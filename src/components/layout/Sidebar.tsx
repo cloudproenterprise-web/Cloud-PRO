@@ -1,0 +1,942 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Server,
+  Users,
+  HardDrive,
+  Layers,
+  Shield,
+  CreditCard,
+  Code2,
+  FolderOpen,
+  Database,
+  Mail,
+  Globe,
+  Lock,
+  Cpu,
+  Clock,
+  Archive,
+  Palette,
+  LayoutDashboard,
+  LogOut,
+  ChevronDown,
+  Cloud,
+  Network,
+  Sparkles,
+  Terminal,
+  Search,
+  X,
+  ChevronsUpDown,
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { CloudProLogo } from '../common/CloudProLogo';
+
+interface SidebarProps {
+  currentTab: string;
+  onSelectTab: (tab: string) => void;
+  isOpen: boolean;
+  onCloseMobile: () => void;
+}
+
+interface NavMenuItem {
+  id: string;
+  label: string;
+  aliases?: string[];
+  icon: React.ComponentType<{ className?: string }>;
+  externalHref?: string;
+  badge?: {
+    text: string;
+  };
+}
+
+interface NavMenuGroup {
+  key: string;
+  title: string;
+  items: NavMenuItem[];
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  currentTab,
+  onSelectTab,
+  isOpen,
+  onCloseMobile,
+}) => {
+  const { currentUser, currentResellerProfile, switchRole, logout } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    // Admin Groups
+    admin_infra: true,
+    admin_network: true,
+    admin_vps: true,
+    admin_hosting: true,
+    admin_tenancy: true,
+    admin_finance: true,
+    // Reseller Groups
+    reseller_portal: true,
+    reseller_hosting: true,
+    reseller_branding: true,
+    // Customer Groups
+    customer_overview: true,
+    customer_website: true,
+    customer_db: true,
+    customer_ops: true,
+    customer_billing: true,
+  });
+
+  const adminGroups: NavMenuGroup[] = useMemo(
+    () => [
+      {
+        key: 'admin_infra',
+        title: 'Infrastruktur & Server',
+        items: [
+          {
+            id: 'dashboard',
+            aliases: ['admin-dashboard'],
+            label: 'Cluster Overview',
+            icon: LayoutDashboard,
+          },
+          {
+            id: 'servers',
+            label: 'Server Nodes & Daemons',
+            icon: Server,
+          },
+          {
+            id: 'ssh-direct',
+            label: 'Web Terminal (SSH)',
+            icon: Terminal,
+            externalHref: '/ssh',
+            badge: {
+              text: 'SSH',
+            },
+          },
+          {
+            id: 'architecture',
+            label: 'Arsitektur Sistem',
+            icon: Layers,
+          },
+        ],
+      },
+      {
+        key: 'admin_network',
+        title: 'Jaringan, Tunnel & DNS',
+        items: [
+          {
+            id: 'gateway-tunnel',
+            label: 'CF Tunnel & IPv6 DDNS',
+            icon: Network,
+          },
+          {
+            id: 'tailscale-mesh',
+            label: 'Tailscale Mesh & SSH',
+            icon: Network,
+          },
+          {
+            id: 'dns-zones',
+            aliases: ['cpanel-dns'],
+            label: 'DNS Zone Editor',
+            icon: Globe,
+          },
+          {
+            id: 'nameservers',
+            aliases: ['dns-manager', 'private-ns'],
+            label: 'Private Nameserver',
+            icon: Server,
+          },
+          {
+            id: 'ip-manager',
+            label: 'Dedicated IP & Pool',
+            icon: Globe,
+          },
+        ],
+      },
+      {
+        key: 'admin_vps',
+        title: 'Manajemen VPS Cloud',
+        items: [
+          {
+            id: 'vps',
+            label: 'Kelola VPS Cloud (KVM)',
+            icon: Cpu,
+          },
+        ],
+      },
+      {
+        key: 'admin_hosting',
+        title: 'Hosting & Web Suite',
+        items: [
+          {
+            id: 'accounts',
+            aliases: ['hosting-accounts', 'hosting'],
+            label: 'Akun Hosting (vHosts)',
+            icon: Globe,
+          },
+          {
+            id: 'domains',
+            aliases: ['cpanel-domains', 'subdomains'],
+            label: 'Domain & Subdomain',
+            icon: Globe,
+          },
+          {
+            id: 'file-manager',
+            aliases: ['cpanel-files', 'files'],
+            label: 'File Manager',
+            icon: FolderOpen,
+          },
+          {
+            id: 'disk-usage',
+            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
+            label: 'Disk Usage & Cleaner',
+            icon: HardDrive,
+          },
+          {
+            id: 'website-cloner',
+            aliases: ['cloner'],
+            label: 'Kloning Website',
+            icon: Sparkles,
+          },
+          {
+            id: 'databases',
+            aliases: ['cpanel-database'],
+            label: 'MySQL & phpMyAdmin',
+            icon: Database,
+          },
+          {
+            id: 'php-selector',
+            aliases: ['cpanel-php', 'php'],
+            label: 'PHP Selector & Versi',
+            icon: Cpu,
+          },
+          {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL & Let's Encrypt",
+            icon: Lock,
+          },
+          {
+            id: 'emails',
+            aliases: ['cpanel-email'],
+            label: 'Email & Webmail',
+            icon: Mail,
+          },
+          {
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron', 'cron'],
+            label: 'Cron Jobs Otomasi',
+            icon: Clock,
+          },
+          {
+            id: 'backups',
+            aliases: ['cpanel-backup', 'cpanel-backups'],
+            label: 'Backup & Restore',
+            icon: Archive,
+            badge: {
+              text: '.ZIP',
+            },
+          },
+          {
+            id: 'media-storage',
+            aliases: ['cpanel-media', 'media'],
+            label: 'Cloudflare R2 & Media',
+            icon: Cloud,
+          },
+        ],
+      },
+      {
+        key: 'admin_tenancy',
+        title: 'Klien & Mitra Reseller',
+        items: [
+          {
+            id: 'resellers',
+            label: 'Mitra Reseller',
+            icon: Users,
+          },
+          {
+            id: 'customers',
+            label: 'Semua Pelanggan',
+            icon: Users,
+          },
+          {
+            id: 'plans',
+            aliases: ['packages'],
+            label: 'Paket Hosting Global',
+            icon: Layers,
+          },
+        ],
+      },
+      {
+        key: 'admin_finance',
+        title: 'Keuangan & Keamanan',
+        items: [
+          {
+            id: 'billing',
+            aliases: ['invoices'],
+            label: 'Billing & Invoices',
+            icon: CreditCard,
+          },
+          {
+            id: 'security',
+            label: 'Firewall & Security',
+            icon: Shield,
+          },
+          {
+            id: 'api-explorer',
+            aliases: ['api-docs', 'api'],
+            label: 'REST API & Webhooks',
+            icon: Code2,
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+  const resellerGroups: NavMenuGroup[] = useMemo(
+    () => [
+      {
+        key: 'reseller_portal',
+        title: 'Portal Reseller',
+        items: [
+          {
+            id: 'reseller-dashboard',
+            label: 'Dashboard Kuota',
+            icon: LayoutDashboard,
+          },
+          {
+            id: 'customers',
+            label: 'Pelanggan Saya',
+            icon: Users,
+          },
+          {
+            id: 'plans',
+            aliases: ['packages'],
+            label: 'Paket Hosting Sendiri',
+            icon: Layers,
+          },
+          {
+            id: 'vps',
+            label: 'Cloud VPS Instances',
+            icon: Cpu,
+          },
+        ],
+      },
+      {
+        key: 'reseller_hosting',
+        title: 'Kelola Hosting Klien',
+        items: [
+          {
+            id: 'accounts',
+            aliases: ['hosting-accounts'],
+            label: 'Akun Hosting (vHosts)',
+            icon: Globe,
+          },
+          {
+            id: 'media-storage',
+            aliases: ['cpanel-media'],
+            label: 'Cloudflare R2 & Media',
+            icon: Cloud,
+            badge: {
+              text: 'R2',
+            },
+          },
+          {
+            id: 'php-selector',
+            aliases: ['cpanel-php'],
+            label: 'PHP Selector & Versi',
+            icon: Cpu,
+          },
+          {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL Let's Encrypt",
+            icon: Lock,
+          },
+          {
+            id: 'domains',
+            aliases: ['cpanel-domains', 'subdomains'],
+            label: 'Domain & Subdomain',
+            icon: Globe,
+          },
+          {
+            id: 'dns-zones',
+            aliases: ['cpanel-dns'],
+            label: 'DNS Zone Editor',
+            icon: Globe,
+          },
+          {
+            id: 'databases',
+            aliases: ['cpanel-database'],
+            label: 'MySQL & phpMyAdmin',
+            icon: Database,
+          },
+          {
+            id: 'file-manager',
+            aliases: ['cpanel-files'],
+            label: 'File Manager',
+            icon: FolderOpen,
+          },
+          {
+            id: 'disk-usage',
+            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
+            label: 'Disk Usage & Cleaner',
+            icon: HardDrive,
+          },
+          {
+            id: 'website-cloner',
+            aliases: ['cloner'],
+            label: 'Kloning Website',
+            icon: Sparkles,
+          },
+          {
+            id: 'emails',
+            aliases: ['cpanel-email'],
+            label: 'Email & Webmail',
+            icon: Mail,
+          },
+          {
+            id: 'backups',
+            aliases: ['cpanel-backup', 'cpanel-backups'],
+            label: 'Backup & Restore',
+            icon: Archive,
+          },
+          {
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron'],
+            label: 'Cron Jobs',
+            icon: Clock,
+          },
+        ],
+      },
+      {
+        key: 'reseller_branding',
+        title: 'Branding & Keuangan',
+        items: [
+          {
+            id: 'whitelabel',
+            aliases: ['branding'],
+            label: 'White-Label Branding',
+            icon: Palette,
+          },
+          {
+            id: 'nameservers',
+            aliases: ['dns-manager'],
+            label: 'Private Nameserver (NS)',
+            icon: Server,
+          },
+          {
+            id: 'billing',
+            aliases: ['invoices'],
+            label: 'Billing & Invoice',
+            icon: CreditCard,
+          },
+          {
+            id: 'security',
+            label: 'Aktivitas & Keamanan',
+            icon: Shield,
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+  const customerGroups: NavMenuGroup[] = useMemo(
+    () => [
+      {
+        key: 'customer_overview',
+        title: 'Ringkasan & Cloud',
+        items: [
+          {
+            id: 'cpanel-dashboard',
+            aliases: ['customer-dashboard'],
+            label: 'Ringkasan Akun',
+            icon: LayoutDashboard,
+          },
+          {
+            id: 'vps',
+            label: 'Dedicated VPS Cloud',
+            icon: Cpu,
+          },
+        ],
+      },
+      {
+        key: 'customer_website',
+        title: 'Website & Domain',
+        items: [
+          {
+            id: 'file-manager',
+            aliases: ['cpanel-files'],
+            label: 'File Manager',
+            icon: FolderOpen,
+          },
+          {
+            id: 'disk-usage',
+            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
+            label: 'Disk Usage & Cleaner',
+            icon: HardDrive,
+          },
+          {
+            id: 'website-cloner',
+            aliases: ['cloner'],
+            label: 'Kloning Website',
+            icon: Sparkles,
+          },
+          {
+            id: 'php-selector',
+            aliases: ['cpanel-php'],
+            label: 'PHP Selector & Ext',
+            icon: Cpu,
+          },
+          {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL Let's Encrypt",
+            icon: Lock,
+          },
+          {
+            id: 'domains',
+            aliases: ['cpanel-domains', 'subdomains'],
+            label: 'Domain & Subdomain',
+            icon: Globe,
+          },
+          {
+            id: 'dns-zones',
+            aliases: ['cpanel-dns'],
+            label: 'DNS Zone Editor',
+            icon: Globe,
+          },
+          {
+            id: 'media-storage',
+            aliases: ['cpanel-media'],
+            label: 'Media & Cloudflare R2',
+            icon: Cloud,
+          },
+        ],
+      },
+      {
+        key: 'customer_db',
+        title: 'Database & Email',
+        items: [
+          {
+            id: 'databases',
+            aliases: ['cpanel-database'],
+            label: 'MySQL & phpMyAdmin',
+            icon: Database,
+          },
+          {
+            id: 'emails',
+            aliases: ['cpanel-email'],
+            label: 'Email & Webmail',
+            icon: Mail,
+          },
+        ],
+      },
+      {
+        key: 'customer_ops',
+        title: 'Otomasi & Pemeliharaan',
+        items: [
+          {
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron'],
+            label: 'Cron Jobs',
+            icon: Clock,
+          },
+          {
+            id: 'backups',
+            aliases: ['cpanel-backup', 'cpanel-backups'],
+            label: 'Backup & Restore',
+            icon: Archive,
+          },
+        ],
+      },
+      {
+        key: 'customer_billing',
+        title: 'Tagihan & Layanan',
+        items: [
+          {
+            id: 'billing',
+            aliases: ['invoices'],
+            label: 'Invoices & Perpanjangan',
+            icon: CreditCard,
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+  const activeRoleGroups =
+    currentUser?.role === 'admin'
+      ? adminGroups
+      : currentUser?.role === 'reseller'
+      ? resellerGroups
+      : customerGroups;
+
+  const isTabActive = (tabId: string, aliases: string[] = []) => {
+    return currentTab === tabId || aliases.includes(currentTab);
+  };
+
+  // Automatically expand the group that contains the currently active tab
+  useEffect(() => {
+    for (const grp of activeRoleGroups) {
+      if (grp.items.some(item => isTabActive(item.id, item.aliases))) {
+        setOpenSections(prev => (prev[grp.key] ? prev : { ...prev, [grp.key]: true }));
+        break;
+      }
+    }
+  }, [currentTab, currentUser?.role]);
+
+  if (!currentUser) return null;
+
+  const toggleSection = (sectionKey: string) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey],
+    }));
+  };
+
+  const areAllCurrentGroupsOpen = activeRoleGroups.every(g => openSections[g.key]);
+  const toggleAllGroups = () => {
+    const nextState = !areAllCurrentGroupsOpen;
+    const updated: Record<string, boolean> = { ...openSections };
+    activeRoleGroups.forEach(g => {
+      updated[g.key] = nextState;
+    });
+    setOpenSections(updated);
+  };
+
+  // White-label dynamic branding
+  const brandName = currentResellerProfile?.brandName || 'Cloud PRO';
+  const themeColor = currentResellerProfile?.themeColor || '#0284c7';
+  const panelDomain = currentResellerProfile?.panelDomain || 'panel.cloudpro.net';
+
+  const handleNav = (tabId: string) => {
+    onSelectTab(tabId);
+    onCloseMobile();
+  };
+
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  const filteredGroups = activeRoleGroups
+    .map(group => {
+      if (!normalizedQuery) return group;
+      const matchingItems = group.items.filter(
+        item =>
+          item.label.toLowerCase().includes(normalizedQuery) ||
+          group.title.toLowerCase().includes(normalizedQuery)
+      );
+      return { ...group, items: matchingItems };
+    })
+    .filter(group => group.items.length > 0);
+
+  return (
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          onClick={onCloseMobile}
+          className="fixed inset-0 z-60 bg-slate-950/65 backdrop-blur-xs lg:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed top-0 bottom-0 left-0 z-70 flex w-72 flex-col border-r border-slate-800/90 bg-slate-950 text-slate-300 transition-transform duration-300 ease-in-out lg:w-64 lg:translate-x-0 ${
+          isOpen
+            ? 'translate-x-0 shadow-2xl pointer-events-auto'
+            : '-translate-x-full pointer-events-none lg:translate-x-0 lg:pointer-events-auto'
+        }`}
+      >
+        {/* Top Brand Lockup */}
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800/80 bg-slate-950/95 px-4">
+          {currentUser.role === 'reseller' &&
+          currentResellerProfile &&
+          (currentResellerProfile.hideUpstreamBranding || currentResellerProfile.customLogoUrl) ? (
+            <div className="flex items-center gap-3 min-w-0">
+              {currentResellerProfile.customLogoUrl ? (
+                <img
+                  src={currentResellerProfile.customLogoUrl}
+                  alt={brandName}
+                  className="h-9 w-9 shrink-0 rounded-lg object-contain bg-white/95 p-0.5 border border-slate-700 shadow-xs"
+                />
+              ) : (
+                <div
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white font-bold shadow-xs"
+                  style={{ backgroundColor: themeColor }}
+                >
+                  <HardDrive className="h-5 w-5" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <h1 className="text-base font-bold text-white tracking-tight leading-none truncate">
+                  {brandName}
+                </h1>
+                <p className="mt-1 font-mono text-[10px] text-slate-400 leading-none truncate">
+                  {panelDomain}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <CloudProLogo
+              variant="compact"
+              size="md"
+              cloudTextColor="text-white"
+              showSubtitle={true}
+              subtitleText="ENTERPRISE CLOUD PANEL"
+            />
+          )}
+
+          {/* Mobile Close Button */}
+          <button
+            onClick={onCloseMobile}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden cursor-pointer"
+            aria-label="Tutup Menu"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Executive Context & Search Sub-Header */}
+        <div className="border-b border-slate-800/70 bg-slate-900/35 px-3.5 py-2.5 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="truncate text-[11px] font-semibold text-slate-200">
+                {currentUser.name || 'Root Administrator'}
+              </span>
+            </div>
+            <span className="shrink-0 rounded-md border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-sky-300">
+              {currentUser.role === 'admin'
+                ? 'ROOT'
+                : currentUser.role === 'reseller'
+                ? 'WHM'
+                : 'CPANEL'}
+            </span>
+          </div>
+
+          {/* Sleek Quick Filter Input + Expand/Collapse Toggle */}
+          <div className="flex items-center gap-1.5">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Cari modul (SSL, DNS, Disk...)"
+                className="w-full rounded-lg border border-slate-800 bg-slate-900/90 pl-8 pr-6 py-1.5 text-[11px] text-slate-200 placeholder-slate-500 focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/30 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
+                  title="Bersihkan pencarian"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={toggleAllGroups}
+              title={areAllCurrentGroupsOpen ? 'Ringkas semua grup menu' : 'Buka semua grup menu'}
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-slate-800 bg-slate-900/90 text-slate-400 hover:border-slate-700 hover:text-white transition-colors cursor-pointer"
+            >
+              <ChevronsUpDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Architectural Tree-Line Navigation Menu (Unified Monochromatic Slate & Sapphire) */}
+        <nav className="flex-1 space-y-3 overflow-y-auto px-3 py-3 text-xs font-medium scrollbar-thin scrollbar-thumb-slate-800">
+          {filteredGroups.length === 0 ? (
+            <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-4 text-center text-[11px] text-slate-400">
+              Modul <strong>&ldquo;{searchQuery}&rdquo;</strong> tidak ditemukan.
+            </div>
+          ) : (
+            filteredGroups.map(group => {
+              const isOpenGroup = normalizedQuery ? true : !!openSections[group.key];
+              const hasActiveChild = group.items.some(item =>
+                isTabActive(item.id, item.aliases)
+              );
+
+              return (
+                <div key={group.key} className="space-y-1">
+                  {/* Group Header */}
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(group.key)}
+                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[10px] font-extrabold uppercase tracking-[0.08em] transition-colors cursor-pointer select-none group ${
+                      hasActiveChild
+                        ? 'text-slate-200 bg-slate-900/70'
+                        : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full shrink-0 transition-colors ${
+                          hasActiveChild
+                            ? 'bg-sky-400 ring-2 ring-sky-400/25'
+                            : 'bg-slate-600 group-hover:bg-slate-400'
+                        }`}
+                      />
+                      <span className="truncate">{group.title}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="font-mono text-[9px] text-slate-600 group-hover:text-slate-400">
+                        {group.items.length}
+                      </span>
+                      <ChevronDown
+                        className={`h-3.5 w-3.5 text-slate-500 transition-transform duration-200 group-hover:text-slate-300 ${
+                          isOpenGroup ? 'rotate-0' : '-rotate-90'
+                        }`}
+                      />
+                    </div>
+                  </button>
+
+                  {/* Group Items with Architectural Tree-Line */}
+                  {isOpenGroup && (
+                    <div className="ml-3 border-l border-slate-800/90 pl-2 space-y-0.5">
+                      {group.items.map(item => {
+                        const Icon = item.icon;
+                        const active = isTabActive(item.id, item.aliases);
+
+                        const itemContent = (
+                          <>
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span
+                                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition-all ${
+                                  active
+                                    ? 'border-sky-500/40 bg-sky-500/15 text-sky-400 shadow-xs'
+                                    : 'border-slate-800/90 bg-slate-900/60 text-slate-400 group-hover:border-slate-700 group-hover:bg-slate-800/90 group-hover:text-sky-400'
+                                }`}
+                              >
+                                <Icon className="h-3.5 w-3.5" />
+                              </span>
+                              <span className="truncate">{item.label}</span>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {item.badge && (
+                                <span
+                                  className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold border ${
+                                    active
+                                      ? 'border-sky-500/40 bg-sky-500/20 text-sky-200'
+                                      : 'border-slate-700/80 bg-slate-800/80 text-slate-400 group-hover:text-slate-300'
+                                  }`}
+                                >
+                                  {item.badge.text}
+                                </span>
+                              )}
+                              {active && (
+                                <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-xs shadow-sky-400/50" />
+                              )}
+                            </div>
+                          </>
+                        );
+
+                        if (item.externalHref) {
+                          return (
+                            <a
+                              key={item.id}
+                              href={item.externalHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-slate-300 hover:bg-slate-900/80 hover:text-white transition-all cursor-pointer"
+                              title="Buka Direct Web Terminal Linux Shell"
+                            >
+                              {itemContent}
+                            </a>
+                          );
+                        }
+
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => handleNav(item.id)}
+                            className={`group flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left transition-all cursor-pointer ${
+                              active
+                                ? 'bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent text-white font-semibold ring-1 ring-sky-500/35 shadow-xs'
+                                : 'text-slate-300 hover:bg-slate-900/80 hover:text-white'
+                            }`}
+                          >
+                            {itemContent}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </nav>
+
+        {/* Compact Executive Portal Switcher & Logout Dock */}
+        <div className="border-t border-slate-800/90 bg-slate-950 p-3 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Mode Portal
+            </span>
+            <button
+              type="button"
+              onClick={() => logout()}
+              className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] font-semibold text-slate-400 hover:border-rose-500/40 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
+              title="Keluar / Logout Akun"
+            >
+              <LogOut className="h-3 w-3" />
+              <span>Logout</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-3 gap-1 rounded-xl border border-slate-800/90 bg-slate-900/90 p-1">
+            <button
+              type="button"
+              onClick={() => {
+                switchRole('admin');
+                handleNav('dashboard');
+              }}
+              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer ${
+                currentUser.role === 'admin'
+                  ? 'bg-sky-600 text-white font-bold shadow-xs'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              }`}
+            >
+              Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                switchRole('reseller');
+                handleNav('reseller-dashboard');
+              }}
+              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer ${
+                currentUser.role === 'reseller'
+                  ? 'bg-sky-600 text-white font-bold shadow-xs'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              }`}
+            >
+              Reseller
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                switchRole('customer');
+                handleNav('cpanel-dashboard');
+              }}
+              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer ${
+                currentUser.role === 'customer'
+                  ? 'bg-sky-600 text-white font-bold shadow-xs'
+                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+              }`}
+            >
+              Customer
+            </button>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+};

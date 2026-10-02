@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    background-color: #f4f7fb;
+    color: #0f172a;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #f4f7fb;
+    color: #0f172a;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  #root {
+    min-height: 100dvh;
+    max-width: 100%;
+  }
+
+  .font-mono,
+  [data-tabular="true"] {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+/* Executive Cloud Console architectural pearl-slate canvas */
+.bg-exec-canvas {
+  background-color: #f4f7fb;
+  background-image:
+    linear-gradient(180deg, rgba(226, 232, 240, 0.38) 0%, rgba(244, 247, 251, 0.92) 260px, #f4f7fb 100%),
+    radial-gradient(rgba(148, 163, 184, 0.18) 0.75px, transparent 0.75px);
+  background-size: 100% 100%, 24px 24px;
+}
+
+/* ============================================================================
+   1px Minimalist Luxury Hairline Border (Garis Tepi Minimalis 1px Presisi)
+   Crisp, razor-thin 1px perimeter line with Sapphire-Slate metallic sheen
+   ============================================================================ */
+.exec-card-ring {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fcfdff 100%) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(14, 165, 233, 0.68) 0%,
+      rgba(100, 116, 139, 0.52) 35%,
+      rgba(148, 163, 184, 0.58) 68%,
+      rgba(37, 99, 235, 0.65) 100%
+    ) border-box;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.96),
+    0 1px 3px 0 rgba(15, 23, 42, 0.04),
+    0 8px 22px -6px rgba(15, 23, 42, 0.06);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.exec-card-ring:hover {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(2, 132, 199, 0.85) 0%,
+      rgba(71, 85, 105, 0.65) 45%,
+      rgba(37, 99, 235, 0.85) 100%
+    ) border-box;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 4px 12px -2px rgba(2, 132, 199, 0.08),
+    0 12px 28px -8px rgba(15, 23, 42, 0.08);
+}
+
+/* Enterprise Interactive Bento Tile & Secondary Sub-Card Minimalist 1px Border */
+.exec-tile-ring {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(14, 165, 233, 0.55) 0%,
+      rgba(148, 163, 184, 0.55) 50%,
+      rgba(59, 130, 246, 0.55) 100%
+    ) border-box;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px 0 rgba(15, 23, 42, 0.025);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.exec-tile-ring:hover {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(2, 132, 199, 0.9) 0%,
+      rgba(37, 99, 235, 0.85) 100%
+    ) border-box;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 4px 14px -3px rgba(2, 132, 199, 0.14);
+}
+
+/* Automatic 1px Minimalist Hairline Border for all cards inside System & vHost Modules */
+.exec-module-surface .rounded-2xl.border.bg-white,
+.exec-module-surface .rounded-xl.border.bg-white {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fcfdff 100%) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(14, 165, 233, 0.62) 0%,
+      rgba(100, 116, 139, 0.48) 40%,
+      rgba(148, 163, 184, 0.52) 72%,
+      rgba(37, 99, 235, 0.6) 100%
+    ) border-box !important;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    0 2px 10px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Dark Obsidian Architectural 1px Minimalist Hairline Ring for Login Gateway & Floating Dock */
+.exec-dark-ring {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(2, 6, 23, 0.98) 100%) padding-box,
+    linear-gradient(
+      135deg,
+      rgba(56, 189, 248, 0.55) 0%,
+      rgba(148, 163, 184, 0.32) 50%,
+      rgba(37, 99, 235, 0.55) 100%
+    ) border-box;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+    0 24px 48px -12px rgba(0, 0, 0, 0.65);
+}
+
+@keyframes moduleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-module-enter {
+  animation: moduleFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mobile-sticky-dock {
+  bottom: calc(0.75rem + var(--vv-bottom-offset, 0px) + env(safe-area-inset-bottom, 0px));
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide the entire Cloud PRO Server dashboard (#root) when printing a document */
+  body.has-print-document #root,
+  .no-print {
+    display: none !important;
+  }
+
+  #cloudpro-print-sheet {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}

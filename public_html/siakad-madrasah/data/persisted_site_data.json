@@ -1,0 +1,438 @@
+{
+  "siteContent": {
+    "profile": {
+      "name": "Jaenal Maskun",
+      "arabicName": "الأستاذ زين الماسكون",
+      "title": " Jaenal Maskun, S.Pd.I.",
+      "degrees": "S.Pd.I.",
+      "role": "Pendidik, Akademisi & Dev APP Madrasah",
+      "institution": "Lembaga Pendidikan & Madrasah Unggulan",
+      "tagline": "Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat",
+      "bio": "Lebih dari 15 tahun mendedikasikan diri dalam dunia pendidikan Islam, pengembangan kurikulum madrasah terpadu, serta pembinaan akhlak santri dan generasi muda. Berkomitmen menghadirkan ekosistem madrasah yang adaptif terhadap sains-teknologi modern tanpa mencabut akar tradisi keilmuan Islam dan kearifan pesantren.",
+      "motto": "العِلْمُ بِلَا عَمَلٍ كَالشَّجَرِ بِلَا ثَمَرٍ — Ilmu tanpa amal laksana pohon tanpa buah.",
+      "location": "Gentawangi , Indonesia",
+      "email": "jaenalmaskun.ai@gmail.com",
+      "phone": "+62 812-3456-7890",
+      "avatarUrl": "/uploads/avatar_1787051686042_07hu2t.jpg",
+      "socials": {
+        "whatsapp": "https://wa.me/6281234567890",
+        "youtube": "https://youtube.com/@jaenalmaskun",
+        "instagram": "https://instagram.com/jaenalmaskun",
+        "facebook": "https://facebook.com/jaenalmaskun",
+        "linkedin": "https://linkedin.com/in/jaenalmaskun"
+      },
+      "stats": [
+        {
+          "label": "Tahun Pengabdian",
+          "value": "15+",
+          "subtext": "Di Dunia Pendidikan Madrasah"
+        },
+        {
+          "label": "Karya Tulis & Modul",
+          "value": "24+",
+          "subtext": "Modul  Ajar"
+        },
+        {
+          "label": "Guru Terlatih",
+          "value": "3.500+",
+          "subtext": "Pelatihan PKB & Pedagogi"
+        },
+        {
+          "label": "Santri & Siswa Dibina",
+          "value": "12.000+",
+          "subtext": "Alumni Berprestasi"
+        }
+      ]
+    },
+    "education": [
+      {
+        "year": "2013",
+        "degree": "Sarjana Pendidikan S1",
+        "institution": "IAIIG Cilacap",
+        "focus": "Konsentrasi Manajemen Pendidikan Islam & Kurikulum (Cum Laude)"
+      },
+      {
+        "year": "2013",
+        "degree": "Sarjana Pendidikan Agama Islam (S.Pd.I.)",
+        "institution": "Fakultas Tarbiyah dan Keguruan",
+        "focus": "Pendidikan Agama Islam, Metodologi Pengajaran & Bahasa Arab"
+      },
+      {
+        "year": "1995",
+        "degree": "Pendidikan Pesantren & Madrasah Aliyah",
+        "institution": "Pondok Pesantren  As Syafi'iyah Situbondo",
+        "focus": "Tafsir Al-Qur'an, Hadits, Fiqh Syafi'iyah, & Tahfidzul Qur'an"
+      }
+    ],
+    "pillars": [
+      {
+        "title": "Adab & Karakter Luhur",
+        "arabic": "الأخلاق الكريمة",
+        "desc": "Menempatkan pembentukan adab dan tata krama islami sebagai pondasi utama sebelum penanaman keilmuan akademis.",
+        "icon": "HeartHandshake"
+      },
+      {
+        "title": "Tradisi & Nalar Kritis",
+        "arabic": "التراث والتجديد",
+        "desc": "Melestarikan khazanah turots pesantren klasik seraya menumbuhkan daya analitis terhadap tantangan sains modern.",
+        "icon": "BookOpenCheck"
+      },
+      {
+        "title": "Inovasi & Adaptasi Digital",
+        "arabic": "مواكبة العصر",
+        "desc": "Pemanfaatan teknologi mutakhir untuk memperluas syiar dakwah, memperkaya media ajar, dan meningkatkan efisiensi madrasah.",
+        "icon": "Sparkles"
+      },
+      {
+        "title": "Keteladanan Nyata",
+        "arabic": "الأسوة الحسنة",
+        "desc": "Mendidik dengan tindakan nyata, integritas kepribadian, serta konsistensi antara lisan dan perbuatan sehari-hari.",
+        "icon": "ShieldCheck"
+      }
+    ],
+    "quotes": [
+      {
+        "id": "q1",
+        "arabicText": "يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ",
+        "translation": "Allah akan meninggikan orang-orang yang beriman di antaramu dan orang-orang yang diberi ilmu pengetahuan beberapa derajat.",
+        "source": "QS. Al-Mujadilah [58]: 11",
+        "theme": "Keutamaan Ilmu"
+      },
+      {
+        "id": "q2",
+        "arabicText": "طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ",
+        "translation": "Menuntut ilmu itu wajib atas setiap muslim.",
+        "source": "HR. Ibnu Majah no. 224",
+        "theme": "Kewajiban Belajar"
+      },
+      {
+        "id": "q3",
+        "arabicText": "الأَدَبُ قَبْلَ العِلْمِ",
+        "translation": "Adab dan budi pekerti mendahului ilmu pengetahuan.",
+        "source": "Imam Malik rahimahullah",
+        "theme": "Pilar Adab"
+      },
+      {
+        "id": "q4",
+        "arabicText": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+        "translation": "Barangsiapa menempuh jalan untuk mencari ilmu, maka Allah akan memudahkan baginya jalan menuju surga.",
+        "source": "HR. Muslim no. 2699",
+        "theme": "Jalan Menuju Surga"
+      },
+      {
+        "id": "q5",
+        "arabicText": "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",
+        "translation": "Sebaik-baik kalian adalah orang yang belajar Al-Qur'an dan mengajarkannya.",
+        "source": "HR. Al-Bukhari no. 5027",
+        "theme": "Keberkahan Al-Qur'an"
+      }
+    ],
+    "publications": [
+      {
+        "id": "pub-1",
+        "title": "Harmonisasi Adab & Sains: Desain Pembelajaran Integratif di Madrasah Abad 21",
+        "category": "Buku",
+        "year": "2024",
+        "publisher": "Pustaka Cendekia Nusantara",
+        "description": "Kajian komprehensif tentang perumusan strategi integrasi nilai-nilai keislaman dengan metodologi sains dan computational thinking di ruang kelas madrasah.",
+        "tags": [
+          "Kurikulum Madrasah",
+          "Integrasi Sains-Islam",
+          "Pedagogi"
+        ],
+        "featured": true
+      },
+      {
+        "id": "pub-2",
+        "title": "Panduan Praktis Manajemen Kelas Humanis Berbasis Pesantren",
+        "category": "Buku",
+        "year": "2023",
+        "publisher": "Lentera Ilmu Publishing",
+        "description": "Pendekatan keteladanan (Uswah Hasanah) dalam mengelola kedisiplinan santri dengan cinta dan dialog yang memberdayakan.",
+        "tags": [
+          "Manajemen Pendidikan",
+          "Karakter Santri",
+          "Psikologi Anak"
+        ],
+        "featured": true
+      },
+      {
+        "id": "pub-3",
+        "title": "Efektivitas Model Flipped Classroom Berorientasi Fiqh Tematik terhadap Literasi Keagamaan Siswa MA",
+        "category": "Jurnal & Riset",
+        "year": "2023",
+        "publisher": "Jurnal Pendidikan Islam Terakreditasi SINTA",
+        "description": "Penelitian kuantitatif-kualitatif terkait penerapan media digital dalam kajian fiqh muamalah di tingkat Madrasah Aliyah.",
+        "tags": [
+          "Riset Pendidikan",
+          "Fiqh Kontemporer",
+          "EdTech"
+        ]
+      },
+      {
+        "id": "pub-4",
+        "title": "Modul Ajar Pembelajaran Berdiferensiasi Mata Pelajaran Akidah Akhlak",
+        "category": "Modul Pembelajaran",
+        "year": "2024",
+        "publisher": "Kelompok Kerja Guru (KKG) & MGMP",
+        "description": "Panduan guru dalam memetakan kesiapan, minat, dan profil belajar siswa madrasah dengan asesmen diagnostik yang terstruktur.",
+        "tags": [
+          "Kurikulum Merdeka",
+          "Akidah Akhlak",
+          "Modul Guru"
+        ]
+      },
+      {
+        "id": "pub-5",
+        "title": "Menjaga Nalar Kritis di Balik Jubah Tradisi: Refleksi Pendidikan Madrasah",
+        "category": "Opini & Artikel",
+        "year": "2024",
+        "publisher": "Kolom Literasi Keislaman & Media Nasional",
+        "description": "Tulisan esai populer mengenai pentingnya membangun tradisi tadabbur dan dialektika ilmu dalam lingkungan santri.",
+        "tags": [
+          "Opini Publik",
+          "Transformasi Madrasah"
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "id": "exp-1",
+        "period": "2019 — Sekarang",
+        "role": "Kepala Pusat Penjaminan Mutu & Kurikulum",
+        "organization": "Yayasan Pendidikan Islam & Madrasah Terpadu",
+        "type": "Pengabdian",
+        "description": "Memimpin perancangan kurikulum khas madrasah yang menyinergikan Kurikulum Nasional, Kemenag, dan Kurikulum Kepesantrenan Klasik (Kuning).",
+        "achievements": [
+          "Meningkatkan akreditasi madrasah menjadi Unggul (A) secara konsisten",
+          "Menginisiasi program Tahfidz Berbasis Pemahaman Makna (Fahmul Qur'an)",
+          "Digitalisasi rapor dan sistem evaluasi pembelajaran madrasah"
+        ]
+      },
+      {
+        "id": "exp-2",
+        "period": "2021 — Sekarang",
+        "role": "Fasilitator & Instruktur Pengembangan Keprofesian Berkelanjutan (PKB)",
+        "organization": "Kementerian Agama RI / Forum MGMP",
+        "type": "Pendidikan",
+        "description": "Memberikan pelatihan dan mentoring intensif bagi ratusan guru madrasah se-wilayah dalam penyusunan modul ajar inovatif, asesmen autentik, dan literasi digital.",
+        "achievements": [
+          "Telah melatih lebih dari 3.500 guru Madrasah Ibtidaiyah, Tsanawiyah, & Aliyah",
+          "Penyusun instrumen workshop literasi numerasi madrasah"
+        ]
+      },
+      {
+        "id": "exp-3",
+        "period": "2015 — 2019",
+        "role": "Wakil Kepala Bidang Akademik & Kesiswaan",
+        "organization": "Madrasah Tsanawiyah Unggulan",
+        "type": "Pendidikan",
+        "description": "Mengkoordinir pembinaan olimpiade sains madrasah (KSM), kepanduan Pramuka Santri, serta program pembiasaan sholat dhuha dan tadarus harian.",
+        "achievements": [
+          "Membimbing santri meraih medali emas KSM (Kompetisi Sains Madrasah) tingkat provinsi",
+          "Membangun program Duta Akhlak dan Budaya Literasi 15 Menit"
+        ]
+      },
+      {
+        "id": "exp-4",
+        "period": "2010 — 2015",
+        "role": "Guru Senior Pendidikan Agama Islam & Bahasa Arab",
+        "organization": "Madrasah & Pesantren As-Salam",
+        "type": "Pengabdian",
+        "description": "Mengajar ilmu Fiqh, Nahwu Shorof dasar, serta pendampingan asrama santri.",
+        "achievements": [
+          "Dinobatkan sebagai Guru Teladan Tingkat Kabupaten tahun 2014"
+        ]
+      }
+    ],
+    "agenda": [
+      {
+        "id": "ag-1",
+        "title": "Kajian Rutin Kitab Ta'lim Muta'allim: Etika Murid dan Guru",
+        "date": "Setiap Ahad Pagi",
+        "time": "06.30 — 08.00 WIB",
+        "location": "Masjid Baitul 'Ilmi & Live Streaming YouTube",
+        "type": "Kajian Kitab",
+        "status": "Rutin"
+      },
+      {
+        "id": "ag-2",
+        "title": "Workshop Desain Modul Ajar Digital Interaktif untuk Guru Madrasah",
+        "date": "Sabtu, 28 Agustus 2026",
+        "time": "08.30 — 15.00 WIB",
+        "location": "Aula Kemenag Wilayah & Hybrid Zoom",
+        "type": "Pelatihan Guru",
+        "status": "Akan Datang"
+      },
+      {
+        "id": "ag-3",
+        "title": "Seminar Parenting Islami: Menemani Generasi Alpha Bersahabat dengan Al-Qur'an",
+        "date": "Ahad, 06 September 2026",
+        "time": "09.00 — 11.45 WIB",
+        "location": "Gedung Pusat Dakwah Islam (Pusdai)",
+        "type": "Seminar Nasional",
+        "status": "Akan Datang"
+      },
+      {
+        "id": "ag-4",
+        "title": "Bimbingan Tahsin & Fahmul Ayat Tematik bagi Calon Asatidz",
+        "date": "Setiap Malam Kamis",
+        "time": "Ba'da Maghrib — Isya",
+        "location": "Halaqah Pesantren",
+        "type": "Bimbingan Santri",
+        "status": "Rutin"
+      }
+    ],
+    "gallery": [
+      {
+        "id": "gal-1",
+        "title": "Halaqah Kajian Keilmuan Santri",
+        "category": "Kegiatan Belajar",
+        "description": "Suasana diskusi interaktif santri dalam membedah teks kitab kuning dengan pendekatan kontekstual.",
+        "image": "https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "id": "gal-2",
+        "title": "Pelatihan Kurikulum Guru Madrasah",
+        "category": "Pelatihan Guru",
+        "description": "Sesi workshop praktikum asesmen diagnostik bersama para tenaga pendidik se-wilayah.",
+        "image": "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "id": "gal-3",
+        "title": "Wisuda Tahfidz & Peneguhan Sanad",
+        "category": "Kajian & Doa",
+        "description": "Momen sakral penganugerahan syahadah bagi santri yang menuntaskan hafalan Al-Qur'an.",
+        "image": "https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        "id": "gal-4",
+        "title": "Anugerah Dedikasi Pendidik Inspiratif",
+        "category": "Penghargaan",
+        "description": "Apresiasi atas inovasi pembelajaran ramah anak dan pengembangan literasi madrasah.",
+        "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=800&q=80"
+      }
+    ],
+    "visibility": {
+      "hero": true,
+      "about": true,
+      "pillars": true,
+      "publications": true,
+      "experience": true,
+      "agenda": true,
+      "islamicTools": true,
+      "gallery": true,
+      "contact": true
+    },
+    "heroSettings": {
+      "badgeText": "Guru",
+      "greetingTitle": "Assalamu’alaikum Warahmatullahi Wabarakatuh",
+      "greetingSub": "Khidmat untuk Pendidikan Islam & Literasi Madrasah",
+      "showStats": true,
+      "showDownloadCV": true,
+      "heroImage": "/uploads/hero_1787051686043_doq56m.jpg",
+      "photoBadgeText": "Pejuang MI"
+    },
+    "shareSettings": {
+      "title": "Jaenal Maskun, S.Pd.I. | Pendidik, Akademisi & Penggerak Madrasah",
+      "description": "Website Resmi Jaenal Maskun, S.Pd.I. - Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat. Eksplorasi profil, modul pembelajaran madrasah, tasbih digital, dan agenda kajian.",
+      "thumbnailUrl": "/og-image.jpg?v=1787035370",
+      "authorName": "Jaenal Maskun, S.Pd.I.",
+      "badgeText": "Website Resmi Madrasah"
+    }
+  },
+  "logoConfig": {
+    "type": "custom_image",
+    "monogramText": "HJ",
+    "brandName": "GARDA MADRASAH",
+    "badgeText": "MADRASAH",
+    "taglineText": "Pendidik & Dev APP Madrasah",
+    "shape": "circle",
+    "borderStyle": "gold",
+    "showTagline": true,
+    "showBadge": true,
+    "size": "large",
+    "fitMode": "cover",
+    "zoomLevel": 100,
+    "backgroundColor": "emerald",
+    "faviconUrl": "/favicon.ico",
+    "footerLogoType": "sync_header",
+    "customImageUrl": "/uploads/logo_1787054962785_na1vhf.jpg"
+  },
+  "stickyFooterConfig": {
+    "enabled": true,
+    "position": "floating",
+    "theme": "emerald_gold",
+    "maxWidth": "max-w-4xl",
+    "showLabels": true,
+    "showBadges": true,
+    "allowCollapse": true,
+    "collapseDefault": false,
+    "collapseText": "Menu Pintas Madrasah",
+    "showAdminButton": true,
+    "adminButtonText": "Login",
+    "showQuickLogoButton": false,
+    "showAudioButton": false,
+    "showEditShortcut": false,
+    "items": [
+      {
+        "id": "item-beranda",
+        "label": "Beranda",
+        "sectionId": "beranda",
+        "icon": "Home",
+        "visible": true
+      },
+      {
+        "id": "item-karya",
+        "label": "Si@Kad Madrasah",
+        "sectionId": "karya",
+        "icon": "BookOpen",
+        "badgeText": "Si@Kad",
+        "badgeColor": "gold",
+        "visible": true,
+        "linkType": "url",
+        "url": "https://siakad-madrasah.jaenalmaskun.biz.id",
+        "externalUrl": "https://siakad-madrasah.jaenalmaskun.biz.id",
+        "isExternal": true,
+        "openInNewTab": true
+      },
+      {
+        "id": "item-agenda",
+        "label": "Agenda",
+        "sectionId": "agenda",
+        "icon": "Calendar",
+        "badgeText": "Jadwal",
+        "badgeColor": "emerald",
+        "visible": true
+      },
+      {
+        "id": "item-fitur-islami",
+        "label": "Absensi",
+        "sectionId": "fitur-islami",
+        "icon": "Sparkles",
+        "visible": true,
+        "linkType": "url",
+        "url": "https://absensi.jaenalmaskun.biz.id",
+        "externalUrl": "https://absensi.jaenalmaskun.biz.id",
+        "isExternal": true,
+        "openInNewTab": true,
+        "badgeText": "Absensi"
+      },
+      {
+        "id": "item-1786987370070",
+        "label": "Modul Ajar KBC",
+        "linkType": "url",
+        "sectionId": "kustom-url",
+        "url": "https://modul-ajar-kbc.jaenalmaskun.biz.id",
+        "externalUrl": "https://modul-ajar-kbc.jaenalmaskun.biz.id",
+        "openInNewTab": true,
+        "isExternal": true,
+        "icon": "Sparkles",
+        "badgeColor": "gold",
+        "visible": true,
+        "badgeText": "Modul KBC"
+      }
+    ]
+  },
+  "lastUpdated": 1787161028130
+}
