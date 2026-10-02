@@ -604,6 +604,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setOpenSections(updated);
   };
 
+  // Lock body scroll and prevent touch leak when mobile drawer is open
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.touchAction = originalTouchAction;
+      };
+    }
+  }, [isOpen]);
+
+  // Support closing mobile sidebar with Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onCloseMobile();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onCloseMobile]);
+
   // White-label dynamic branding
   const brandName = currentResellerProfile?.brandName || 'Cloud PRO';
   const themeColor = currentResellerProfile?.themeColor || '#0284c7';
@@ -634,12 +660,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpen && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 z-60 bg-slate-950/65 backdrop-blur-xs lg:hidden"
+          onTouchEnd={e => {
+            e.preventDefault();
+            onCloseMobile();
+          }}
+          className="fixed inset-0 z-[90] bg-slate-950/75 backdrop-blur-xs lg:hidden touch-none"
         />
       )}
 
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-70 flex w-72 flex-col border-r border-slate-800/90 bg-slate-950 text-slate-300 transition-transform duration-300 ease-in-out lg:w-64 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-[100] flex h-dvh max-h-dvh w-72 flex-col border-r border-slate-800/90 bg-slate-950 text-slate-300 transition-transform duration-300 ease-in-out lg:w-64 lg:translate-x-0 ${
           isOpen
             ? 'translate-x-0 shadow-2xl pointer-events-auto'
             : '-translate-x-full pointer-events-none lg:translate-x-0 lg:pointer-events-auto'
@@ -686,11 +716,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Mobile Close Button */}
           <button
+            type="button"
             onClick={onCloseMobile}
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden cursor-pointer"
+            onTouchEnd={e => {
+              e.preventDefault();
+              onCloseMobile();
+            }}
+            className="flex h-8.5 w-8.5 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden cursor-pointer touch-manipulation active:scale-95 transition-all"
             aria-label="Tutup Menu"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4.5 w-4.5" />
           </button>
         </div>
 
@@ -749,7 +784,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Architectural Tree-Line Navigation Menu (Unified Monochromatic Slate & Sapphire) */}
-        <nav className="flex-1 space-y-3 overflow-y-auto px-3 py-3 text-xs font-medium scrollbar-thin scrollbar-thumb-slate-800">
+        <nav
+          className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 text-xs font-medium scrollbar-thin scrollbar-thumb-slate-800 touch-pan-y"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {filteredGroups.length === 0 ? (
             <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-4 text-center text-[11px] text-slate-400">
               Modul <strong>&ldquo;{searchQuery}&rdquo;</strong> tidak ditemukan.
@@ -767,7 +805,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleSection(group.key)}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[10px] font-extrabold uppercase tracking-[0.08em] transition-colors cursor-pointer select-none group ${
+                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[10px] font-extrabold uppercase tracking-[0.08em] transition-colors cursor-pointer select-none touch-manipulation group ${
                       hasActiveChild
                         ? 'text-slate-200 bg-slate-900/70'
                         : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
@@ -843,7 +881,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               href={item.externalHref}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="group flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-slate-300 hover:bg-slate-900/80 hover:text-white transition-all cursor-pointer"
+                              className="group flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-slate-300 hover:bg-slate-900/80 hover:text-white transition-all cursor-pointer touch-manipulation"
                               title="Buka Direct Web Terminal Linux Shell"
                             >
                               {itemContent}
@@ -856,10 +894,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             key={item.id}
                             type="button"
                             onClick={() => handleNav(item.id)}
-                            className={`group flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left transition-all cursor-pointer ${
+                            className={`group flex w-full items-center justify-between rounded-lg px-2 py-2 text-left transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                               active
                                 ? 'bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent text-white font-semibold ring-1 ring-sky-500/35 shadow-xs'
-                                : 'text-slate-300 hover:bg-slate-900/80 hover:text-white'
+                                : 'text-slate-300 hover:bg-slate-900/80 hover:text-white active:bg-slate-900'
                             }`}
                           >
                             {itemContent}
@@ -898,7 +936,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 switchRole('admin');
                 handleNav('dashboard');
               }}
-              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer ${
+              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
                 currentUser.role === 'admin'
                   ? 'bg-sky-600 text-white font-bold shadow-xs'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
@@ -912,7 +950,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 switchRole('reseller');
                 handleNav('reseller-dashboard');
               }}
-              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer ${
+              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
                 currentUser.role === 'reseller'
                   ? 'bg-sky-600 text-white font-bold shadow-xs'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
@@ -926,7 +964,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 switchRole('customer');
                 handleNav('cpanel-dashboard');
               }}
-              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer ${
+              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
                 currentUser.role === 'customer'
                   ? 'bg-sky-600 text-white font-bold shadow-xs'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
