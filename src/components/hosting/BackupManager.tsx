@@ -92,7 +92,7 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
 
   // Domains & Subdomains for this account
   const [serverDomains, setServerDomains] = useState<ServerDomainItem[]>([]);
-  const [selectedDomain, setSelectedDomain] = useState<string>(preselectedDomain || account.primaryDomain);
+  const [selectedDomain, setSelectedDomain] = useState<string>(preselectedDomain || account?.primaryDomain || 'denbaguse.my.id');
   const [selectedDocRoot, setSelectedDocRoot] = useState<string>('/public_html');
 
   // Backups lists (server + local db)
@@ -156,10 +156,14 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
   const vaultFileInputRef = useRef<HTMLInputElement>(null);
   const localZipInputRef = useRef<HTMLInputElement>(null);
 
-  // Load server domains and backups
+  // Load server domains and backups safely with AbortController timeout
   const loadDomains = async () => {
     try {
-      const res = await fetch('/api/backup/domains');
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch('/api/backup/domains', { signal: controller.signal });
+      clearTimeout(timer);
+
       if (res.ok) {
         const text = await res.text();
         try {
@@ -167,7 +171,7 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
           if (data.ok && Array.isArray(data.domains)) {
             setServerDomains(data.domains);
             const initial = data.domains.find(
-              (d: ServerDomainItem) => d.domain.toLowerCase() === (preselectedDomain || account.primaryDomain).toLowerCase()
+              (d: ServerDomainItem) => d.domain.toLowerCase() === (preselectedDomain || account?.primaryDomain || '').toLowerCase()
             ) || data.domains[0];
             if (initial) {
               setSelectedDomain(initial.domain);
@@ -180,17 +184,20 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
     } catch {}
 
     // Fallback to local db domains
-    const localDoms = db.getDomains(account.id);
+    const accId = account?.id || 'acc-rdm-01';
+    const accDomain = account?.primaryDomain || 'denbaguse.my.id';
+    const accUser = account?.username || 'cloudpro';
+    const localDoms = db.getDomains(accId);
     const mapped: ServerDomainItem[] = [
       {
         id: 'dom-primary',
-        domain: account.primaryDomain,
+        domain: accDomain,
         type: 'primary',
         documentRoot: '/public_html',
-        accountId: account.id,
-        username: account.username,
+        accountId: accId,
+        username: accUser,
         phpVersion: '8.2',
-        filesCount: db.getVirtualFiles(account.id).length,
+        filesCount: db.getVirtualFiles(accId).length,
         totalSizeBytes: 10485760,
         formattedSize: '10.5 MB',
       },
@@ -198,9 +205,9 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
         id: d.id,
         domain: d.domain,
         type: d.type as any,
-        documentRoot: d.documentRoot ? d.documentRoot.replace(`/home/${account.username}`, '') : '/public_html',
-        accountId: account.id,
-        username: account.username,
+        documentRoot: d.documentRoot ? d.documentRoot.replace(`/home/${accUser}`, '') : '/public_html',
+        accountId: accId,
+        username: accUser,
         phpVersion: d.phpVersion || '8.2',
         filesCount: 0,
         totalSizeBytes: 0,
@@ -213,7 +220,11 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
   const loadBackups = async () => {
     setIsLoadingBackups(true);
     try {
-      const res = await fetch('/api/backup/list');
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch('/api/backup/list', { signal: controller.signal });
+      clearTimeout(timer);
+
       if (res.ok) {
         const text = await res.text();
         try {
@@ -234,18 +245,22 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
   useEffect(() => {
     loadDomains();
     loadBackups();
-  }, [account.id]);
+  }, [account?.id]);
 
   useEffect(() => {
-    fetch('/api/vault/state')
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000);
+    fetch('/api/vault/state', { signal: controller.signal })
       .then(r => (r.ok ? r.json() : null))
       .then(data => {
+        clearTimeout(timer);
         if (data?.vaultPath) setVaultPath(data.vaultPath);
         if (data?.lastSavedAt) {
           setLastVaultSync(new Date(data.lastSavedAt).toLocaleString('id-ID'));
         }
       })
       .catch(() => {});
+    return () => clearTimeout(timer);
   }, []);
 
   // Update selected doc root when domain selection changes

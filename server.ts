@@ -7616,7 +7616,16 @@ ftp.quit()
   // =========================================================================
 
   // Helper function to scan disk size and file count (with optional exclusion of subdomain directories when scanning /public_html)
-  const calculateDirStats = (absPath: string, excludeSubdomainFolders = false) => {
+  const dirStatsCache = new Map<string, { count: number; totalSize: number; formatted: string; cachedAt: number }>();
+
+  const calculateDirStats = (absPath: string, excludeSubdomainFolders = false): { count: number; totalSize: number; formatted: string } => {
+    const cacheKey = `${absPath}:${excludeSubdomainFolders}`;
+    const cached = dirStatsCache.get(cacheKey);
+    const now = Date.now();
+    if (cached && now - cached.cachedAt < 30000) {
+      return { count: cached.count, totalSize: cached.totalSize, formatted: cached.formatted };
+    }
+
     let count = 0;
     let totalSize = 0;
     const subDirNames = excludeSubdomainFolders
@@ -7628,33 +7637,55 @@ ftp.quit()
         )
       : new Set<string>();
 
-    const scan = (dir: string, isRootLevel: boolean) => {
-      if (!fs.existsSync(dir)) return;
+    const visitedDirs = new Set<string>();
+
+    const scan = (dir: string, isRootLevel: boolean, depth: number) => {
+      if (depth > 4 || count >= 2000 || !fs.existsSync(dir)) return;
       try {
+        const real = fs.realpathSync(dir);
+        if (visitedDirs.has(real)) return;
+        visitedDirs.add(real);
+
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const e of entries) {
-          if (e.name === '.git' || e.name === 'node_modules' || e.name === '__MACOSX') continue;
+          if (
+            e.name.startsWith('.') ||
+            e.name === 'node_modules' ||
+            e.name === '__MACOSX' ||
+            e.name === 'cache' ||
+            e.name === 'sessions' ||
+            e.name === 'tmp' ||
+            (typeof (e as any).isSymbolicLink === 'function' && (e as any).isSymbolicLink())
+          ) {
+            continue;
+          }
           if (isRootLevel && e.isDirectory() && subDirNames.has(e.name.toLowerCase())) continue;
           const p = path.join(dir, e.name);
           if (e.isDirectory()) {
-            scan(p, false);
+            scan(p, false, depth + 1);
           } else if (e.isFile()) {
             count++;
             try {
               totalSize += fs.statSync(p).size;
             } catch {}
           }
+          if (count >= 2000) break;
         }
       } catch {}
     };
-    scan(absPath, true);
+
+    scan(absPath, true, 0);
+
     const formatBytes = (bytes: number) => {
       if (bytes < 1024) return `${bytes} B`;
       if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
       if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
       return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
     };
-    return { count, totalSize, formatted: formatBytes(totalSize) };
+
+    const result = { count, totalSize, formatted: formatBytes(totalSize) };
+    dirStatsCache.set(cacheKey, { ...result, cachedAt: now });
+    return result;
   };
 
   // 1. GET /api/backup/domains - List all domains and subdomains with active stats

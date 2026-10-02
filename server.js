@@ -7140,22 +7140,35 @@ ftp.quit()
       });
     }
   });
+  const dirStatsCache = /* @__PURE__ */ new Map();
   const calculateDirStats = (absPath, excludeSubdomainFolders = false) => {
+    const cacheKey = `${absPath}:${excludeSubdomainFolders}`;
+    const cached = dirStatsCache.get(cacheKey);
+    const now = Date.now();
+    if (cached && now - cached.cachedAt < 3e4) {
+      return { count: cached.count, totalSize: cached.totalSize, formatted: cached.formatted };
+    }
     let count = 0;
     let totalSize = 0;
     const subDirNames = excludeSubdomainFolders ? new Set(
       Array.from(getSubdomainDocRoots()).map((r) => r.replace(/^\/public_html\//i, "").split("/")[0].toLowerCase()).filter(Boolean).concat(["siakad-madrasah", "rdm", "cbt", "elearning", "ppdb", "perpustakaan", "simpatika", "emis"])
     ) : /* @__PURE__ */ new Set();
-    const scan = (dir, isRootLevel) => {
-      if (!fs.existsSync(dir)) return;
+    const visitedDirs = /* @__PURE__ */ new Set();
+    const scan = (dir, isRootLevel, depth) => {
+      if (depth > 4 || count >= 2e3 || !fs.existsSync(dir)) return;
       try {
+        const real = fs.realpathSync(dir);
+        if (visitedDirs.has(real)) return;
+        visitedDirs.add(real);
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const e of entries) {
-          if (e.name === ".git" || e.name === "node_modules" || e.name === "__MACOSX") continue;
+          if (e.name.startsWith(".") || e.name === "node_modules" || e.name === "__MACOSX" || e.name === "cache" || e.name === "sessions" || e.name === "tmp" || typeof e.isSymbolicLink === "function" && e.isSymbolicLink()) {
+            continue;
+          }
           if (isRootLevel && e.isDirectory() && subDirNames.has(e.name.toLowerCase())) continue;
           const p = path.join(dir, e.name);
           if (e.isDirectory()) {
-            scan(p, false);
+            scan(p, false, depth + 1);
           } else if (e.isFile()) {
             count++;
             try {
@@ -7163,18 +7176,21 @@ ftp.quit()
             } catch {
             }
           }
+          if (count >= 2e3) break;
         }
       } catch {
       }
     };
-    scan(absPath, true);
+    scan(absPath, true, 0);
     const formatBytes = (bytes) => {
       if (bytes < 1024) return `${bytes} B`;
       if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
       if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
       return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
     };
-    return { count, totalSize, formatted: formatBytes(totalSize) };
+    const result = { count, totalSize, formatted: formatBytes(totalSize) };
+    dirStatsCache.set(cacheKey, { ...result, cachedAt: now });
+    return result;
   };
   app.get("/api/backup/domains", (_req, res) => {
     try {
