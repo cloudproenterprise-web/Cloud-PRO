@@ -286,17 +286,17 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
 
     <!-- Quick Action Pills for Mobile -->
     <div class="quick-bar">
-      <button class="quick-btn" onclick="runCommand('([ -d .git ] || (git init && git remote add origin https://github.com/siakadmadrasah-lang/CloudPRO-Server.git)) && bash update.sh')">🚀 1-Click Update</button>
+      <button class="quick-btn" onclick="runCommand('bash update.sh')">🚀 1-Click Update</button>
       <button class="quick-btn" onclick="runCommand('for h in /root /home/*; do [ -d \"$h\" ] && for f in .bashrc .profile .bash_profile; do [ -f \"$h/$f\" ] && sed -i \"s/\\r$//\" \"$h/$f\" && sed -i -E \"s/^[[:space:]]*(exit|logout|exec |source .*update|\\. .*update|fuser -k|\\.?\\/?update\\.sh)/# [Auto-Heal] &/\" \"$h/$f\"; done; done; mkdir -p /run/sshd 2>/dev/null; service ssh start 2>/dev/null || true; echo \"[OK] Terminal Ubuntu & SSH di Komputer berhasil diperbaiki! Silakan buka kembali aplikasi Ubuntu di PC.\"')">🛠️ Perbaiki SSH PC</button>
       <button class="quick-btn" onclick="runCommand('pm2 status')">📊 PM2 Status</button>
       <button class="quick-btn" onclick="runCommand('pm2 restart cloudpro')">🔄 PM2 Restart</button>
       <button class="quick-btn" onclick="runCommand('pm2 logs cloudpro --lines 25')">📜 PM2 Logs</button>
-      <button class="quick-btn" onclick="runCommand('([ -d .git ] || (git init && git remote add origin https://github.com/siakadmadrasah-lang/CloudPRO-Server.git)) && git status -s')">📁 Git Status</button>
-      <button class="quick-btn" onclick="runCommand('([ -d .git ] || (git init && git remote add origin https://github.com/siakadmadrasah-lang/CloudPRO-Server.git)) && git fetch origin main && git reset --hard FETCH_HEAD')">⬇️ Git Pull</button>
+      <button class="quick-btn" onclick="runCommand('git status -s')">📁 Git Status</button>
+      <button class="quick-btn" onclick="runCommand('git pull origin main || (git fetch origin main && git reset --hard FETCH_HEAD)')">⬇️ Git Pull</button>
       <button class="quick-btn" onclick="runCommand('free -h && echo \"---\" && df -h /')">💾 RAM & Disk</button>
       <button class="quick-btn" onclick="runCommand('lsof -i :3000 || netstat -tlpn | grep 3000')">🔌 Cek Port 3000</button>
       <button class="quick-btn" onclick="runCommand('ps aux | grep -E \"server.js|cloudpro\" | grep -v grep')">⚙️ Cek Proses Node</button>
-      <button class="quick-btn" onclick="runCommand('cd ~/CloudPRO-Server && pwd')">📂 Ke Folder App</button>
+      <button class="quick-btn" onclick="runCommand('pwd')">📂 Cek Direktori CWD</button>
     </div>
 
     <!-- Terminal Screen -->
@@ -540,13 +540,40 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
           body: JSON.stringify({ command: cmd, cwd: currentCwd }),
         });
 
-        const data = await res.json();
+        const rawText = await res.text();
         tempBlock.remove();
 
         if (res.status === 401) {
           alert('PIN Terminal Salah! Silakan masukkan PIN yang benar.');
           lockTerminal();
           return;
+        }
+
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch (jsonErr) {
+          // If server reloaded during update/restart and connection returned HTML
+          if (cmd.includes('update') || cmd.includes('restart') || cmd.includes('pm2') || rawText.includes('<!DOCTYPE') || rawText.includes('<html')) {
+            appendHistoryBlock(
+              cmd,
+              '⚡ [INFO] Perintah update / restart sedang dieksekusi di background server...\\n' +
+              'Service PM2 sedang me-reload process CloudPRO.\\n' +
+              'Menghubungi ulang server dalam 3 detik...',
+              false,
+              0
+            );
+            setTimeout(async () => {
+              try {
+                const check = await fetch('/');
+                if (check.ok || check.status < 500) {
+                  appendHistoryBlock('status', '✅ [SUKSES] Server CloudPRO telah aktif kembali dan siap melayani!', false, 0);
+                }
+              } catch (e) {}
+            }, 3500);
+            return;
+          }
+          throw new Error(rawText.slice(0, 160) || 'Format respon tidak valid');
         }
 
         if (data.clear) {
@@ -561,7 +588,17 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
         }
       } catch (err) {
         tempBlock.remove();
-        appendHistoryBlock(cmd, 'Koneksi gagal atau server terputus: ' + err.message, true, 1);
+        if (cmd.includes('update') || cmd.includes('restart')) {
+          appendHistoryBlock(
+            cmd,
+            '⚡ [INFO] Server CloudPRO sedang me-restart service di background.\\n' +
+            'Silakan refresh browser beberapa detik lagi untuk melihat versi terbaru.',
+            false,
+            0
+          );
+        } else {
+          appendHistoryBlock(cmd, 'Koneksi gagal atau server terputus: ' + err.message, true, 1);
+        }
       } finally {
         isRunning = false;
         document.getElementById('btnSend').disabled = false;

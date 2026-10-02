@@ -69,7 +69,12 @@ fi
 echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH telah diperbaiki!"
 
 echo "[1/3] Mengambil kode terbaru dari GitHub..."
-REPO_URL="https://github.com/siakadmadrasah-lang/CloudPRO-Server.git"
+CURRENT_ORIGIN="$(git remote get-url origin 2>/dev/null || echo "")"
+if [[ "$CURRENT_ORIGIN" == *"Cloud-PRO"* ]]; then
+  REPO_URL="$CURRENT_ORIGIN"
+else
+  REPO_URL="https://github.com/cloudproenterprise-web/Cloud-PRO.git"
+fi
 
 if [ ! -d ".git" ]; then
   echo "[INFO] Folder .git belum terdeteksi. Menginisialisasi repository Git otomatis..."
@@ -122,9 +127,10 @@ if command -v pm2 &> /dev/null; then
       kill -9 "$pid" 2>/dev/null || sudo -n kill -9 "$pid" 2>/dev/null || true
     done
   fi
-  pm2 reload cloudpro --update-env < /dev/null 2>/dev/null || pm2 restart cloudpro --update-env < /dev/null 2>/dev/null || pm2 start server.js --name cloudpro --update-env < /dev/null
   pm2 save < /dev/null 2>/dev/null || true
-  echo "[OK] Server CloudPRO berhasil di-reload via PM2!"
+  # Jalankan reload PM2 setelah jeda 1.5 detik agar respon terminal HTTP terkirim utuh tanpa terputus
+  (sleep 1.5 && (pm2 reload cloudpro --update-env < /dev/null 2>/dev/null || pm2 restart cloudpro --update-env < /dev/null 2>/dev/null || pm2 start server.js --name cloudpro --update-env < /dev/null)) >/dev/null 2>&1 &
+  echo "[OK] Server CloudPRO berhasil disinkronkan & dijadwalkan reload via PM2!"
 else
   OLD_NODE_PIDS=$(pgrep -f "node.*server\.js|tsx.*server\.ts" 2>/dev/null | grep -v "^$$\$" | grep -v "^$PPID\$" || true)
   if [ -n "$OLD_NODE_PIDS" ]; then
