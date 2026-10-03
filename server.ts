@@ -1715,6 +1715,7 @@ function renderVirtualHostResponse(
       cleanHost.endsWith('.run.app') ||
       cleanHost.endsWith('.trycloudflare.com') ||
       cleanHost.startsWith('cloud.') ||
+      cleanHost.startsWith('cloudpro.') ||
       cleanHost.startsWith('servercloud.') ||
       cleanHost.startsWith('panel.') ||
       cleanHost.startsWith('cpanel.') ||
@@ -9035,6 +9036,8 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       rawHost === '127.0.0.1' ||
       rawHost.endsWith('.run.app') ||
       rawHost.endsWith('.trycloudflare.com') ||
+      rawHost.startsWith('cloud.') ||
+      rawHost.startsWith('cloudpro.') ||
       rawHost.startsWith('servercloud.') ||
       rawHost.startsWith('panel.') ||
       rawHost.startsWith('cpanel.') ||
@@ -9108,6 +9111,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       cleanHost.endsWith('.run.app') ||
       cleanHost.endsWith('.trycloudflare.com') ||
       cleanHost.startsWith('cloud.') ||
+      cleanHost.startsWith('cloudpro.') ||
       cleanHost.startsWith('servercloud.') ||
       cleanHost.startsWith('panel.') ||
       cleanHost.startsWith('cpanel.') ||
@@ -9490,7 +9494,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   try {
     if (!fs.existsSync(sslKeyPath) || !fs.existsSync(sslCertPath)) {
       execSync(
-        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=servercloud.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:servercloud.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
+        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=servercloud.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:servercloud.denbaguse.my.id,DNS:cloudpro.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
         { stdio: 'ignore' }
       );
     }
