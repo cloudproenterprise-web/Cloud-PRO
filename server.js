@@ -2370,6 +2370,14 @@ function renderVirtualHostResponse(hostHeader, reqPath, forceAccountAndDir) {
     </div>
     <h3 style="font-size:14px;color:#cbd5e1;margin-bottom:12px;">Isi Direktori ${docRoot} (${dirFiles.length} item):</h3>
     <ul>${fileListHtml}</ul>
+    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #233554; display: flex; flex-direction: column; gap: 12px;">
+      <a href="/?panel=1" style="display: block; text-align: center; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 15px; padding: 14px 20px; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
+        \u26A1 Masuk ke Dashboard Cloud PRO
+      </a>
+      <a href="/cloudpro-login" style="display: block; text-align: center; background: rgba(56, 189, 248, 0.12); color: #38bdf8; font-weight: 700; font-size: 13px; padding: 10px 16px; border-radius: 10px; text-decoration: none; border: 1px solid rgba(56, 189, 248, 0.3);">
+        \u{1F510} Halaman Login Admin (cloudpro-login)
+      </a>
+    </div>
   </div>
 </body>
 </html>`
