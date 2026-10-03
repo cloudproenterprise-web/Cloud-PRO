@@ -8309,7 +8309,34 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   app.use("/apple-touch-icon.png", (_req, res) => {
     const f = path.join(process.cwd(), "public_html", "apple-touch-icon.png");
     if (fs.existsSync(f)) return res.sendFile(f);
+    const pub = path.join(process.cwd(), "public", "favicon.svg");
+    if (fs.existsSync(pub)) {
+      res.setHeader("Content-Type", "image/svg+xml");
+      return res.sendFile(pub);
+    }
     res.status(404).end();
+  });
+  app.use(["/favicon.svg", "/favicon.ico", "/favicon.png", "/logo.svg"], (req, res, next) => {
+    const rawFwd = req.headers["x-forwarded-host"] || req.headers["x-original-host"];
+    const fwdHost = Array.isArray(rawFwd) ? rawFwd[0] : typeof rawFwd === "string" ? rawFwd.split(",")[0].trim() : "";
+    const rawHost = (fwdHost || req.headers.host || "").split(":")[0].toLowerCase().replace(/^www\./, "");
+    const isPanel = !rawHost || rawHost === "localhost" || rawHost === "127.0.0.1" || rawHost.endsWith(".run.app") || rawHost.endsWith(".trycloudflare.com") || rawHost.startsWith("cloudpro.") || rawHost.startsWith("cloud.") || rawHost.startsWith("servercloud.") || rawHost.startsWith("panel.") || rawHost.startsWith("cpanel.") || rawHost.startsWith("whm.") || rawHost.startsWith("admin.");
+    if (isPanel) {
+      const fileName = path.basename(req.path);
+      const candidates = [
+        path.join(process.cwd(), "dist", fileName),
+        path.join(process.cwd(), "public", fileName)
+      ];
+      for (const p of candidates) {
+        if (fs.existsSync(p)) {
+          if (fileName.endsWith(".svg")) res.setHeader("Content-Type", "image/svg+xml");
+          else if (fileName.endsWith(".ico")) res.setHeader("Content-Type", "image/x-icon");
+          else if (fileName.endsWith(".png")) res.setHeader("Content-Type", "image/png");
+          return res.sendFile(p);
+        }
+      }
+    }
+    next();
   });
   app.use("/assets", (req, res, next) => {
     const fileName = path.basename(req.path);
@@ -8354,7 +8381,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     const isExplicitPanelParam = req.query.panel === "1" || req.query.cp === "1" || req.query.cloudpro === "1" || req.query.login === "admin";
     const isExplicitPanelRoute = lowerPath === "/cloudpro-login" || lowerPath.startsWith("/cloudpro-login/") || lowerPath === "/cloudpro-admin" || lowerPath.startsWith("/cloudpro-admin/") || lowerPath === "/cp-admin";
     const isControlPanelRoute = isExplicitPanelParam || isExplicitPanelRoute || isPanelHost && (lowerPath === "/" || lowerPath === "/index.html" || lowerPath === "/cpanel" || lowerPath.startsWith("/cpanel/") || lowerPath === "/login" || lowerPath.startsWith("/login/") || lowerPath === "/admin" || lowerPath.startsWith("/admin/") || lowerPath === "/panel" || lowerPath.startsWith("/panel/") || lowerPath === "/whm" || lowerPath.startsWith("/whm/") || lowerPath === "/dashboard" || lowerPath.startsWith("/dashboard/"));
-    if (isControlPanelRoute || isPanelHost && req.path.startsWith("/assets/") || req.path.startsWith("/src/") || req.path.startsWith("/@") || req.path.startsWith("/node_modules/") || isPanelHost && req.path.startsWith("/assets/index-") || isPanelHost && (req.path === "/favicon.svg" || req.path === "/logo.svg")) {
+    if (isControlPanelRoute || isPanelHost && req.path.startsWith("/assets/") || req.path.startsWith("/src/") || req.path.startsWith("/@") || req.path.startsWith("/node_modules/") || isPanelHost && req.path.startsWith("/assets/index-") || isPanelHost && (req.path === "/favicon.svg" || req.path === "/favicon.ico" || req.path === "/favicon.png" || req.path === "/logo.svg")) {
       if (isControlPanelRoute) {
         req.url = "/";
       }
