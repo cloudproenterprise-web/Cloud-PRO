@@ -190,10 +190,23 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
       return activeTab === 'file-manager' || activeTab === 'cpanel-files';
     }
     if (itemId === 'disk-cleaner') {
-      return activeTab === 'disk-cleaner' || activeTab === 'cpanel-disk-cleaner';
+      return (
+        activeTab === 'disk-cleaner' ||
+        activeTab === 'cpanel-cleaner' ||
+        activeTab === 'disk-usage' ||
+        activeTab === 'cpanel-disk' ||
+        activeTab === 'cpanel-disk-cleaner'
+      );
     }
     if (itemId === 'backups') {
-      return activeTab === 'backups' || activeTab === 'cpanel-backups';
+      return (
+        activeTab === 'backups' ||
+        activeTab === 'backup' ||
+        activeTab === 'restore' ||
+        activeTab === 'cpanel-backup' ||
+        activeTab === 'cpanel-restore' ||
+        activeTab === 'cpanel-backups'
+      );
     }
     return activeTab === itemId;
   };

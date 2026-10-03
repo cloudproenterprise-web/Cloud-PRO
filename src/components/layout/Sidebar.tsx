@@ -26,6 +26,8 @@ import {
   Search,
   X,
   ChevronsUpDown,
+  Trash2,
+  RotateCcw,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { CloudProLogo } from '../common/CloudProLogo';
@@ -184,9 +186,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           },
           {
             id: 'disk-usage',
-            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
-            label: 'Disk Usage & Cleaner',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage',
             icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner', 'cpanel-disk-cleaner'],
+            label: 'Disk Cleaner',
+            icon: Trash2,
           },
           {
             id: 'website-cloner',
@@ -226,12 +234,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           },
           {
             id: 'backups',
-            aliases: ['cpanel-backup', 'cpanel-backups'],
-            label: 'Backup & Restore',
+            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
+            label: 'Backup (.ZIP)',
             icon: Archive,
             badge: {
               text: '.ZIP',
             },
+          },
+          {
+            id: 'restore',
+            aliases: ['cpanel-restore', 'restore-manager'],
+            label: 'Restore Website',
+            icon: RotateCcw,
           },
           {
             id: 'media-storage',
@@ -376,9 +390,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           },
           {
             id: 'disk-usage',
-            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
-            label: 'Disk Usage & Cleaner',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage',
             icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner'],
+            label: 'Disk Cleaner',
+            icon: Trash2,
           },
           {
             id: 'website-cloner',
@@ -394,9 +414,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           },
           {
             id: 'backups',
-            aliases: ['cpanel-backup', 'cpanel-backups'],
-            label: 'Backup & Restore',
+            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
+            label: 'Backup (.ZIP)',
             icon: Archive,
+          },
+          {
+            id: 'restore',
+            aliases: ['cpanel-restore'],
+            label: 'Restore Website',
+            icon: RotateCcw,
           },
           {
             id: 'cron-jobs',
@@ -470,9 +496,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           },
           {
             id: 'disk-usage',
-            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
-            label: 'Disk Usage & Cleaner',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage',
             icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner'],
+            label: 'Disk Cleaner',
+            icon: Trash2,
           },
           {
             id: 'website-cloner',
@@ -542,9 +574,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           },
           {
             id: 'backups',
-            aliases: ['cpanel-backup', 'cpanel-backups'],
-            label: 'Backup & Restore',
+            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
+            label: 'Backup (.ZIP)',
             icon: Archive,
+          },
+          {
+            id: 'restore',
+            aliases: ['cpanel-restore'],
+            label: 'Restore Website',
+            icon: RotateCcw,
           },
         ],
       },

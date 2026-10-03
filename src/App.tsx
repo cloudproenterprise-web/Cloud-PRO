@@ -14,6 +14,10 @@ import { DnsZoneEditor } from './components/hosting/DnsZoneEditor';
 import { PhpConfigManager } from './components/hosting/PhpConfigManager';
 import { CronManager } from './components/hosting/CronManager';
 import { BackupManager } from './components/hosting/BackupManager';
+import { BackupModule } from './components/hosting/BackupModule';
+import { RestoreModule } from './components/hosting/RestoreModule';
+import { DiskUsageModule } from './components/hosting/DiskUsageModule';
+import { DiskCleanerModule } from './components/hosting/DiskCleanerModule';
 import { DiskUsageCleanerModule } from './components/hosting/DiskUsageCleanerModule';
 import { MediaStorageManager } from './components/hosting/MediaStorageManager';
 import { DomainSubdomainManager } from './components/hosting/DomainSubdomainManager';
@@ -917,19 +921,58 @@ const AppContent: React.FC = () => {
       case 'cpanel-cron':
         return renderAccountSuiteWrapper('Cron Jobs Otomasi', <CronManager account={selectedAccount!} />);
       case 'backups':
+      case 'backup':
       case 'cpanel-backup':
         return renderAccountSuiteWrapper(
-          'Backup & Restore (.ZIP)',
+          'Backup Website (.ZIP)',
           <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
-            <BackupManager account={selectedAccount!} preselectedDomain={backupPreselectedDomain} />
+            <BackupModule
+              account={selectedAccount!}
+              preselectedDomain={backupPreselectedDomain}
+              onNavigateTab={(tab, domain) => {
+                if (domain) setBackupPreselectedDomain(domain);
+                setActiveTab(tab);
+              }}
+            />
+          </ModuleErrorBoundary>
+        );
+      case 'restore':
+      case 'cpanel-restore':
+        return renderAccountSuiteWrapper(
+          'Restore Website (.ZIP)',
+          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
+            <RestoreModule
+              account={selectedAccount!}
+              preselectedDomain={backupPreselectedDomain}
+              onNavigateTab={(tab, domain) => {
+                if (domain) setBackupPreselectedDomain(domain);
+                setActiveTab(tab);
+              }}
+            />
           </ModuleErrorBoundary>
         );
       case 'disk-usage':
-      case 'disk-cleaner':
       case 'cpanel-disk':
         return renderAccountSuiteWrapper(
-          'Analisa Penggunaan Disk & Pembersih Sampah',
-          <DiskUsageCleanerModule
+          'Analisa Penggunaan Disk',
+          <DiskUsageModule
+            account={selectedAccount!}
+            onOpenFileManager={(targetPath) => {
+              setFileManagerPath(targetPath);
+              setActiveTab('file-manager');
+            }}
+            onNavigateTab={(tab, domain) => {
+              if (domain) setBackupPreselectedDomain(domain);
+              setActiveTab(tab);
+            }}
+          />
+        );
+      case 'disk-cleaner':
+      case 'cpanel-cleaner':
+      case 'cleaner':
+        return renderAccountSuiteWrapper(
+          'Pembersih Disk & File Sampah',
+          <DiskCleanerModule
             account={selectedAccount!}
             onOpenFileManager={(targetPath) => {
               setFileManagerPath(targetPath);

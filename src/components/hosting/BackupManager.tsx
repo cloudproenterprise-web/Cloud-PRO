@@ -35,9 +35,12 @@ import { db } from '../../services/storage';
 import { useAuth } from '../../context/AuthContext';
 import { useServer } from '../../context/ServerContext';
 
-interface BackupManagerProps {
+export interface BackupManagerProps {
   account: HostingAccount;
   preselectedDomain?: string;
+  initialTab?: 'backup_domain' | 'restore_domain' | 'backup_archives' | 'persistent_vault';
+  mode?: 'backup' | 'restore' | 'all';
+  onNavigateTab?: (tab: string, domain?: string) => void;
 }
 
 interface ServerDomainItem {
@@ -79,7 +82,13 @@ interface BackupJobState {
   error?: string;
 }
 
-export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselectedDomain }) => {
+export const BackupManager: React.FC<BackupManagerProps> = ({
+  account,
+  preselectedDomain,
+  initialTab,
+  mode = 'all',
+  onNavigateTab,
+}) => {
   const { currentUser } = useAuth();
   const { showToast, refreshAll, confirmAction } = useServer();
 
@@ -87,8 +96,18 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
 
   // Active top navigation tab
   const [activeTab, setActiveTab] = useState<'backup_domain' | 'restore_domain' | 'backup_archives' | 'persistent_vault'>(
-    'backup_domain'
+    initialTab || (mode === 'restore' ? 'restore_domain' : 'backup_domain')
   );
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    } else if (mode === 'restore' && activeTab === 'backup_domain') {
+      setActiveTab('restore_domain');
+    } else if (mode === 'backup' && activeTab === 'restore_domain') {
+      setActiveTab('backup_domain');
+    }
+  }, [initialTab, mode]);
 
   // Domains & Subdomains for this account
   const [serverDomains, setServerDomains] = useState<ServerDomainItem[]>([]);
@@ -826,98 +845,149 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
       )}
 
       {/* =================================================================== */}
-      {/* TOP NAVIGATION TABS                                                 */}
+      {/* TOP NAVIGATION TABS (ADAPTIVE PER MODULE MODE)                     */}
       {/* =================================================================== */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <button
-          type="button"
-          onClick={() => setActiveTab('backup_domain')}
-          className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
-            activeTab === 'backup_domain'
-              ? 'border-orange-600 bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md ring-2 ring-orange-400/50'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
-          }`}
-        >
-          <Archive className={`h-5 w-5 shrink-0 ${activeTab === 'backup_domain' ? 'text-white' : 'text-orange-500'}`} />
-          <div>
-            <div className="text-xs font-bold flex items-center gap-1">
-              <span>Cadangkan Domain</span>
-              <span className={`rounded px-1 py-0.2 text-[8px] font-extrabold ${activeTab === 'backup_domain' ? 'bg-orange-800/80 text-orange-200' : 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300'}`}>
-                .ZIP
-              </span>
+      <div className={`grid gap-3 ${mode === 'backup' || mode === 'restore' ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-4'}`}>
+        {(mode === 'all' || mode === 'backup') && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('backup_domain')}
+            className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
+              activeTab === 'backup_domain'
+                ? 'border-orange-600 bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md ring-2 ring-orange-400/50'
+                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
+            }`}
+          >
+            <Archive className={`h-5 w-5 shrink-0 ${activeTab === 'backup_domain' ? 'text-white' : 'text-orange-500'}`} />
+            <div>
+              <div className="text-xs font-bold flex items-center gap-1">
+                <span>Cadangkan Domain</span>
+                <span className={`rounded px-1 py-0.2 text-[8px] font-extrabold ${activeTab === 'backup_domain' ? 'bg-orange-800/80 text-orange-200' : 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300'}`}>
+                  .ZIP
+                </span>
+              </div>
+              <div className={`text-[10px] ${activeTab === 'backup_domain' ? 'text-orange-100' : 'text-slate-400'}`}>
+                Buat Arsip .ZIP Cepat
+              </div>
             </div>
-            <div className={`text-[10px] ${activeTab === 'backup_domain' ? 'text-orange-100' : 'text-slate-400'}`}>
-              Buat Arsip .ZIP Cepat
-            </div>
-          </div>
-        </button>
+          </button>
+        )}
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('restore_domain')}
-          className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
-            activeTab === 'restore_domain'
-              ? 'border-sky-600 bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-md ring-2 ring-sky-400/50'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
-          }`}
-        >
-          <RotateCcw className={`h-5 w-5 shrink-0 ${activeTab === 'restore_domain' ? 'text-white' : 'text-sky-500'}`} />
-          <div>
-            <div className="text-xs font-bold flex items-center gap-1">
-              <span>Pulihkan (Restore)</span>
-              <span className={`rounded px-1 py-0.2 text-[8px] font-extrabold ${activeTab === 'restore_domain' ? 'bg-sky-800/80 text-sky-200' : 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300'}`}>
-                3 CARA
-              </span>
+        {(mode === 'all' || mode === 'restore') && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('restore_domain')}
+            className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
+              activeTab === 'restore_domain'
+                ? 'border-sky-600 bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-md ring-2 ring-sky-400/50'
+                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
+            }`}
+          >
+            <RotateCcw className={`h-5 w-5 shrink-0 ${activeTab === 'restore_domain' ? 'text-white' : 'text-sky-500'}`} />
+            <div>
+              <div className="text-xs font-bold flex items-center gap-1">
+                <span>Pulihkan (Restore)</span>
+                <span className={`rounded px-1 py-0.2 text-[8px] font-extrabold ${activeTab === 'restore_domain' ? 'bg-sky-800/80 text-sky-200' : 'bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300'}`}>
+                  3 CARA
+                </span>
+              </div>
+              <div className={`text-[10px] ${activeTab === 'restore_domain' ? 'text-sky-100' : 'text-slate-400'}`}>
+                Server, URL Remote &amp; Upload
+              </div>
             </div>
-            <div className={`text-[10px] ${activeTab === 'restore_domain' ? 'text-sky-100' : 'text-slate-400'}`}>
-              Server, URL Remote &amp; Upload
-            </div>
-          </div>
-        </button>
+          </button>
+        )}
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('backup_archives')}
-          className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
-            activeTab === 'backup_archives'
-              ? 'border-indigo-600 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md ring-2 ring-indigo-400/50'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
-          }`}
-        >
-          <HardDrive className={`h-5 w-5 shrink-0 ${activeTab === 'backup_archives' ? 'text-white' : 'text-indigo-500'}`} />
-          <div>
-            <div className="text-xs font-bold flex items-center gap-1">
-              <span>Arsip Berkas Server</span>
-              <span className="text-[10px] font-bold text-slate-400">({serverBackups.length})</span>
+        {(mode === 'all' || mode === 'backup') && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('backup_archives')}
+            className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
+              activeTab === 'backup_archives'
+                ? 'border-indigo-600 bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md ring-2 ring-indigo-400/50'
+                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
+            }`}
+          >
+            <HardDrive className={`h-5 w-5 shrink-0 ${activeTab === 'backup_archives' ? 'text-white' : 'text-indigo-500'}`} />
+            <div>
+              <div className="text-xs font-bold flex items-center gap-1">
+                <span>Arsip Berkas Server</span>
+                <span className="text-[10px] font-bold text-slate-400">({serverBackups.length})</span>
+              </div>
+              <div className={`text-[10px] ${activeTab === 'backup_archives' ? 'text-indigo-100' : 'text-slate-400'}`}>
+                Unduh &amp; Kelola .ZIP
+              </div>
             </div>
-            <div className={`text-[10px] ${activeTab === 'backup_archives' ? 'text-indigo-100' : 'text-slate-400'}`}>
-              Unduh &amp; Kelola .ZIP
-            </div>
-          </div>
-        </button>
+          </button>
+        )}
 
-        <button
-          type="button"
-          onClick={() => setActiveTab('persistent_vault')}
-          className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
-            activeTab === 'persistent_vault'
-              ? 'border-emerald-600 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md ring-2 ring-emerald-400/50'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
-          }`}
-        >
-          <ShieldCheck className={`h-5 w-5 shrink-0 ${activeTab === 'persistent_vault' ? 'text-white' : 'text-emerald-500'}`} />
-          <div>
-            <div className="text-xs font-bold flex items-center gap-1">
-              <span>Persistent Vault</span>
-              <span className={`rounded px-1 py-0.2 text-[8px] font-extrabold ${activeTab === 'persistent_vault' ? 'bg-emerald-800/80 text-emerald-200' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}`}>
-                AMAN
-              </span>
+        {(mode === 'all' || mode === 'restore') && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('persistent_vault')}
+            className={`flex items-center gap-2.5 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
+              activeTab === 'persistent_vault'
+                ? 'border-emerald-600 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md ring-2 ring-emerald-400/50'
+                : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200'
+            }`}
+          >
+            <ShieldCheck className={`h-5 w-5 shrink-0 ${activeTab === 'persistent_vault' ? 'text-white' : 'text-emerald-500'}`} />
+            <div>
+              <div className="text-xs font-bold flex items-center gap-1">
+                <span>Persistent Vault</span>
+                <span className={`rounded px-1 py-0.2 text-[8px] font-extrabold ${activeTab === 'persistent_vault' ? 'bg-emerald-800/80 text-emerald-200' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'}`}>
+                  AMAN
+                </span>
+              </div>
+              <div className={`text-[10px] ${activeTab === 'persistent_vault' ? 'text-emerald-100' : 'text-slate-400'}`}>
+                Kunci Data Saat Update
+              </div>
             </div>
-            <div className={`text-[10px] ${activeTab === 'persistent_vault' ? 'text-emerald-100' : 'text-slate-400'}`}>
-              Kunci Data Saat Update
+          </button>
+        )}
+
+        {/* Cross Module Jump Buttons */}
+        {mode === 'backup' && (
+          <button
+            type="button"
+            onClick={() => onNavigateTab ? onNavigateTab('restore', selectedDomain) : setActiveTab('restore_domain')}
+            className="flex items-center justify-between rounded-xl border border-sky-300 bg-sky-50/70 p-3.5 text-left hover:bg-sky-100/80 dark:border-sky-800 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <RotateCcw className="h-5 w-5 shrink-0 text-sky-600 dark:text-sky-400" />
+              <div>
+                <div className="text-xs font-bold text-sky-900 dark:text-sky-200">
+                  Modul Restore
+                </div>
+                <div className="text-[10px] text-sky-700 dark:text-sky-300">
+                  Pulihkan website dari arsip / ZIP
+                </div>
+              </div>
             </div>
-          </div>
-        </button>
+            <ArrowRight className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+          </button>
+        )}
+
+        {mode === 'restore' && (
+          <button
+            type="button"
+            onClick={() => onNavigateTab ? onNavigateTab('backups', selectedDomain) : setActiveTab('backup_domain')}
+            className="flex items-center justify-between rounded-xl border border-orange-300 bg-orange-50/70 p-3.5 text-left hover:bg-orange-100/80 dark:border-orange-800 dark:bg-orange-950/40 dark:hover:bg-orange-900/50 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <Archive className="h-5 w-5 shrink-0 text-orange-600 dark:text-orange-400" />
+              <div>
+                <div className="text-xs font-bold text-orange-900 dark:text-orange-200">
+                  Modul Backup
+                </div>
+                <div className="text-[10px] text-orange-700 dark:text-orange-300">
+                  Buat snapshot cadangan baru
+                </div>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+          </button>
+        )}
       </div>
 
       {/* =================================================================== */}

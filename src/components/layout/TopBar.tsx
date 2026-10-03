@@ -126,8 +126,19 @@ export const TopBar: React.FC<TopBarProps> = ({
       case 'cpanel-cron':
         return { title: 'Cron Jobs Scheduler', category: 'cPanel' };
       case 'backups':
+      case 'backup':
       case 'cpanel-backup':
-        return { title: 'Backup & 1-Click Restore', category: 'cPanel' };
+        return { title: 'Backup Website & Database (.ZIP)', category: 'Backup & Recovery' };
+      case 'restore':
+      case 'cpanel-restore':
+        return { title: 'Restore Website & Database (.ZIP)', category: 'Backup & Recovery' };
+      case 'disk-usage':
+      case 'cpanel-disk':
+        return { title: 'Analisa Penggunaan Disk', category: 'Penyimpanan' };
+      case 'disk-cleaner':
+      case 'cpanel-cleaner':
+      case 'cleaner':
+        return { title: 'Pembersih File Sampah (Disk Cleaner)', category: 'Penyimpanan' };
       default:
         return { title: 'Management Console', category: 'Cloud PRO' };
     }
