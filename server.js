@@ -293,6 +293,18 @@ function renderWebTerminalHtml(host, initialCwd) {
       </div>
     </header>
 
+    <!-- Prominent Gateway to Main Control Panel -->
+    <div style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #38bdf8; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 50;">
+      <div style="color: #fff; font-size: 12px; font-weight: 600; line-height: 1.3;">
+        <span style="font-size: 15px; margin-right: 4px;">\u{1F310}</span>
+        <strong>Masuk ke Control Panel Hosting:</strong>
+        <div style="color: #bae6fd; font-size: 10px; font-weight: normal;">cPanel, Domain, File Manager, CF Tunnel</div>
+      </div>
+      <a href="/" style="background: #facc15; color: #0f172a; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.25); display: inline-flex; align-items: center; gap: 5px; shrink-0: 0;">
+        \u26A1 Buka Panel &rarr;
+      </a>
+    </div>
+
     <!-- Quick Action Pills for Mobile -->
     <div class="quick-bar">
       <button class="quick-btn" onclick="runCommand('bash update.sh')">\u{1F680} 1-Click Update</button>
@@ -434,19 +446,25 @@ function renderWebTerminalHtml(host, initialCwd) {
     }
 
     function insertChar(ch) {
+      if (!cmdInput) return;
       cmdInput.value += ch;
-      cmdInput.focus();
+      if (!('ontouchstart' in window)) {
+        cmdInput.focus();
+      }
     }
 
     function handleCtrlC() {
+      if (!cmdInput) return;
       appendHistoryBlock(cmdInput.value || '^C', '^C (Perintah diinterupsi)', false);
       cmdInput.value = '';
       isRunning = false;
     }
 
     function clearTerminal() {
-      outputHistory.innerHTML = '';
-      cmdInput.focus();
+      if (outputHistory) outputHistory.innerHTML = '';
+      if (!('ontouchstart' in window) && cmdInput) {
+        cmdInput.focus();
+      }
     }
 
     function navHistory(dir) {
