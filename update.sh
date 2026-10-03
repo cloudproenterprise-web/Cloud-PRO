@@ -95,12 +95,9 @@ for STATE_FILE in cloudpro-full-state.json cloudpro-vhost-store.json cloudpro-tu
 done
 
 git branch -D origin/main 2>/dev/null || true
-git fetch origin main
-if git merge-base --is-ancestor FETCH_HEAD HEAD 2>/dev/null && [ "$(git rev-parse HEAD 2>/dev/null)" != "$(git rev-parse FETCH_HEAD 2>/dev/null)" ]; then
-  echo "[INFO] Commit lokal sudah lebih baru dari GitHub origin/main. Mempertahankan versi terbaru..."
-else
-  git reset --hard FETCH_HEAD
-fi
+git fetch origin main --force
+git reset --hard FETCH_HEAD
+git clean -fd -e .cloudpro-data 2>/dev/null || true
 git gc --prune=now -q 2>/dev/null || true
 
 # Pulihkan kembali state dari Persistent Vault ke .cloudpro-data setelah git reset
@@ -126,14 +123,12 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 if command -v pm2 &> /dev/null; then
-  # Jika PM2 belum menjalankan cloudpro, bersihkan dulu proses node server.js lama di port 3000
-  if ! pm2 describe cloudpro &>/dev/null; then
-    OLD_PIDS=$(pgrep -f "node.*server\.js|tsx.*server\.ts" 2>/dev/null | grep -v "^$$\$" | grep -v "^$PPID\$" || true)
-    for pid in $OLD_PIDS; do
-      kill -9 "$pid" 2>/dev/null || sudo -n kill -9 "$pid" 2>/dev/null || true
-    done
-  fi
-  pm2 restart cloudpro --update-env 2>/dev/null || pm2 start server.js --name cloudpro --update-env 2>/dev/null || true
+  # Bersihkan dulu proses liar yang mengunci port 3000
+  OLD_PIDS=$(pgrep -f "node.*server\.js|tsx.*server\.ts" 2>/dev/null | grep -v "^$$\$" | grep -v "^$PPID\$" || true)
+  for pid in $OLD_PIDS; do
+    kill -9 "$pid" 2>/dev/null || sudo -n kill -9 "$pid" 2>/dev/null || true
+  done
+  pm2 restart cloudpro --update-env 2>/dev/null || pm2 restart all 2>/dev/null || pm2 start server.js --name cloudpro --update-env 2>/dev/null || true
   pm2 save < /dev/null 2>/dev/null || true
   echo "[OK] Server CloudPRO aktif & berjalan segar via PM2!"
 else
@@ -171,8 +166,15 @@ fi
 if curl -sI --max-time 5 http://127.0.0.1:3000/ | grep -q "HTTP"; then
   echo "========================================================"
   echo " >>> UPDATE SUKSES! SERVER AKTIF DI PORT 3000 <<<"
+  echo " Commit Hash: $(git rev-parse --short HEAD) - $(git log -1 --pretty=%B | head -n 1)"
   echo " [TERVERIFIKASI] Respon server & API Cloud PRO 100% AKTIF!"
   echo " Buka https://servercloud.denbaguse.my.id atau https://denbaguse.my.id"
+  echo "--------------------------------------------------------"
+  echo " PENTING AGAR TAMPILAN TERBARU LANGSUNG MUNCUL DI BROWSER:"
+  echo " 1. Browser Anda masih menyimpan cache tampilan lama."
+  echo " 2. Tekan tombol CTRL + SHIFT + R (atau CTRL + F5) di PC."
+  echo " 3. Di HP: Buka menu titik tiga di browser -> Muat Ulang,"
+  echo "    atau coba buka lewat Tab Samaran (Incognito Window)."
   echo "========================================================"
 else
   echo "Server sedang memuat, cek dengan: pm2 status"
