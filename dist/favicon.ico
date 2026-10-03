@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0058b8" />
+      <stop offset="100%" stop-color="#003d80" />
+    </linearGradient>
+  </defs>
+  <!-- Background Cloud Emblem -->
+  <path d="M 28 76 C 18 76 10 68 10 58 C 10 49 16 42 24 40.5 C 25.5 28 36 18 49 18 C 60 18 69.5 25 73 34.5 C 83 35.5 91 44 91 54 C 91 65 83 74 72 75.5 C 70 76 30 76 28 76 Z" fill="url(#cloudGrad)" />
+  
+  <!-- Circuit loop and ascending arrow cutouts -->
+  <!-- Circuit Stream Line 1 -->
+  <path d="M 19 76 C 22 66 28 58 35 55 C 38 53.5 42 53.5 45 55 C 49 57.5 50.5 62 49 66 C 47 70.5 41.5 72.5 37 70 C 33.5 68 32 64 33 60 C 34 54 40 48 48 45 L 67 36" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  
+  <!-- Arrow Head -->
+  <polygon points="65,26 80,31 71,44 69,38 61,42" fill="#ffffff" />
+  
+  <!-- Parallel Flow Line 2 -->
+  <path d="M 24 76 C 27 68 33 62 39 59" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none" />
+</svg>

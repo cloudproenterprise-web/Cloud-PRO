@@ -2123,11 +2123,11 @@ if (rootEl && typeof App !== 'undefined') {
 function renderVirtualHostResponse(hostHeader, reqPath, forceAccountAndDir) {
   const cleanHost = hostHeader.split(":")[0].toLowerCase().replace(/^www\./, "");
   const isRawIp = /^(\d{1,3}\.){3}\d{1,3}$/.test(cleanHost) || cleanHost.includes(":") || cleanHost.startsWith("[");
-  if (!forceAccountAndDir && (!cleanHost || isRawIp || !cleanHost.includes(".") || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost === "desktop-djq024c" || cleanHost.endsWith(".ts.net") || cleanHost.endsWith(".local") || cleanHost.endsWith(".lan") || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("cloudpro.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin."))) {
+  if (!forceAccountAndDir && (!cleanHost || isRawIp || !cleanHost.includes(".") || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost === "desktop-djq024c" || cleanHost.endsWith(".ts.net") || cleanHost.endsWith(".local") || cleanHost.endsWith(".lan") || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin."))) {
     return null;
   }
   const lowerReqPath = (reqPath || "").toLowerCase();
-  const isExplicitPanelUrl = lowerReqPath === "/cp" || lowerReqPath.startsWith("/cp/") || lowerReqPath === "/panel" || lowerReqPath.startsWith("/panel/") || lowerReqPath === "/cloudpro" || lowerReqPath.startsWith("/cloudpro/") || lowerReqPath === "/cpanel" || lowerReqPath.startsWith("/cpanel/") || lowerReqPath === "/whm" || lowerReqPath.startsWith("/whm/") || lowerReqPath === "/portal" || lowerReqPath.startsWith("/portal/") || lowerReqPath === "/masuk" || lowerReqPath.startsWith("/masuk/") || lowerReqPath === "/admin-panel" || lowerReqPath.startsWith("/admin-panel/") || lowerReqPath === "/cloudpro-login" || lowerReqPath.startsWith("/cloudpro-login/") || lowerReqPath === "/cloudpro-admin" || lowerReqPath.startsWith("/cloudpro-admin/") || lowerReqPath === "/cp-admin" || lowerReqPath.startsWith("/cp-admin/");
+  const isExplicitPanelUrl = lowerReqPath === "/cloudpro-login" || lowerReqPath.startsWith("/cloudpro-login/") || lowerReqPath === "/cloudpro-admin" || lowerReqPath.startsWith("/cloudpro-admin/") || lowerReqPath === "/cp-admin" || lowerReqPath.startsWith("/cp-admin/");
   if (!forceAccountAndDir && isExplicitPanelUrl) {
     return null;
   }
@@ -7235,7 +7235,7 @@ ftp.quit()
           type: "subdomain",
           documentRoot: "/public_html/siakad-madrasah",
           accountId: primaryAcc?.id || "acc-rdm-01",
-          username: primaryAcc?.username || "madrasah",
+          username: primaryAcc?.username || "cloudpro",
           phpVersion: "8.2",
           filesCount: stats.count,
           totalSizeBytes: stats.totalSize,
@@ -8301,48 +8301,12 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     if (fs.existsSync(f)) return res.sendFile(f);
     res.status(404).end();
   });
-  app.get(["/favicon.svg", "/favicon.ico"], (req, res, next) => {
-    const rawFwd = req.headers["x-forwarded-host"] || req.headers["x-original-host"];
-    const fwdHost = Array.isArray(rawFwd) ? rawFwd[0] : typeof rawFwd === "string" ? rawFwd.split(",")[0].trim() : "";
-    const rawHost = (fwdHost || req.headers.host || "").split(":")[0].toLowerCase().replace(/^www\./, "");
-    const isPanel = !rawHost || rawHost === "localhost" || rawHost === "127.0.0.1" || rawHost.endsWith(".run.app") || rawHost.endsWith(".trycloudflare.com") || rawHost.startsWith("cloud.") || rawHost.startsWith("servercloud.") || rawHost.startsWith("cloudpro.") || rawHost.startsWith("panel.");
-    if (isPanel) {
-      const publicSvg = path.join(process.cwd(), "public", "favicon.svg");
-      if (fs.existsSync(publicSvg)) {
-        res.setHeader("Content-Type", "image/svg+xml");
-        res.setHeader("Cache-Control", "public, max-age=86400");
-        return res.sendFile(publicSvg);
-      }
-      const distSvg = path.join(process.cwd(), "dist", "favicon.svg");
-      if (fs.existsSync(distSvg)) {
-        res.setHeader("Content-Type", "image/svg+xml");
-        res.setHeader("Cache-Control", "public, max-age=86400");
-        return res.sendFile(distSvg);
-      }
-    }
-    next();
-  });
-  app.get("/logo.svg", (req, res, next) => {
-    const publicLogo = path.join(process.cwd(), "public", "logo.svg");
-    if (fs.existsSync(publicLogo)) {
-      res.setHeader("Content-Type", "image/svg+xml");
-      res.setHeader("Cache-Control", "public, max-age=86400");
-      return res.sendFile(publicLogo);
-    }
-    const distLogo = path.join(process.cwd(), "dist", "logo.svg");
-    if (fs.existsSync(distLogo)) {
-      res.setHeader("Content-Type", "image/svg+xml");
-      res.setHeader("Cache-Control", "public, max-age=86400");
-      return res.sendFile(distLogo);
-    }
-    next();
-  });
   app.use("/assets", (req, res, next) => {
     const fileName = path.basename(req.path);
     const rawFwd = req.headers["x-forwarded-host"] || req.headers["x-original-host"];
     const fwdHost = Array.isArray(rawFwd) ? rawFwd[0] : typeof rawFwd === "string" ? rawFwd.split(",")[0].trim() : "";
     const rawHost = (fwdHost || req.headers.host || "").split(":")[0].toLowerCase().replace(/^www\./, "");
-    const isPanel = !rawHost || rawHost === "localhost" || rawHost === "127.0.0.1" || rawHost.endsWith(".run.app") || rawHost.endsWith(".trycloudflare.com") || rawHost.startsWith("cloud.") || rawHost.startsWith("cloudpro.") || rawHost.startsWith("servercloud.") || rawHost.startsWith("panel.") || rawHost.startsWith("cpanel.") || rawHost.startsWith("whm.") || rawHost.startsWith("admin.");
+    const isPanel = !rawHost || rawHost === "localhost" || rawHost === "127.0.0.1" || rawHost.endsWith(".run.app") || rawHost.endsWith(".trycloudflare.com") || rawHost.startsWith("servercloud.") || rawHost.startsWith("panel.") || rawHost.startsWith("cpanel.") || rawHost.startsWith("whm.") || rawHost.startsWith("admin.");
     const hostDocRootRel = resolveHostDocRoot(rawHost).replace(/^\//, "");
     const candidates = isPanel ? [
       path.join(process.cwd(), "dist", "assets", fileName),
@@ -8376,23 +8340,11 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       res.setHeader("Expires", "0");
       return res.status(200).send(renderWebTerminalHtml(incomingHost, activeTerminalCwd));
     }
-    const isDirectExclusivePanelPath = lowerPath === "/panel" || lowerPath.startsWith("/panel/") || lowerPath === "/cp" || lowerPath.startsWith("/cp/") || lowerPath === "/cloudpro" || lowerPath.startsWith("/cloudpro/") || lowerPath === "/cpanel" || lowerPath.startsWith("/cpanel/") || lowerPath === "/whm" || lowerPath.startsWith("/whm/") || lowerPath === "/portal" || lowerPath.startsWith("/portal/") || lowerPath === "/masuk" || lowerPath.startsWith("/masuk/") || lowerPath === "/admin-panel" || lowerPath.startsWith("/admin-panel/") || lowerPath === "/cloudpro-login" || lowerPath.startsWith("/cloudpro-login/") || lowerPath === "/cloudpro-admin" || lowerPath.startsWith("/cloudpro-admin/") || lowerPath === "/cp-admin" || lowerPath.startsWith("/cp-admin/");
-    const isDirectExclusivePanelQuery = req.query.panel === "1" || req.query.cp === "1" || req.query.cloudpro === "1" || req.query.admin === "1";
-    if (isDirectExclusivePanelPath || isDirectExclusivePanelQuery) {
-      const indexPath = path.join(process.cwd(), "dist", "index.html");
-      if (fs.existsSync(indexPath)) {
-        res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
-        res.setHeader("Pragma", "no-cache");
-        res.setHeader("Expires", "0");
-        return res.sendFile(indexPath);
-      }
-    }
-    const isPanelHost = !cleanHost || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("cloudpro.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin.");
+    const isPanelHost = !cleanHost || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin.");
     const isExplicitPanelParam = req.query.panel === "1" || req.query.cp === "1" || req.query.cloudpro === "1" || req.query.login === "admin";
     const isExplicitPanelRoute = lowerPath === "/cloudpro-login" || lowerPath.startsWith("/cloudpro-login/") || lowerPath === "/cloudpro-admin" || lowerPath.startsWith("/cloudpro-admin/") || lowerPath === "/cp-admin";
     const isControlPanelRoute = isExplicitPanelParam || isExplicitPanelRoute || isPanelHost && (lowerPath === "/" || lowerPath === "/index.html" || lowerPath === "/cpanel" || lowerPath.startsWith("/cpanel/") || lowerPath === "/login" || lowerPath.startsWith("/login/") || lowerPath === "/admin" || lowerPath.startsWith("/admin/") || lowerPath === "/panel" || lowerPath.startsWith("/panel/") || lowerPath === "/whm" || lowerPath.startsWith("/whm/") || lowerPath === "/dashboard" || lowerPath.startsWith("/dashboard/"));
-    if (isControlPanelRoute || isPanelHost && req.path.startsWith("/assets/") || req.path.startsWith("/src/") || req.path.startsWith("/@") || req.path.startsWith("/node_modules/") || isPanelHost && req.path.startsWith("/assets/index-") || isPanelHost && (req.path === "/favicon.svg" || req.path === "/favicon.ico" || req.path === "/logo.svg")) {
+    if (isControlPanelRoute || isPanelHost && req.path.startsWith("/assets/") || req.path.startsWith("/src/") || req.path.startsWith("/@") || req.path.startsWith("/node_modules/") || isPanelHost && req.path.startsWith("/assets/index-") || isPanelHost && (req.path === "/favicon.svg" || req.path === "/logo.svg")) {
       if (isControlPanelRoute) {
         req.url = "/";
       }
@@ -8655,7 +8607,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   try {
     if (!fs.existsSync(sslKeyPath) || !fs.existsSync(sslCertPath)) {
       execSync(
-        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=servercloud.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:servercloud.denbaguse.my.id,DNS:cloudpro.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
+        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=servercloud.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:servercloud.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
         { stdio: "ignore" }
       );
     }

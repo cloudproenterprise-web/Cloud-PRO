@@ -1715,7 +1715,6 @@ function renderVirtualHostResponse(
       cleanHost.endsWith('.run.app') ||
       cleanHost.endsWith('.trycloudflare.com') ||
       cleanHost.startsWith('cloud.') ||
-      cleanHost.startsWith('cloudpro.') ||
       cleanHost.startsWith('servercloud.') ||
       cleanHost.startsWith('panel.') ||
       cleanHost.startsWith('cpanel.') ||
@@ -1731,22 +1730,6 @@ function renderVirtualHostResponse(
   // Only bypass virtual host for explicit Cloud PRO administrative URLs, not regular customer /login or /admin routes!
   const lowerReqPath = (reqPath || '').toLowerCase();
   const isExplicitPanelUrl =
-    lowerReqPath === '/cp' ||
-    lowerReqPath.startsWith('/cp/') ||
-    lowerReqPath === '/panel' ||
-    lowerReqPath.startsWith('/panel/') ||
-    lowerReqPath === '/cloudpro' ||
-    lowerReqPath.startsWith('/cloudpro/') ||
-    lowerReqPath === '/cpanel' ||
-    lowerReqPath.startsWith('/cpanel/') ||
-    lowerReqPath === '/whm' ||
-    lowerReqPath.startsWith('/whm/') ||
-    lowerReqPath === '/portal' ||
-    lowerReqPath.startsWith('/portal/') ||
-    lowerReqPath === '/masuk' ||
-    lowerReqPath.startsWith('/masuk/') ||
-    lowerReqPath === '/admin-panel' ||
-    lowerReqPath.startsWith('/admin-panel/') ||
     lowerReqPath === '/cloudpro-login' ||
     lowerReqPath.startsWith('/cloudpro-login/') ||
     lowerReqPath === '/cloudpro-admin' ||
@@ -7765,7 +7748,7 @@ ftp.quit()
           type: 'subdomain',
           documentRoot: '/public_html/siakad-madrasah',
           accountId: primaryAcc?.id || 'acc-rdm-01',
-          username: primaryAcc?.username || 'madrasah',
+          username: primaryAcc?.username || 'cloudpro',
           phpVersion: '8.2',
           filesCount: stats.count,
           totalSizeBytes: stats.totalSize,
@@ -9040,55 +9023,6 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     res.status(404).end();
   });
 
-  // Explicit servercloud & Cloud PRO favicon and logo handler for Panel hosts & direct requests
-  app.get(['/favicon.svg', '/favicon.ico'], (req, res, next) => {
-    const rawFwd = req.headers['x-forwarded-host'] || req.headers['x-original-host'];
-    const fwdHost = Array.isArray(rawFwd) ? rawFwd[0] : typeof rawFwd === 'string' ? rawFwd.split(',')[0].trim() : '';
-    const rawHost = (fwdHost || req.headers.host || '').split(':')[0].toLowerCase().replace(/^www\./, '');
-    const isPanel =
-      !rawHost ||
-      rawHost === 'localhost' ||
-      rawHost === '127.0.0.1' ||
-      rawHost.endsWith('.run.app') ||
-      rawHost.endsWith('.trycloudflare.com') ||
-      rawHost.startsWith('cloud.') ||
-      rawHost.startsWith('servercloud.') ||
-      rawHost.startsWith('cloudpro.') ||
-      rawHost.startsWith('panel.');
-
-    if (isPanel) {
-      const publicSvg = path.join(process.cwd(), 'public', 'favicon.svg');
-      if (fs.existsSync(publicSvg)) {
-        res.setHeader('Content-Type', 'image/svg+xml');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-        return res.sendFile(publicSvg);
-      }
-      const distSvg = path.join(process.cwd(), 'dist', 'favicon.svg');
-      if (fs.existsSync(distSvg)) {
-        res.setHeader('Content-Type', 'image/svg+xml');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-        return res.sendFile(distSvg);
-      }
-    }
-    next();
-  });
-
-  app.get('/logo.svg', (req, res, next) => {
-    const publicLogo = path.join(process.cwd(), 'public', 'logo.svg');
-    if (fs.existsSync(publicLogo)) {
-      res.setHeader('Content-Type', 'image/svg+xml');
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-      return res.sendFile(publicLogo);
-    }
-    const distLogo = path.join(process.cwd(), 'dist', 'logo.svg');
-    if (fs.existsSync(distLogo)) {
-      res.setHeader('Content-Type', 'image/svg+xml');
-      res.setHeader('Cache-Control', 'public, max-age=86400');
-      return res.sendFile(distLogo);
-    }
-    next();
-  });
-
   // Multi-tier asset resolver: strictly isolates panel assets vs primary domain vs each subdomain's documentRoot
   app.use('/assets', (req, res, next) => {
     const fileName = path.basename(req.path);
@@ -9101,8 +9035,6 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       rawHost === '127.0.0.1' ||
       rawHost.endsWith('.run.app') ||
       rawHost.endsWith('.trycloudflare.com') ||
-      rawHost.startsWith('cloud.') ||
-      rawHost.startsWith('cloudpro.') ||
       rawHost.startsWith('servercloud.') ||
       rawHost.startsWith('panel.') ||
       rawHost.startsWith('cpanel.') ||
@@ -9169,50 +9101,6 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       return res.status(200).send(renderWebTerminalHtml(incomingHost, activeTerminalCwd));
     }
 
-    // Direct Exclusive Cloud PRO Panel Gateway Interceptor (Sama persis seperti jalur /ssh):
-    // Dijamin 100% langsung membuka Panel Admin Cloud PRO dari domain mana saja:
-    // Contoh: denbaguse.my.id/panel, /cp, /cloudpro, /cpanel, /whm, /portal, /masuk
-    const isDirectExclusivePanelPath =
-      lowerPath === '/panel' ||
-      lowerPath.startsWith('/panel/') ||
-      lowerPath === '/cp' ||
-      lowerPath.startsWith('/cp/') ||
-      lowerPath === '/cloudpro' ||
-      lowerPath.startsWith('/cloudpro/') ||
-      lowerPath === '/cpanel' ||
-      lowerPath.startsWith('/cpanel/') ||
-      lowerPath === '/whm' ||
-      lowerPath.startsWith('/whm/') ||
-      lowerPath === '/portal' ||
-      lowerPath.startsWith('/portal/') ||
-      lowerPath === '/masuk' ||
-      lowerPath.startsWith('/masuk/') ||
-      lowerPath === '/admin-panel' ||
-      lowerPath.startsWith('/admin-panel/') ||
-      lowerPath === '/cloudpro-login' ||
-      lowerPath.startsWith('/cloudpro-login/') ||
-      lowerPath === '/cloudpro-admin' ||
-      lowerPath.startsWith('/cloudpro-admin/') ||
-      lowerPath === '/cp-admin' ||
-      lowerPath.startsWith('/cp-admin/');
-
-    const isDirectExclusivePanelQuery =
-      req.query.panel === '1' ||
-      req.query.cp === '1' ||
-      req.query.cloudpro === '1' ||
-      req.query.admin === '1';
-
-    if (isDirectExclusivePanelPath || isDirectExclusivePanelQuery) {
-      const indexPath = path.join(process.cwd(), 'dist', 'index.html');
-      if (fs.existsSync(indexPath)) {
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('Expires', '0');
-        return res.sendFile(indexPath);
-      }
-    }
-
     const isPanelHost =
       !cleanHost ||
       cleanHost === 'localhost' ||
@@ -9220,7 +9108,6 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       cleanHost.endsWith('.run.app') ||
       cleanHost.endsWith('.trycloudflare.com') ||
       cleanHost.startsWith('cloud.') ||
-      cleanHost.startsWith('cloudpro.') ||
       cleanHost.startsWith('servercloud.') ||
       cleanHost.startsWith('panel.') ||
       cleanHost.startsWith('cpanel.') ||
@@ -9271,7 +9158,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       req.path.startsWith('/@') ||
       req.path.startsWith('/node_modules/') ||
       (isPanelHost && req.path.startsWith('/assets/index-')) ||
-      (isPanelHost && (req.path === '/favicon.svg' || req.path === '/favicon.ico' || req.path === '/logo.svg'))
+      (isPanelHost && (req.path === '/favicon.svg' || req.path === '/logo.svg'))
     ) {
       if (isControlPanelRoute) {
         req.url = '/';
@@ -9603,7 +9490,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   try {
     if (!fs.existsSync(sslKeyPath) || !fs.existsSync(sslCertPath)) {
       execSync(
-        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=servercloud.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:servercloud.denbaguse.my.id,DNS:cloudpro.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
+        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=servercloud.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:servercloud.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
         { stdio: 'ignore' }
       );
     }
