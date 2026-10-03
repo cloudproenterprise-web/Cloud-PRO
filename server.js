@@ -8301,6 +8301,42 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     if (fs.existsSync(f)) return res.sendFile(f);
     res.status(404).end();
   });
+  app.get(["/favicon.svg", "/favicon.ico"], (req, res, next) => {
+    const rawFwd = req.headers["x-forwarded-host"] || req.headers["x-original-host"];
+    const fwdHost = Array.isArray(rawFwd) ? rawFwd[0] : typeof rawFwd === "string" ? rawFwd.split(",")[0].trim() : "";
+    const rawHost = (fwdHost || req.headers.host || "").split(":")[0].toLowerCase().replace(/^www\./, "");
+    const isPanel = !rawHost || rawHost === "localhost" || rawHost === "127.0.0.1" || rawHost.endsWith(".run.app") || rawHost.endsWith(".trycloudflare.com") || rawHost.startsWith("cloud.") || rawHost.startsWith("servercloud.") || rawHost.startsWith("cloudpro.") || rawHost.startsWith("panel.");
+    if (isPanel) {
+      const publicSvg = path.join(process.cwd(), "public", "favicon.svg");
+      if (fs.existsSync(publicSvg)) {
+        res.setHeader("Content-Type", "image/svg+xml");
+        res.setHeader("Cache-Control", "public, max-age=86400");
+        return res.sendFile(publicSvg);
+      }
+      const distSvg = path.join(process.cwd(), "dist", "favicon.svg");
+      if (fs.existsSync(distSvg)) {
+        res.setHeader("Content-Type", "image/svg+xml");
+        res.setHeader("Cache-Control", "public, max-age=86400");
+        return res.sendFile(distSvg);
+      }
+    }
+    next();
+  });
+  app.get("/logo.svg", (req, res, next) => {
+    const publicLogo = path.join(process.cwd(), "public", "logo.svg");
+    if (fs.existsSync(publicLogo)) {
+      res.setHeader("Content-Type", "image/svg+xml");
+      res.setHeader("Cache-Control", "public, max-age=86400");
+      return res.sendFile(publicLogo);
+    }
+    const distLogo = path.join(process.cwd(), "dist", "logo.svg");
+    if (fs.existsSync(distLogo)) {
+      res.setHeader("Content-Type", "image/svg+xml");
+      res.setHeader("Cache-Control", "public, max-age=86400");
+      return res.sendFile(distLogo);
+    }
+    next();
+  });
   app.use("/assets", (req, res, next) => {
     const fileName = path.basename(req.path);
     const rawFwd = req.headers["x-forwarded-host"] || req.headers["x-original-host"];
@@ -8356,7 +8392,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     const isExplicitPanelParam = req.query.panel === "1" || req.query.cp === "1" || req.query.cloudpro === "1" || req.query.login === "admin";
     const isExplicitPanelRoute = lowerPath === "/cloudpro-login" || lowerPath.startsWith("/cloudpro-login/") || lowerPath === "/cloudpro-admin" || lowerPath.startsWith("/cloudpro-admin/") || lowerPath === "/cp-admin";
     const isControlPanelRoute = isExplicitPanelParam || isExplicitPanelRoute || isPanelHost && (lowerPath === "/" || lowerPath === "/index.html" || lowerPath === "/cpanel" || lowerPath.startsWith("/cpanel/") || lowerPath === "/login" || lowerPath.startsWith("/login/") || lowerPath === "/admin" || lowerPath.startsWith("/admin/") || lowerPath === "/panel" || lowerPath.startsWith("/panel/") || lowerPath === "/whm" || lowerPath.startsWith("/whm/") || lowerPath === "/dashboard" || lowerPath.startsWith("/dashboard/"));
-    if (isControlPanelRoute || isPanelHost && req.path.startsWith("/assets/") || req.path.startsWith("/src/") || req.path.startsWith("/@") || req.path.startsWith("/node_modules/") || isPanelHost && req.path.startsWith("/assets/index-") || isPanelHost && (req.path === "/favicon.svg" || req.path === "/logo.svg")) {
+    if (isControlPanelRoute || isPanelHost && req.path.startsWith("/assets/") || req.path.startsWith("/src/") || req.path.startsWith("/@") || req.path.startsWith("/node_modules/") || isPanelHost && req.path.startsWith("/assets/index-") || isPanelHost && (req.path === "/favicon.svg" || req.path === "/favicon.ico" || req.path === "/logo.svg")) {
       if (isControlPanelRoute) {
         req.url = "/";
       }
