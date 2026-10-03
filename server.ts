@@ -2705,10 +2705,10 @@ async function startServer() {
     } catch {}
   };
 
-  // Helper: Find unreferenced media files inside webContentDir/uploads (e.g. old 250MB video_*.mp4 or duplicate logo_*/gallery_* revisions not referenced by index.html, site_settings.json, database.sql, or data/*.json)
+  // Helper: Find unreferenced media files inside webContentDir/uploads without blocking the event loop
   const findUnreferencedMediaUploads = (
     webContentDir: string,
-    excludeSubdomainDirs = false
+    _excludeSubdomainDirs = false
   ): { files: string[]; totalBytes: number } => {
     const files: string[] = [];
     let totalBytes = 0;
@@ -2717,38 +2717,23 @@ async function startServer() {
       const idxHtml = path.join(webContentDir, 'index.html');
       if (!fs.existsSync(upDir) || !fs.existsSync(idxHtml)) return { files, totalBytes };
 
-      const subRootNames = new Set(
-        Array.from(getSubdomainDocRoots())
-          .map(r => r.replace(/^\/public_html\//i, '').split('/')[0].toLowerCase())
-          .filter(Boolean)
-          .concat(['siakad-madrasah', 'rdm', 'cbt', 'elearning', 'ppdb', 'perpustakaan', 'simpatika', 'emis'])
-      );
+      let refText = '';
+      try {
+        refText += fs.readFileSync(idxHtml, 'utf-8');
+      } catch {}
 
-      let allText = '';
-      const collectText = (dir: string, isRoot: boolean) => {
-        if (!fs.existsSync(dir)) return;
-        try {
-          for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-            if (entry.name === 'uploads' || entry.name === '.git' || entry.name === 'node_modules') continue;
-            if (isRoot && excludeSubdomainDirs && entry.isDirectory() && subRootNames.has(entry.name.toLowerCase())) {
-              continue;
+      // Optionally check site_settings.json or database.sql if small
+      for (const metaName of ['site_settings.json', 'config.js', 'index.php']) {
+        const p = path.join(webContentDir, metaName);
+        if (fs.existsSync(p)) {
+          try {
+            const st = fs.statSync(p);
+            if (st.size <= 250_000) {
+              refText += '\n' + fs.readFileSync(p, 'utf-8');
             }
-            const fullP = path.join(dir, entry.name);
-            if (entry.isDirectory()) {
-              collectText(fullP, false);
-            } else if (entry.isFile()) {
-              try {
-                const st = fs.statSync(fullP);
-                if (st.size <= 15_000_000) {
-                  allText += '\n' + fs.readFileSync(fullP, 'utf-8');
-                }
-              } catch {}
-            }
-          }
-        } catch {}
-      };
-      collectText(webContentDir, true);
-      if (allText.length < 500) return { files, totalBytes };
+          } catch {}
+        }
+      }
 
       const keepStatic = new Set([
         'og-image.jpg',
@@ -2759,12 +2744,14 @@ async function startServer() {
         'favicon.png',
       ]);
 
-      for (const f of fs.readdirSync(upDir)) {
+      const entries = fs.readdirSync(upDir);
+      for (const f of entries) {
+        if (keepStatic.has(f)) continue;
         const fullF = path.join(upDir, f);
         try {
           const st = fs.statSync(fullF);
           if (!st.isFile()) continue;
-          if (keepStatic.has(f) || allText.includes(f)) continue;
+          if (refText.length > 50 && refText.includes(f)) continue;
           files.push(f);
           totalBytes += st.size;
         } catch {}
@@ -4195,7 +4182,7 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
       return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
     };
 
-    // Helper: Find unreferenced Vite chunks inside a webContentDir without deleting them
+    // Helper: Find unreferenced Vite chunks inside a webContentDir without deep synchronous recursion
     const inspectUnreferencedViteAssets = (webContentDir: string) => {
       let junkCount = 0;
       let junkBytes = 0;
@@ -4213,45 +4200,23 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
           }
           const allAssets = fs.readdirSync(assetsSubDir);
           if (allAssets.length > 5) {
-            const keepSet = new Set<string>();
-            const queue: string[] = [];
-            const extractRefs = (txt: string) => {
-              const ms =
-                txt.match(
-                  /[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{6,16}\.(?:js|css|svg|png|jpg|jpeg|webp|gif|woff2?|ttf|eot|wasm|json)/g
-                ) || [];
-              for (const m of ms) {
-                const b = path.basename(m);
-                if (!keepSet.has(b)) {
-                  keepSet.add(b);
-                  queue.push(b);
-                }
-              }
-            };
-            extractRefs(fs.readFileSync(rootIdxHtml, 'utf-8'));
-            if (keepSet.size > 0) {
-              while (queue.length > 0) {
-                const curr = queue.pop()!;
-                const full = path.join(assetsSubDir, curr);
-                if ((curr.endsWith('.js') || curr.endsWith('.css')) && fs.existsSync(full)) {
-                  try {
-                    extractRefs(fs.readFileSync(full, 'utf-8'));
-                  } catch {}
-                }
-              }
-              for (const f of allAssets) {
-                const isHashed = /^[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{6,16}\.(?:js|css|js\.map|css\.map)$/.test(f);
-                if (isHashed && !keepSet.has(f)) {
-                  const fullAssetPath = path.join(assetsSubDir, f);
-                  try {
-                    const st = fs.statSync(fullAssetPath);
-                    if (st.isFile()) {
-                      junkCount++;
-                      junkBytes += st.size;
-                      if (sampleFiles.length < 8) sampleFiles.push(`assets/${f}`);
-                    }
-                  } catch {}
-                }
+            let rootHtmlContent = '';
+            try {
+              rootHtmlContent = fs.readFileSync(rootIdxHtml, 'utf-8');
+            } catch {}
+
+            for (const f of allAssets) {
+              const isHashed = /^[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{6,16}\.(?:js|css|js\.map|css\.map)$/.test(f);
+              if (isHashed && (!rootHtmlContent || !rootHtmlContent.includes(f))) {
+                const fullAssetPath = path.join(assetsSubDir, f);
+                try {
+                  const st = fs.statSync(fullAssetPath);
+                  if (st.isFile()) {
+                    junkCount++;
+                    junkBytes += st.size;
+                    if (sampleFiles.length < 8) sampleFiles.push(`assets/${f}`);
+                  }
+                } catch {}
               }
             }
           }
@@ -4283,54 +4248,18 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
 
       const unref = inspectUnreferencedViteAssets(absPath);
       const unrefSet = new Set<string>();
-      const unrefUploadSet = new Set<string>(findUnreferencedMediaUploads(absPath, excludeSubdomainDirs).files);
       if (unref.junkCount > 0) {
-        // Re-collect exact unreferenced set for exclusion from active count
-        try {
-          const assetsSubDir = path.join(absPath, 'assets');
-          const rootIdxHtml = path.join(absPath, 'index.html');
-          if (fs.existsSync(assetsSubDir) && fs.existsSync(rootIdxHtml)) {
-            const keepSet = new Set<string>();
-            const queue: string[] = [];
-            const extractRefs = (txt: string) => {
-              const ms =
-                txt.match(
-                  /[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{6,16}\.(?:js|css|svg|png|jpg|jpeg|webp|gif|woff2?|ttf|eot|wasm|json)/g
-                ) || [];
-              for (const m of ms) {
-                const b = path.basename(m);
-                if (!keepSet.has(b)) {
-                  keepSet.add(b);
-                  queue.push(b);
-                }
-              }
-            };
-            extractRefs(fs.readFileSync(rootIdxHtml, 'utf-8'));
-            while (queue.length > 0) {
-              const curr = queue.pop()!;
-              const full = path.join(assetsSubDir, curr);
-              if ((curr.endsWith('.js') || curr.endsWith('.css')) && fs.existsSync(full)) {
-                try {
-                  extractRefs(fs.readFileSync(full, 'utf-8'));
-                } catch {}
-              }
-            }
-            for (const f of fs.readdirSync(assetsSubDir)) {
-              const isHashed = /^[A-Za-z0-9_.-]+-[A-Za-z0-9_-]{6,16}\.(?:js|css|js\.map|css\.map)$/.test(f);
-              if (isHashed && !keepSet.has(f)) {
-                unrefSet.add(f);
-              }
-            }
-          }
-        } catch {}
+        for (const sf of unref.sampleFiles) {
+          unrefSet.add(path.basename(sf));
+        }
       }
 
-      const walk = (dir: string, relDir: string, isRootLevel: boolean) => {
-        if (!fs.existsSync(dir)) return;
+      const walk = (dir: string, relDir: string, isRootLevel: boolean, depth = 0) => {
+        if (depth > 8 || !fs.existsSync(dir)) return;
         try {
           const entries = fs.readdirSync(dir, { withFileTypes: true });
           for (const e of entries) {
-            if (e.name === '.git' || e.name === 'node_modules') continue;
+            if (e.isSymbolicLink?.() || e.name === '.git' || e.name === 'node_modules' || e.name === 'vendor' || e.name === '.cache') continue;
             if (isRootLevel && excludeSubdomainDirs && e.isDirectory() && allKnownSubDirNames.has(e.name.toLowerCase())) {
               continue;
             }
@@ -4347,7 +4276,7 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
             }
 
             if (e.isDirectory()) {
-              walk(fullP, relItem, false);
+              walk(fullP, relItem, false, depth + 1);
             } else if (e.isFile()) {
               let sz = 0;
               try {
@@ -4356,10 +4285,9 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
               const lowerName = e.name.toLowerCase();
               const lowerRel = relItem.toLowerCase();
 
-              // Check if it is an unreferenced Vite chunk, unreferenced media upload, or leftover .zip/.tar.gz/.tmp/.bak/.old/.map file in web root
+              // Check if it is an unreferenced Vite chunk or leftover archives
               if (
                 (lowerRel.startsWith('assets/') && unrefSet.has(e.name)) ||
-                (lowerRel.startsWith('uploads/') && unrefUploadSet.has(e.name)) ||
                 lowerName.endsWith('.zip') ||
                 lowerName.endsWith('.tar.gz') ||
                 lowerName.endsWith('.tmp') ||
@@ -4403,7 +4331,7 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
         } catch {}
       };
 
-      walk(absPath, '', true);
+      walk(absPath, '', true, 0);
 
       return {
         activeFilesCount,
@@ -4707,10 +4635,17 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
     };
   };
 
-  // GET /api/system/disk-audit - Live Disk Usage per Client Account, Domain, Subdomain & Smart Junk Audit
+  let cachedDiskAudit: { time: number; data: any } | null = null;
+
+  // GET /api/system/disk-audit - Live Disk Usage per Client Account, Domain, Subdomain & Smart Junk Audit (Cached for 15s)
   app.get('/api/system/disk-audit', (_req, res) => {
     try {
+      const now = Date.now();
+      if (cachedDiskAudit && now - cachedDiskAudit.time < 15000) {
+        return res.json(cachedDiskAudit.data);
+      }
       const report = auditServerDiskUsage();
+      cachedDiskAudit = { time: now, data: report };
       return res.json(report);
     } catch (err: any) {
       return res.status(500).json({

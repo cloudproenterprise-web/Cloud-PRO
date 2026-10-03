@@ -780,10 +780,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setOpenSections(updated);
   };
 
-  // Lock body scroll and prevent touch leak when mobile drawer is open
+  // Lock body scroll and prevent touch leak ONLY when mobile drawer is open (< 1024px)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (isOpen) {
+    if (isOpen && window.innerWidth < 1024) {
       const originalOverflow = document.body.style.overflow;
       const originalTouchAction = document.body.style.touchAction;
       document.body.style.overflow = 'hidden';

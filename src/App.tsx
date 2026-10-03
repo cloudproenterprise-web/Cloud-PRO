@@ -402,6 +402,42 @@ const AppContent: React.FC = () => {
       ? activeAccount
       : accessibleAccounts[0] || null;
 
+  const safeFallbackAccount: HostingAccount = {
+    id: 'acc-rdm-01',
+    primaryDomain: 'denbaguse.my.id',
+    domain: 'denbaguse.my.id',
+    username: 'cloudpro',
+    customerId: 'usr-admin-01',
+    customerName: 'Jaenal Maskun (Website Pribadi)',
+    customerEmail: 'myboskue@gmail.com',
+    resellerId: 'usr-admin-01',
+    serverId: 'srv-sg-01',
+    serverName: 'SG-Edge-01 (Singapore)',
+    planId: 'plan-pro',
+    planName: 'Cloud Pro SSD',
+    diskUsedMb: 120,
+    diskLimitMb: 25600,
+    bandwidthUsedMb: 500,
+    bandwidthLimitMb: 512000,
+    phpVersion: '8.2',
+    phpExtensions: ['ioncube', 'mysqli', 'pdo'],
+    status: 'active',
+    sslStatus: 'active',
+    sslProvider: "Let's Encrypt",
+    sslExpiresAt: '2027-01-01T00:00:00Z',
+    forceHttps: true,
+    documentRoot: '/public_html',
+    ipAddress: '100.121.16.66',
+    databaseCount: 1,
+    emailCount: 1,
+    ftpCount: 1,
+    nameservers: ['ns1.denbaguse.my.id', 'ns2.denbaguse.my.id'],
+    createdAt: new Date().toISOString(),
+  };
+
+  const safeSelectedAccount: HostingAccount =
+    selectedAccount || accessibleAccounts[0] || accounts[0] || safeFallbackAccount;
+
   const handleCreateDefaultRdmAccount = () => {
     if (currentUser.role === 'customer') {
       const customerOwnAcc: HostingAccount = {
@@ -613,7 +649,9 @@ const AppContent: React.FC = () => {
         </div>
 
         <div className="exec-module-surface min-w-0 w-full">
-          {component}
+          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTabState(getRootDashboardTab())}>
+            {component}
+          </ModuleErrorBoundary>
         </div>
       </div>
     );
@@ -951,16 +989,14 @@ const AppContent: React.FC = () => {
           'BACKUP SUITE',
           'Modul Backup Website & Database (.ZIP)',
           'Buat cadangan website terkompresi .ZIP, database MySQL terisolasi, dan unduh arsip server secara mandiri',
-          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
-            <BackupModule
-              account={selectedAccount || accounts[0]}
-              preselectedDomain={backupPreselectedDomain}
-              onNavigateTab={(tab, domain) => {
-                if (domain) setBackupPreselectedDomain(domain);
-                setActiveTab(tab);
-              }}
-            />
-          </ModuleErrorBoundary>
+          <BackupModule
+            account={safeSelectedAccount}
+            preselectedDomain={backupPreselectedDomain}
+            onNavigateTab={(tab, domain) => {
+              if (domain) setBackupPreselectedDomain(domain);
+              setActiveTab(tab);
+            }}
+          />
         );
       case 'restore':
       case 'cpanel-restore':
@@ -968,16 +1004,14 @@ const AppContent: React.FC = () => {
           'RECOVERY SUITE',
           'Modul Restore Website & Database (.ZIP)',
           'Pulihkan website dari arsip server, berkas .ZIP komputer lokal, atau tarik otomatis dari URL remote dengan proteksi safety snapshot',
-          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
-            <RestoreModule
-              account={selectedAccount || accounts[0]}
-              preselectedDomain={backupPreselectedDomain}
-              onNavigateTab={(tab, domain) => {
-                if (domain) setBackupPreselectedDomain(domain);
-                setActiveTab(tab);
-              }}
-            />
-          </ModuleErrorBoundary>
+          <RestoreModule
+            account={safeSelectedAccount}
+            preselectedDomain={backupPreselectedDomain}
+            onNavigateTab={(tab, domain) => {
+              if (domain) setBackupPreselectedDomain(domain);
+              setActiveTab(tab);
+            }}
+          />
         );
       case 'disk-usage':
       case 'cpanel-disk':
@@ -986,7 +1020,7 @@ const AppContent: React.FC = () => {
           'Modul Disk Usage & Analisa Kuota',
           'Pantau pemakaian penyimpanan riil NVMe per akun klien, document root website, folder subdomain, dan komponen file aktif',
           <DiskUsageModule
-            account={selectedAccount || accounts[0]}
+            account={safeSelectedAccount}
             onOpenFileManager={(targetPath) => {
               setFileManagerPath(targetPath);
               setActiveTab('file-manager');
@@ -1005,7 +1039,7 @@ const AppContent: React.FC = () => {
           'Modul Disk Cleaner & Pembersih Sampah',
           'Pembersihan aman 100% (Zero Error) untuk chunk JS/CSS usang, berkas ZIP sementara, dan crash log tanpa menyentuh uploads & database',
           <DiskCleanerModule
-            account={selectedAccount || accounts[0]}
+            account={safeSelectedAccount}
             onOpenFileManager={(targetPath) => {
               setFileManagerPath(targetPath);
               setActiveTab('file-manager');
