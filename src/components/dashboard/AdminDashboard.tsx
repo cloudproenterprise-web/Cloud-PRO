@@ -62,12 +62,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="relative p-5 sm:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2 min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="relative flex h-3 w-3 shrink-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 max-w-full overflow-hidden">
+                <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
+                  <span className="relative inline-flex h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-emerald-500"></span>
                 </span>
-                <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 flex items-center min-h-[1.85rem]">
+                <h2 className="text-[16px] xs:text-lg sm:text-2xl font-extrabold tracking-tight text-slate-900 flex items-center min-h-[1.75rem] sm:min-h-[1.85rem] whitespace-nowrap shrink-0">
                   <TypewriterText
                     text="Cloud PRO Enterprise"
                     speed={80}
@@ -76,11 +76,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     loop={true}
                     loopDelay={3000}
                     cursorColor="bg-sky-600"
+                    className="whitespace-nowrap"
                   />
                 </h2>
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
+                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold text-emerald-700 whitespace-nowrap shrink-0">
                   <ShieldCheck className="h-3 w-3 text-emerald-600" />
-                  SLA 99.98% HA
+                  <span className="hidden xs:inline">SLA </span>99.98% HA
                 </span>
               </div>
 

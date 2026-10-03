@@ -51,10 +51,10 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
   }, [currentText, isDeleting, text, speed, deleteSpeed, loopDelay, delay, loop]);
 
   return (
-    <span className={`inline-flex items-center select-none font-bold tracking-tight ${className}`}>
-      <span>{currentText}</span>
+    <span className={`inline-flex items-center select-none font-bold tracking-tight whitespace-nowrap ${className}`}>
+      <span className="whitespace-nowrap">{currentText}</span>
       <span
-        className={`ml-1 inline-block h-[1.15em] w-0.5 animate-pulse rounded-full ${cursorColor} align-middle shadow-[0_0_8px_rgba(14,165,233,0.8)]`}
+        className={`ml-1 inline-block h-[1.15em] w-0.5 shrink-0 animate-pulse rounded-full ${cursorColor} align-middle shadow-[0_0_8px_rgba(14,165,233,0.8)]`}
         aria-hidden="true"
       />
     </span>

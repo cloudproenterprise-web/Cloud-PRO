@@ -397,7 +397,7 @@
       "serverName": "SG-Edge-01 (Singapore)",
       "planId": "plan-pro",
       "planName": "Cloud Pro SSD",
-      "diskUsedMb": 8,
+      "diskUsedMb": 16,
       "diskLimitMb": 25600,
       "bandwidthUsedMb": 8450,
       "bandwidthLimitMb": 512000,
@@ -1219,6 +1219,6 @@
       "createdAt": "2026-09-28T09:00:00Z"
     }
   ],
-  "stateUpdatedAt": 1791017522431,
+  "stateUpdatedAt": 1791019961698,
   "deletedIds": []
 }
