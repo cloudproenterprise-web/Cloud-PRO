@@ -7185,7 +7185,7 @@ ftp.quit()
     const cacheKey = `${absPath}:${excludeSubdomainFolders}`;
     const cached = dirStatsCache.get(cacheKey);
     const now = Date.now();
-    if (cached && now - cached.cachedAt < 3e4) {
+    if (cached && now - cached.cachedAt < 6e5) {
       return { count: cached.count, totalSize: cached.totalSize, formatted: cached.formatted };
     }
     let count = 0;
@@ -7195,14 +7195,13 @@ ftp.quit()
     ) : /* @__PURE__ */ new Set();
     const visitedDirs = /* @__PURE__ */ new Set();
     const scan = (dir, isRootLevel, depth) => {
-      if (depth > 4 || count >= 2e3 || !fs.existsSync(dir)) return;
+      if (depth > 2 || count >= 150 || !fs.existsSync(dir)) return;
       try {
-        const real = fs.realpathSync(dir);
-        if (visitedDirs.has(real)) return;
-        visitedDirs.add(real);
+        if (visitedDirs.has(dir)) return;
+        visitedDirs.add(dir);
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const e of entries) {
-          if (e.name.startsWith(".") || e.name === "node_modules" || e.name === "__MACOSX" || e.name === "cache" || e.name === "sessions" || e.name === "tmp" || typeof e.isSymbolicLink === "function" && e.isSymbolicLink()) {
+          if (e.name.startsWith(".") || e.name === "node_modules" || e.name === "__MACOSX" || e.name === "cache" || e.name === "sessions" || e.name === "tmp") {
             continue;
           }
           if (isRootLevel && e.isDirectory() && subDirNames.has(e.name.toLowerCase())) continue;
@@ -7216,7 +7215,7 @@ ftp.quit()
             } catch {
             }
           }
-          if (count >= 2e3) break;
+          if (count >= 150) break;
         }
       } catch {
       }
@@ -7235,21 +7234,20 @@ ftp.quit()
   app.get("/api/backup/domains", (_req, res) => {
     try {
       const list = [];
+      const absDocRoot = path.join(process.cwd(), "public_html");
+      const primaryStats = calculateDirStats(absDocRoot, true);
       for (const acc of vhostStore.accounts) {
-        const docRoot = "/public_html";
-        const absDocRoot = path.join(process.cwd(), "public_html");
-        const stats = calculateDirStats(absDocRoot, true);
         list.push({
           id: acc.id,
           domain: acc.primaryDomain,
           type: "primary",
-          documentRoot: docRoot,
+          documentRoot: "/public_html",
           accountId: acc.id,
           username: acc.username,
           phpVersion: acc.phpVersion || "8.2",
-          filesCount: stats.count,
-          totalSizeBytes: stats.totalSize,
-          formattedSize: stats.formatted
+          filesCount: primaryStats.count,
+          totalSizeBytes: primaryStats.totalSize,
+          formattedSize: primaryStats.formatted
         });
       }
       for (const sub of vhostStore.subdomains || []) {

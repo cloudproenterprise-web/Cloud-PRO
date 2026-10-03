@@ -7645,7 +7645,8 @@ ftp.quit()
     const cacheKey = `${absPath}:${excludeSubdomainFolders}`;
     const cached = dirStatsCache.get(cacheKey);
     const now = Date.now();
-    if (cached && now - cached.cachedAt < 30000) {
+    // Cache stats for 10 minutes so disk is never re-scanned repeatedly
+    if (cached && now - cached.cachedAt < 600000) {
       return { count: cached.count, totalSize: cached.totalSize, formatted: cached.formatted };
     }
 
@@ -7663,11 +7664,11 @@ ftp.quit()
     const visitedDirs = new Set<string>();
 
     const scan = (dir: string, isRootLevel: boolean, depth: number) => {
-      if (depth > 4 || count >= 2000 || !fs.existsSync(dir)) return;
+      // Shallow, lightning-fast scan: max depth 2, max 150 items
+      if (depth > 2 || count >= 150 || !fs.existsSync(dir)) return;
       try {
-        const real = fs.realpathSync(dir);
-        if (visitedDirs.has(real)) return;
-        visitedDirs.add(real);
+        if (visitedDirs.has(dir)) return;
+        visitedDirs.add(dir);
 
         const entries = fs.readdirSync(dir, { withFileTypes: true });
         for (const e of entries) {
@@ -7677,8 +7678,7 @@ ftp.quit()
             e.name === '__MACOSX' ||
             e.name === 'cache' ||
             e.name === 'sessions' ||
-            e.name === 'tmp' ||
-            (typeof (e as any).isSymbolicLink === 'function' && (e as any).isSymbolicLink())
+            e.name === 'tmp'
           ) {
             continue;
           }
@@ -7692,7 +7692,7 @@ ftp.quit()
               totalSize += fs.statSync(p).size;
             } catch {}
           }
-          if (count >= 2000) break;
+          if (count >= 150) break;
         }
       } catch {}
     };
@@ -7727,21 +7727,22 @@ ftp.quit()
         formattedSize: string;
       }> = [];
 
+      // Scan primary document root ONCE (never repeatedly in a loop)
+      const absDocRoot = path.join(process.cwd(), 'public_html');
+      const primaryStats = calculateDirStats(absDocRoot, true);
+
       for (const acc of vhostStore.accounts) {
-        const docRoot = '/public_html';
-        const absDocRoot = path.join(process.cwd(), 'public_html');
-        const stats = calculateDirStats(absDocRoot, true);
         list.push({
           id: acc.id,
           domain: acc.primaryDomain,
           type: 'primary',
-          documentRoot: docRoot,
+          documentRoot: '/public_html',
           accountId: acc.id,
           username: acc.username,
           phpVersion: acc.phpVersion || '8.2',
-          filesCount: stats.count,
-          totalSizeBytes: stats.totalSize,
-          formattedSize: stats.formatted,
+          filesCount: primaryStats.count,
+          totalSizeBytes: primaryStats.totalSize,
+          formattedSize: primaryStats.formatted,
         });
       }
 

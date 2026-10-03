@@ -920,7 +920,9 @@ const AppContent: React.FC = () => {
       case 'cpanel-backup':
         return renderAccountSuiteWrapper(
           'Backup & Restore (.ZIP)',
-          <BackupManager account={selectedAccount!} preselectedDomain={backupPreselectedDomain} />
+          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
+            <BackupManager account={selectedAccount!} preselectedDomain={backupPreselectedDomain} />
+          </ModuleErrorBoundary>
         );
       case 'disk-usage':
       case 'disk-cleaner':

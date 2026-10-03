@@ -160,7 +160,7 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
   const loadDomains = async () => {
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 4000);
+      const timer = setTimeout(() => controller.abort(), 2000);
       const res = await fetch('/api/backup/domains', { signal: controller.signal });
       clearTimeout(timer);
 
@@ -1215,7 +1215,7 @@ export const BackupManager: React.FC<BackupManagerProps> = ({ account, preselect
                   >
                     {serverBackups.map(b => (
                       <option key={b.fileName} value={b.fileName}>
-                        {b.fileName} — {b.formattedSize} ({new Date(b.createdAt).toLocaleString('id-ID')}) [{b.type.toUpperCase()}]
+                        {b.fileName} — {b.formattedSize || '0 B'} ({b.createdAt ? new Date(b.createdAt).toLocaleString('id-ID') : '-'}) [{(b.type || 'full').toUpperCase()}]
                       </option>
                     ))}
                   </select>
