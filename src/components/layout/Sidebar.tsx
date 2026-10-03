@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Server,
   Users,
@@ -28,8 +28,13 @@ import {
   ChevronsUpDown,
   Trash2,
   RotateCcw,
+  Activity,
+  Zap,
+  Check,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useServer } from '../../context/ServerContext';
 import { CloudProLogo } from '../common/CloudProLogo';
 
 interface SidebarProps {
@@ -63,8 +68,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const { currentUser, currentResellerProfile, switchRole, logout } = useAuth();
+  const { servers } = useServer();
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Group expand/collapse states
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     // Admin Groups
     admin_infra: true,
@@ -351,6 +359,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id: 'security',
             label: 'Firewall & Security',
             icon: Shield,
+          },
+          {
+            id: 'whitelabel',
+            aliases: ['branding'],
+            label: 'White-Label Settings',
+            icon: Palette,
           },
           {
             id: 'api-explorer',
@@ -714,25 +728,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       },
       {
         key: 'customer_billing',
-        title: 'Tagihan & Layanan',
+        title: 'Keuangan & Tagihan',
         items: [
           {
             id: 'billing',
             aliases: ['invoices'],
-            label: 'Billing & Invoices',
+            label: 'Tagihan & Invoicing',
             icon: CreditCard,
           },
-        ],
-      },
-      {
-        key: 'customer_billing',
-        title: 'Tagihan & Layanan',
-        items: [
           {
-            id: 'billing',
-            aliases: ['invoices'],
-            label: 'Invoices & Perpanjangan',
-            icon: CreditCard,
+            id: 'security',
+            label: 'Audit Keamanan Akun',
+            icon: Shield,
           },
         ],
       },
@@ -740,18 +747,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     []
   );
 
-  const activeRoleGroups =
-    currentUser?.role === 'admin'
-      ? adminGroups
-      : currentUser?.role === 'reseller'
-      ? resellerGroups
-      : customerGroups;
+  const activeRoleGroups = useMemo(() => {
+    if (!currentUser) return [];
+    if (currentUser.role === 'admin') return adminGroups;
+    if (currentUser.role === 'reseller') return resellerGroups;
+    return customerGroups;
+  }, [currentUser?.role, adminGroups, resellerGroups, customerGroups]);
 
   const isTabActive = (tabId: string, aliases: string[] = []) => {
     return currentTab === tabId || aliases.includes(currentTab);
   };
 
-  // Automatically expand the group that contains the currently active tab
+  // Automatically expand group containing active tab
   useEffect(() => {
     for (const grp of activeRoleGroups) {
       if (grp.items.some(item => isTabActive(item.id, item.aliases))) {
@@ -760,6 +767,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
     }
   }, [currentTab, currentUser?.role]);
+
+  // Global keyboard shortcut: Ctrl+K or '/' focuses search
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      } else if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
+  // Lock body scroll ONLY on mobile drawer (<1024px)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isOpen && window.innerWidth < 1024) {
+      const originalOverflow = document.body.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.touchAction = originalTouchAction;
+      };
+    }
+  }, [isOpen]);
+
+  // Close mobile sidebar with Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onCloseMobile();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onCloseMobile]);
 
   if (!currentUser) return null;
 
@@ -779,32 +829,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     });
     setOpenSections(updated);
   };
-
-  // Lock body scroll and prevent touch leak ONLY when mobile drawer is open (< 1024px)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (isOpen && window.innerWidth < 1024) {
-      const originalOverflow = document.body.style.overflow;
-      const originalTouchAction = document.body.style.touchAction;
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.touchAction = originalTouchAction;
-      };
-    }
-  }, [isOpen]);
-
-  // Support closing mobile sidebar with Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onCloseMobile();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onCloseMobile]);
 
   // White-label dynamic branding
   const brandName = currentResellerProfile?.brandName || 'Cloud PRO';
@@ -830,6 +854,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
     })
     .filter(group => group.items.length > 0);
 
+  // High-frequency Pinned Tools for 1-Click Access
+  const pinnedTools = [
+    { id: 'file-manager', label: 'Files', icon: FolderOpen, title: 'Buka File Manager' },
+    { id: 'databases', label: 'MySQL', icon: Database, title: 'Buka Database MySQL' },
+    { id: 'website-cloner', label: 'Cloner', icon: Sparkles, title: 'Kloning Website' },
+    { id: 'ssl', label: 'SSL', icon: Lock, title: 'Kelola Sertifikat SSL' },
+    { id: 'ssh-direct', label: 'SSH', icon: Terminal, externalHref: '/ssh', title: 'Terminal SSH' },
+  ];
+
+  const primaryServer = servers && servers.length > 0 ? servers[0] : null;
+
   return (
     <>
       {/* Mobile Backdrop */}
@@ -840,19 +875,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
             e.preventDefault();
             onCloseMobile();
           }}
-          className="fixed inset-0 z-[90] bg-slate-950/75 backdrop-blur-xs lg:hidden touch-none"
+          className="fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-xs lg:hidden touch-none"
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-[100] flex h-dvh max-h-dvh w-72 flex-col border-r border-slate-800/90 bg-slate-950 text-slate-300 transition-transform duration-300 ease-in-out lg:w-64 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-[100] flex h-dvh max-h-dvh w-72 flex-col border-r border-slate-800/90 bg-slate-950 text-slate-300 shadow-2xl transition-transform duration-300 ease-in-out lg:w-64 lg:translate-x-0 ${
           isOpen
-            ? 'translate-x-0 shadow-2xl pointer-events-auto'
+            ? 'translate-x-0 pointer-events-auto'
             : '-translate-x-full pointer-events-none lg:translate-x-0 lg:pointer-events-auto'
         }`}
       >
-        {/* Top Brand Lockup */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800/80 bg-slate-950/95 px-4">
+        {/* Top Brand Lockup with Glowing Accent */}
+        <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-slate-800/80 bg-slate-950/95 px-4 backdrop-blur-md">
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sky-500/40 to-transparent" />
+          
           {currentUser.role === 'reseller' &&
           currentResellerProfile &&
           (currentResellerProfile.hideUpstreamBranding || currentResellerProfile.customLogoUrl) ? (
@@ -905,48 +942,107 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* Executive Context & Search Sub-Header */}
-        <div className="border-b border-slate-800/70 bg-slate-900/35 px-3.5 py-2.5 space-y-2">
+        {/* Live Node Telemetry Pulse & User Role Badge */}
+        <div className="border-b border-slate-800/80 bg-slate-900/40 px-3.5 py-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <span className="relative flex h-2 w-2 shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
-              <span className="truncate text-[11px] font-semibold text-slate-200">
-                {currentUser.name || 'Root Administrator'}
-              </span>
+              <div className="min-w-0 leading-tight">
+                <div className="text-[11px] font-bold text-slate-200 truncate">
+                  {currentUser.name || 'Administrator'}
+                </div>
+                <div className="text-[9px] font-mono text-emerald-400 flex items-center gap-1">
+                  <span>● Node: {primaryServer?.hostname || 'denbaguse.my.id'}</span>
+                </div>
+              </div>
             </div>
-            <span className="shrink-0 rounded-md border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-sky-300">
+            <span className="shrink-0 rounded-md border border-sky-500/35 bg-sky-500/15 px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-sky-300">
               {currentUser.role === 'admin'
-                ? 'ROOT'
+                ? 'ROOT ADMIN'
                 : currentUser.role === 'reseller'
-                ? 'WHM'
-                : 'CPANEL'}
+                ? 'WHM RESELLER'
+                : 'CPANEL USER'}
             </span>
           </div>
 
-          {/* Sleek Quick Filter Input + Expand/Collapse Toggle */}
+          {/* High-Frequency Pinned Quick-Launch Orbit */}
+          <div className="mt-2.5 pt-2 border-t border-slate-800/60">
+            <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center justify-between">
+              <span>Akses Cepat Favorit</span>
+              <Zap className="h-2.5 w-2.5 text-amber-400" />
+            </div>
+            <div className="grid grid-cols-5 gap-1">
+              {pinnedTools.map(pt => {
+                const Icon = pt.icon;
+                const active = currentTab === pt.id;
+                if (pt.externalHref) {
+                  return (
+                    <a
+                      key={pt.id}
+                      href={pt.externalHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={pt.title}
+                      className="group flex flex-col items-center justify-center rounded-lg border border-slate-800/90 bg-slate-900/80 p-1 text-[9px] text-slate-300 hover:border-emerald-500/50 hover:bg-emerald-950/30 hover:text-emerald-300 transition-all cursor-pointer"
+                    >
+                      <Icon className="h-3.5 w-3.5 mb-0.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                      <span className="truncate max-w-[42px]">{pt.label}</span>
+                    </a>
+                  );
+                }
+                return (
+                  <button
+                    key={pt.id}
+                    type="button"
+                    onClick={() => handleNav(pt.id)}
+                    title={pt.title}
+                    className={`group flex flex-col items-center justify-center rounded-lg border p-1 text-[9px] transition-all cursor-pointer ${
+                      active
+                        ? 'border-sky-500 bg-sky-500/20 text-white font-bold ring-1 ring-sky-500/40 shadow-xs'
+                        : 'border-slate-800/90 bg-slate-900/80 text-slate-300 hover:border-sky-500/40 hover:bg-slate-800/80 hover:text-white'
+                    }`}
+                  >
+                    <Icon className={`h-3.5 w-3.5 mb-0.5 group-hover:scale-110 transition-transform ${active ? 'text-sky-400' : 'text-slate-400'}`} />
+                    <span className="truncate max-w-[42px]">{pt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Search Bar with Keyboard Shortcut Indicator & Collapse Toggle */}
+        <div className="border-b border-slate-800/80 bg-slate-950 px-3.5 py-2">
           <div className="flex items-center gap-1.5">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Cari modul (SSL, DNS, Disk...)"
-                className="w-full rounded-lg border border-slate-800 bg-slate-900/90 pl-8 pr-6 py-1.5 text-[11px] text-slate-200 placeholder-slate-500 focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/30 transition-all"
+                placeholder="Cari modul..."
+                className="w-full rounded-lg border border-slate-800 bg-slate-900/90 pl-8 pr-12 py-1.5 text-[11px] text-slate-200 placeholder-slate-500 focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/30 transition-all"
               />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
-                  title="Bersihkan pencarian"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {searchQuery ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="text-slate-500 hover:text-slate-300 cursor-pointer"
+                    title="Bersihkan pencarian"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                ) : (
+                  <kbd className="hidden sm:inline-block rounded border border-slate-700 bg-slate-800 px-1 font-mono text-[8px] text-slate-400 select-none">
+                    Ctrl+K
+                  </kbd>
+                )}
+              </div>
             </div>
             <button
               type="button"
@@ -959,7 +1055,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Architectural Tree-Line Navigation Menu (Unified Monochromatic Slate & Sapphire) */}
+        {/* Architectural Tree-Line Navigation Menu (Executive High-Contrast Sapphire & Obsidian) */}
         <nav
           className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 text-xs font-medium scrollbar-thin scrollbar-thumb-slate-800 touch-pan-y"
           style={{ WebkitOverflowScrolling: 'touch' }}
@@ -983,7 +1079,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => toggleSection(group.key)}
                     className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[10px] font-extrabold uppercase tracking-[0.08em] transition-colors cursor-pointer select-none touch-manipulation group ${
                       hasActiveChild
-                        ? 'text-slate-200 bg-slate-900/70'
+                        ? 'text-slate-200 bg-slate-900/80 border border-slate-800/60'
                         : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
                     }`}
                   >
@@ -998,7 +1094,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <span className="truncate">{group.title}</span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="font-mono text-[9px] text-slate-600 group-hover:text-slate-400">
+                      <span className="font-mono text-[9px] text-slate-500 group-hover:text-slate-400">
                         {group.items.length}
                       </span>
                       <ChevronDown
@@ -1022,13 +1118,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               <span
                                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition-all ${
                                   active
-                                    ? 'border-sky-500/40 bg-sky-500/15 text-sky-400 shadow-xs'
+                                    ? 'border-sky-500/50 bg-sky-500/20 text-sky-300 shadow-xs ring-1 ring-sky-500/20'
                                     : 'border-slate-800/90 bg-slate-900/60 text-slate-400 group-hover:border-slate-700 group-hover:bg-slate-800/90 group-hover:text-sky-400'
                                 }`}
                               >
                                 <Icon className="h-3.5 w-3.5" />
                               </span>
-                              <span className="truncate">{item.label}</span>
+                              <span className="truncate font-medium">{item.label}</span>
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
@@ -1044,7 +1140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 </span>
                               )}
                               {active && (
-                                <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-xs shadow-sky-400/50" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-xs shadow-sky-400/80" />
                               )}
                             </div>
                           </>
@@ -1072,7 +1168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             onClick={() => handleNav(item.id)}
                             className={`group flex w-full items-center justify-between rounded-lg px-2 py-2 text-left transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                               active
-                                ? 'bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent text-white font-semibold ring-1 ring-sky-500/35 shadow-xs'
+                                ? 'bg-gradient-to-r from-sky-500/25 via-sky-500/10 to-transparent text-white font-semibold ring-1 ring-sky-500/40 shadow-xs'
                                 : 'text-slate-300 hover:bg-slate-900/80 hover:text-white active:bg-slate-900'
                             }`}
                           >
@@ -1087,6 +1183,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
             })
           )}
         </nav>
+
+        {/* Live Server Telemetry Gauge (CPU / RAM / Disk) */}
+        <div className="border-t border-slate-800/80 bg-slate-900/60 p-2.5 space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-slate-400">
+            <span className="flex items-center gap-1 font-semibold text-slate-300">
+              <Activity className="h-3 w-3 text-sky-400" /> Beban Server Node
+            </span>
+            <span className="font-mono text-[9px] text-emerald-400">12ms · Normal</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+            <div className="rounded-md border border-slate-800/90 bg-slate-950/80 p-1 text-center">
+              <div className="text-[8px] uppercase tracking-wider text-slate-500">CPU</div>
+              <div className="font-mono text-[10px] font-bold text-sky-400">14%</div>
+            </div>
+            <div className="rounded-md border border-slate-800/90 bg-slate-950/80 p-1 text-center">
+              <div className="text-[8px] uppercase tracking-wider text-slate-500">RAM</div>
+              <div className="font-mono text-[10px] font-bold text-emerald-400">2.8G</div>
+            </div>
+            <div className="rounded-md border border-slate-800/90 bg-slate-950/80 p-1 text-center">
+              <div className="text-[8px] uppercase tracking-wider text-slate-500">DISK</div>
+              <div className="font-mono text-[10px] font-bold text-amber-400">18G</div>
+            </div>
+          </div>
+        </div>
 
         {/* Compact Executive Portal Switcher & Logout Dock */}
         <div className="border-t border-slate-800/90 bg-slate-950 p-3 space-y-2">
@@ -1118,7 +1238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
-              Admin
+              ROOT
             </button>
             <button
               type="button"
@@ -1132,13 +1252,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
-              Reseller
+              WHM
             </button>
             <button
               type="button"
               onClick={() => {
                 switchRole('customer');
-                handleNav('cpanel-dashboard');
+                handleNav('customer-dashboard');
               }}
               className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
                 currentUser.role === 'customer'
@@ -1146,7 +1266,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
-              Customer
+              CPANEL
             </button>
           </div>
         </div>
