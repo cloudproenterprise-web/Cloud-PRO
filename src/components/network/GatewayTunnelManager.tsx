@@ -610,7 +610,7 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2 font-bold text-rose-300 text-xs">
                     <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
-                    <span>Diagnostik Rute Tunnel &amp; CNAME (<code>servercloud.{rootDomain}</code>)</span>
+                    <span>Diagnostik Rute Tunnel &amp; CNAME (<code>cloudpro.{rootDomain}</code> &amp; <code>servercloud.{rootDomain}</code>)</span>
                   </div>
                   <button
                     type="button"
@@ -939,15 +939,30 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
                     </td>
                   </tr>
                 ))}
+                <tr className="bg-emerald-500/5 dark:bg-emerald-950/20 border-l-4 border-emerald-500">
+                  <td className="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-400">
+                    cloudpro.{rootDomain}
+                    <span className="ml-2 rounded bg-emerald-500/15 px-2 py-0.5 font-sans text-[10px] font-bold text-emerald-600 dark:text-emerald-300">
+                      Web Panel Admin Resmi
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 font-sans text-slate-600 dark:text-slate-300">
+                    Dashboard &amp; Portal Utama Cloud PRO Enterprise
+                  </td>
+                  <td className="px-4 py-3 text-sky-600 dark:text-sky-400">http://localhost:3000</td>
+                  <td className="px-4 py-3 text-right font-sans text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                    Resmi (Online)
+                  </td>
+                </tr>
                 <tr className="bg-slate-50/60 dark:bg-slate-950/50">
                   <td className="px-4 py-3 font-bold text-indigo-600 dark:text-indigo-400">
                     servercloud.{rootDomain}
                     <span className="ml-2 rounded bg-indigo-500/10 px-2 py-0.5 font-sans text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
-                      Subdomain Panel Cloud
+                      Subdomain Panel Alternatif
                     </span>
                   </td>
                   <td className="px-4 py-3 font-sans text-slate-600 dark:text-slate-300">
-                    Dashboard Control Panel Server Cloud PRO (Atau Custom Subdomain)
+                    Dashboard Control Panel Server Cloud PRO (Cadangan)
                   </td>
                   <td className="px-4 py-3 text-sky-600 dark:text-sky-400">http://localhost:3000</td>
                   <td className="px-4 py-3 text-right font-sans text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">

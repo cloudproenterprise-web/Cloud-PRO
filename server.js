@@ -1863,6 +1863,17 @@ function parseHostSubdomainInfo(rawHost) {
   const matchedPrimaryAccount = (vhostStore.accounts || []).find(
     (a) => a.primaryDomain.toLowerCase().replace(/^www\./, "") === cleanHost
   );
+  const isOfficialPanelHost = cleanHost === "cloudpro.denbaguse.my.id" || cleanHost.startsWith("cloudpro.") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("admin.");
+  if (isOfficialPanelHost) {
+    return {
+      cleanHost,
+      isSubdomain: false,
+      subPrefix: "",
+      parentDomain: cleanHost,
+      matchedPrimaryAccount: vhostStore.accounts?.[0],
+      explicitSub: void 0
+    };
+  }
   if (matchedPrimaryAccount) {
     return {
       cleanHost,
@@ -7408,7 +7419,7 @@ with zipfile.ZipFile(zip_dest, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as zf
             if '__MACOSX' in dirs: dirs.remove('__MACOSX')
             if root == src_dir:
                 for ex in list(dirs):
-                    if ex.lower() in exclude_dirs or ex in ('servercloud', 'rdm'):
+                    if ex.lower() in exclude_dirs or ex in ('cloudpro', 'servercloud', 'rdm'):
                         dirs.remove(ex)
             for file in files:
                 if b_type == 'full' and file in ('database.json', 'database.sql') and root == src_dir:
@@ -8644,7 +8655,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   try {
     if (!fs.existsSync(sslKeyPath) || !fs.existsSync(sslCertPath)) {
       execSync(
-        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=servercloud.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:servercloud.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
+        `openssl req -x509 -newkey rsa:2048 -nodes -keyout "${sslKeyPath}" -out "${sslCertPath}" -days 3650 -subj "/CN=cloudpro.denbaguse.my.id" -addext "subjectAltName=DNS:localhost,DNS:cloudpro.denbaguse.my.id,DNS:servercloud.denbaguse.my.id,DNS:*.denbaguse.my.id,DNS:denbaguse.my.id,IP:127.0.0.1" 2>/dev/null`,
         { stdio: "ignore" }
       );
     }
