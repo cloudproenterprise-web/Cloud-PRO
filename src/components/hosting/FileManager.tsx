@@ -60,7 +60,7 @@ export const FileManager: React.FC<FileManagerProps> = ({ account, initialPath, 
   const { currentUser } = useAuth();
   const { showToast, confirmAction } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
   // Resolve path cleanly (strips /home/<user> if present)
   const resolveCleanPath = (p?: string) => {

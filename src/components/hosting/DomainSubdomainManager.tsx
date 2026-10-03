@@ -38,16 +38,16 @@ export const DomainSubdomainManager: React.FC<DomainSubdomainManagerProps> = ({
   const { currentUser } = useAuth();
   const { showToast, refreshAll, confirmAction } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
-  const [domains, setDomains] = useState<DomainEntity[]>(() => db.getDomains(account.id));
+  const [domains, setDomains] = useState<DomainEntity[]>(() => account?.id ? db.getDomains(account.id) : []);
   const [showSubdomainModal, setShowSubdomainModal] = useState(false);
   const [showAddonModal, setShowAddonModal] = useState(false);
   const [previewTarget, setPreviewTarget] = useState<{ domain: string; docRoot: string } | null>(null);
 
   // Subdomain form states
   const [subPrefix, setSubPrefix] = useState('');
-  const [parentDomain, setParentDomain] = useState(account.primaryDomain);
+  const [parentDomain, setParentDomain] = useState(account?.primaryDomain || '');
   const [subDocRoot, setSubDocRoot] = useState('');
   const [isCustomSubDocRoot, setIsCustomSubDocRoot] = useState(false);
   const [subPhpVersion, setSubPhpVersion] = useState<PhpVersion>('7.4');
@@ -61,9 +61,11 @@ export const DomainSubdomainManager: React.FC<DomainSubdomainManagerProps> = ({
   const [isSubmittingAddon, setIsSubmittingAddon] = useState(false);
 
   useEffect(() => {
-    setDomains([...db.getDomains(account.id)]);
-    setParentDomain(account.primaryDomain);
-  }, [account.id, account.primaryDomain]);
+    if (account?.id) {
+      setDomains([...db.getDomains(account.id)]);
+      setParentDomain(account.primaryDomain || '');
+    }
+  }, [account?.id, account?.primaryDomain]);
 
   // Refresh domain list
   const reloadDomains = () => {

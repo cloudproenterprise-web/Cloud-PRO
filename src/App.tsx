@@ -619,145 +619,155 @@ const AppContent: React.FC = () => {
     );
   };
 
-  const renderAccountSuiteWrapper = (title: string, component: React.ReactNode) => {
-    if (!selectedAccount) return renderNoAccountPlaceholder();
+  const renderAccountSuiteWrapper = (
+    title: string,
+    renderComponent: (account: HostingAccount) => React.ReactNode
+  ) => {
+    const activeAcc =
+      (selectedAccount && accessibleAccounts.some(a => a.id === selectedAccount.id) ? selectedAccount : null) ||
+      (accessibleAccounts.length > 0 ? accessibleAccounts[0] : null) ||
+      (currentUser.role === 'admin' && accounts.length > 0 ? accounts[0] : null);
+
+    if (!activeAcc) return renderNoAccountPlaceholder();
 
     return (
       <div className="space-y-4 max-w-full overflow-hidden w-full min-w-0">
         {/* Executive Virtual Host Context Switcher & Grid Banner with 360° Perimeter Ring */}
         <div className="exec-card-ring relative overflow-hidden rounded-2xl w-full max-w-full min-w-0">
           <div className="p-4">
-          <div className="flex flex-col gap-3">
-            {/* Top Bar: Back Button, Title & Active Domain Context */}
-            <div className="flex items-center gap-2.5 min-w-0">
-              <button
-                type="button"
-                onClick={handleGoBack}
-                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-sky-600 transition-colors cursor-pointer shrink-0 shadow-2xs active:scale-95"
-                title="Kembali ke halaman sebelumnya"
-              >
-                <ArrowLeft className="h-3.5 w-3.5 text-sky-600" />
-                <span>Kembali</span>
-              </button>
-              <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-sky-600 border border-slate-200/80 shrink-0">
-                <Globe className="h-4 w-4" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
-                    {title}
-                  </h3>
-                  <span className="hidden md:inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-700">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    ACTIVE VHOST
-                  </span>
+            <div className="flex flex-col gap-3">
+              {/* Top Bar: Back Button, Title & Active Domain Context */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <button
+                  type="button"
+                  onClick={handleGoBack}
+                  className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-sky-600 transition-colors cursor-pointer shrink-0 shadow-2xs active:scale-95"
+                  title="Kembali ke halaman sebelumnya"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5 text-sky-600" />
+                  <span>Kembali</span>
+                </button>
+                <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-sky-600 border border-slate-200/80 shrink-0">
+                  <Globe className="h-4 w-4" />
                 </div>
-                <p className="text-[11px] text-slate-500 truncate">
-                  Konteks Virtual Host: <strong className="font-mono text-slate-800 font-semibold">{selectedAccount.primaryDomain}</strong>
-                </p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                      {title}
+                    </h3>
+                    <span className="hidden md:inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      ACTIVE VHOST
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 truncate">
+                    Konteks Virtual Host: <strong className="font-mono text-slate-800 font-semibold">{activeAcc.primaryDomain}</strong>
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Second Row: Domain Dropdown (Full width on Android/Mobile) & Action Buttons */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 w-full">
-              {currentUser.role !== 'customer' && accessibleAccounts.length > 0 && (
-                <div className="flex items-center gap-2 w-full sm:w-auto sm:max-w-md min-w-0">
-                  <label htmlFor="active-vhost-selector" className="text-xs font-bold text-slate-700 shrink-0 flex items-center gap-1.5">
-                    <Globe className="h-3.5 w-3.5 text-sky-600" />
-                    <span className="sm:hidden">Akun:</span>
-                    <span className="hidden sm:inline">Pilih Akun Hosting:</span>
-                  </label>
-                  <div className="relative flex-1 min-w-0">
-                    <select
-                      id="active-vhost-selector"
-                      value={selectedAccount.id}
-                      onChange={(e) => {
-                        const acc = accessibleAccounts.find(a => a.id === e.target.value);
-                        if (acc) setActiveAccount(acc);
-                      }}
-                      className="w-full appearance-none rounded-xl border border-slate-300 bg-white pl-3 pr-8 py-2 font-mono text-xs font-bold text-slate-900 shadow-2xs focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden cursor-pointer"
-                    >
-                      {accessibleAccounts.map(acc => {
-                        const accSubs = db.getDomains(acc.id).filter(d => d.type === 'subdomain');
-                        return (
-                          <option key={acc.id} value={acc.id}>
-                            {acc.primaryDomain} ({acc.username}){accSubs.length > 0 ? ` • ${accSubs.length} Subdomain` : ''}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
-                      <ChevronDown className="h-3.5 w-3.5 text-sky-600" />
+              {/* Second Row: Domain Dropdown (Full width on Android/Mobile) & Action Buttons */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 w-full">
+                {currentUser.role !== 'customer' && accessibleAccounts.length > 0 && (
+                  <div className="flex items-center gap-2 w-full sm:w-auto sm:max-w-md min-w-0">
+                    <label htmlFor="active-vhost-selector" className="text-xs font-bold text-slate-700 shrink-0 flex items-center gap-1.5">
+                      <Globe className="h-3.5 w-3.5 text-sky-600" />
+                      <span className="sm:hidden">Akun:</span>
+                      <span className="hidden sm:inline">Pilih Akun Hosting:</span>
+                    </label>
+                    <div className="relative flex-1 min-w-0">
+                      <select
+                        id="active-vhost-selector"
+                        value={activeAcc.id}
+                        onChange={(e) => {
+                          const acc = accessibleAccounts.find(a => a.id === e.target.value);
+                          if (acc) setActiveAccount(acc);
+                        }}
+                        className="w-full appearance-none rounded-xl border border-slate-300 bg-white pl-3 pr-8 py-2 font-mono text-xs font-bold text-slate-900 shadow-2xs focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden cursor-pointer"
+                      >
+                        {accessibleAccounts.map(acc => {
+                          const accSubs = db.getDomains(acc.id).filter(d => d.type === 'subdomain');
+                          return (
+                            <option key={acc.id} value={acc.id}>
+                              {acc.primaryDomain} ({acc.username}){accSubs.length > 0 ? ` • ${accSubs.length} Subdomain` : ''}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
+                        <ChevronDown className="h-3.5 w-3.5 text-sky-600" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Action Buttons: 2-column full-width grid on mobile, inline flex on desktop */}
-              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0">
-                <button
-                  onClick={() => setIsWebsitePreviewOpen(true)}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50/50 hover:text-sky-700 shadow-2xs cursor-pointer transition-colors active:scale-95"
-                  title="Lihat Hasil Kloning / Live Preview Website"
-                >
-                  <ExternalLink className="h-3.5 w-3.5 text-sky-600" />
-                  <span>Preview Web</span>
-                </button>
-                {currentUser.role !== 'customer' && (
-                  <button
-                    onClick={() => setIsCreateAccountOpen(true)}
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-sky-500 shadow-2xs cursor-pointer transition-colors active:scale-95"
-                  >
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span>Provisi Akun</span>
-                  </button>
                 )}
-              </div>
-            </div>
-          </div>
 
-          {/* 4-Column Elegant Virtual Host Context Grid with 360° Perimeter Rings */}
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 border-t border-slate-100 pt-3">
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Domain Utama
-              </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-sky-700 truncate">
-                {selectedAccount.primaryDomain}
-              </div>
-            </div>
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Username Sistem
-              </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
-                {selectedAccount.username}
-              </div>
-            </div>
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Engine Runtime
-              </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
-                PHP {selectedAccount.phpVersion}{' '}
-                {selectedAccount.phpExtensions?.includes('ioncube') ? '· ionCube' : ''}
+                {/* Action Buttons: 2-column full-width grid on mobile, inline flex on desktop */}
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0">
+                  <button
+                    onClick={() => setIsWebsitePreviewOpen(true)}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50/50 hover:text-sky-700 shadow-2xs cursor-pointer transition-colors active:scale-95"
+                    title="Lihat Hasil Kloning / Live Preview Website"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 text-sky-600" />
+                    <span>Preview Web</span>
+                  </button>
+                  {currentUser.role !== 'customer' && (
+                    <button
+                      onClick={() => setIsCreateAccountOpen(true)}
+                      className="flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-sky-500 shadow-2xs cursor-pointer transition-colors active:scale-95"
+                    >
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span>Provisi Akun</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Server &amp; IP
+
+            {/* 4-Column Elegant Virtual Host Context Grid with 360° Perimeter Rings */}
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 border-t border-slate-100 pt-3">
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Domain Utama
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-sky-700 truncate">
+                  {activeAcc.primaryDomain}
+                </div>
               </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
-                {selectedAccount.ipAddress}
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Username Sistem
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
+                  {activeAcc.username}
+                </div>
+              </div>
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Engine Runtime
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
+                  PHP {activeAcc.phpVersion}{' '}
+                  {activeAcc.phpExtensions?.includes('ioncube') ? '· ionCube' : ''}
+                </div>
+              </div>
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Server &amp; IP
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
+                  {activeAcc.ipAddress}
+                </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
 
-        {/* Child Tool Component keyed by selectedAccount.id for strict multi-tenant isolation */}
-        <div key={selectedAccount.id} className="exec-module-surface min-w-0 w-full">
-          {component}
+        {/* Child Tool Component wrapped in ModuleErrorBoundary */}
+        <div key={activeAcc.id} className="exec-module-surface min-w-0 w-full">
+          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
+            {renderComponent(activeAcc)}
+          </ModuleErrorBoundary>
         </div>
       </div>
     );
@@ -832,93 +842,108 @@ const AppContent: React.FC = () => {
       case 'cpanel-files':
         return renderAccountSuiteWrapper(
           'File Manager & Ekstraktor ZIP',
-          <FileManager key={`${selectedAccount?.id}-${fileManagerPath}`} account={selectedAccount!} initialPath={fileManagerPath} onBack={handleGoBack} />
+          (acc) => (
+            <FileManager
+              key={`${acc.id}-${fileManagerPath}`}
+              account={acc}
+              initialPath={fileManagerPath}
+              onBack={handleGoBack}
+            />
+          )
         );
       case 'website-cloner':
       case 'cloner':
         return renderAccountSuiteWrapper(
           'Kloning Website Otomatis (1-Click URL Cloner)',
-          <WebsiteClonerModule
-            account={selectedAccount!}
-            onOpenFileManager={(targetPath) => {
-              setFileManagerPath(targetPath);
-              setActiveTab('file-manager');
-            }}
-            onOpenPreview={(domain, docRoot) => {
-              if (docRoot) setFileManagerPath(docRoot);
-              setIsWebsitePreviewOpen(true);
-            }}
-            onNavigateTab={setActiveTab}
-          />
+          (acc) => (
+            <WebsiteClonerModule
+              account={acc}
+              onOpenFileManager={(targetPath) => {
+                setFileManagerPath(targetPath);
+                setActiveTab('file-manager');
+              }}
+              onOpenPreview={(domain, docRoot) => {
+                if (docRoot) setFileManagerPath(docRoot);
+                setIsWebsitePreviewOpen(true);
+              }}
+              onNavigateTab={setActiveTab}
+            />
+          )
         );
       case 'databases':
       case 'cpanel-database':
-        return renderAccountSuiteWrapper('MySQL Databases', <DatabaseManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('MySQL Databases', (acc) => <DatabaseManager account={acc} />);
       case 'emails':
       case 'cpanel-email':
-        return renderAccountSuiteWrapper('Email & Webmail', <EmailManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('Email & Webmail', (acc) => <EmailManager account={acc} />);
       case 'ssl':
       case 'cpanel-ssl':
-        return renderAccountSuiteWrapper('SSL & Let\'s Encrypt', <SslManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('SSL & Let\'s Encrypt', (acc) => <SslManager account={acc} />);
       case 'gateway-tunnel':
         if (currentUser.role !== 'admin') {
           return <CustomerDashboard onNavigate={setActiveTab} />;
         }
         return renderAccountSuiteWrapper(
           'Cloudflare Tunnel & IPv6 IndiHome Gateway',
-          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
+          (acc) => (
             <GatewayTunnelManager
-              account={selectedAccount!}
+              account={acc}
               onNavigateTab={setActiveTab}
               onOpenPreview={(domain, docRoot) => {
                 if (docRoot) setFileManagerPath(docRoot);
                 setIsWebsitePreviewOpen(true);
               }}
             />
-          </ModuleErrorBoundary>
+          )
         );
       case 'dns-zones':
       case 'cpanel-dns':
         return renderAccountSuiteWrapper(
           'DNS Zone Editor',
-          <DnsZoneEditor
-            account={selectedAccount!}
-            onOpenGatewayModule={() => setActiveTab('gateway-tunnel')}
-          />
+          (acc) => (
+            <DnsZoneEditor
+              account={acc}
+              onOpenGatewayModule={() => setActiveTab('gateway-tunnel')}
+            />
+          )
         );
       case 'domains':
       case 'subdomains':
       case 'cpanel-domains':
         return renderAccountSuiteWrapper(
           'Domain & Subdomain Manager',
-          <DomainSubdomainManager
-            account={selectedAccount!}
-            onOpenFileManager={(targetPath) => {
-              setFileManagerPath(targetPath);
-              setActiveTab('file-manager');
-            }}
-            onNavigateTab={(tab, domain) => {
-              if (domain) setBackupPreselectedDomain(domain);
-              setActiveTab(tab);
-            }}
-          />
+          (acc) => (
+            <DomainSubdomainManager
+              account={acc}
+              onOpenFileManager={(targetPath) => {
+                setFileManagerPath(targetPath);
+                setActiveTab('file-manager');
+              }}
+              onNavigateTab={(tab, domain) => {
+                if (domain) setBackupPreselectedDomain(domain);
+                setActiveTab(tab);
+              }}
+            />
+          )
         );
       case 'php-selector':
       case 'cpanel-php':
         return renderAccountSuiteWrapper(
           'PHP Selector & Versi',
-          <PhpConfigManager
-            account={selectedAccount!}
-            preselectedDomain={backupPreselectedDomain}
-            onNavigateTab={(tab, domain) => {
-              if (domain) setBackupPreselectedDomain(domain);
-              setActiveTab(tab);
-            }}
-          />
+          (acc) => (
+            <PhpConfigManager
+              account={acc}
+              preselectedDomain={backupPreselectedDomain}
+              onNavigateTab={(tab, domain) => {
+                if (domain) setBackupPreselectedDomain(domain);
+                setActiveTab(tab);
+              }}
+            />
+          )
         );
       case 'cron-jobs':
       case 'cpanel-cron':
-        return renderAccountSuiteWrapper('Cron Jobs Otomasi', <CronManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('Cron Jobs Otomasi', (acc) => <CronManager account={acc} />);
       case 'backups':
       case 'backup':
       case 'cpanel-backup':
@@ -993,7 +1018,7 @@ const AppContent: React.FC = () => {
         );
       case 'media-storage':
       case 'cpanel-media':
-        return renderAccountSuiteWrapper('Cloudflare R2 & Media', <MediaStorageManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('Cloudflare R2 & Media', (acc) => <MediaStorageManager account={acc} />);
       case 'plans':
       case 'packages':
         return renderSystemModuleWrapper(

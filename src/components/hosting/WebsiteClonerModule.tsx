@@ -52,13 +52,15 @@ export const WebsiteClonerModule: React.FC<WebsiteClonerModuleProps> = ({
   const { currentUser } = useAuth();
   const { showToast, refreshAll } = useServer();
 
-  const [accountDomains, setAccountDomains] = useState<DomainEntity[]>(() => db.getDomains(account.id));
+  const [accountDomains, setAccountDomains] = useState<DomainEntity[]>(() => account?.id ? db.getDomains(account.id) : []);
   const [showNewSubdomainInput, setShowNewSubdomainInput] = useState<boolean>(false);
   const [newSubdomainPrefix, setNewSubdomainPrefix] = useState<string>('');
 
   React.useEffect(() => {
-    setAccountDomains(db.getDomains(account.id));
-  }, [account.id]);
+    if (account?.id) {
+      setAccountDomains(db.getDomains(account.id));
+    }
+  }, [account?.id]);
 
   const handleCreateAndSelectSubdomain = (prefixToCreate?: string) => {
     const raw = (prefixToCreate || newSubdomainPrefix).toLowerCase().trim().replace(/[^a-z0-9-]/g, '');

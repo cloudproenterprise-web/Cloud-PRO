@@ -47,10 +47,10 @@ export const DatabaseManager: React.FC<DatabaseManagerProps> = ({ account }) => 
   const { currentUser } = useAuth();
   const { showToast, confirmAction } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
   // Databases strictly isolated for THIS hosting account
-  const [databases, setDatabases] = useState<DatabaseEntity[]>(() => db.getDatabases(account.id));
+  const [databases, setDatabases] = useState<DatabaseEntity[]>(() => account?.id ? db.getDatabases(account.id) : []);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [dbSuffix, setDbSuffix] = useState('');
   const [userSuffix, setUserSuffix] = useState('');

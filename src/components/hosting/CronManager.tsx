@@ -20,9 +20,9 @@ export const CronManager: React.FC<CronManagerProps> = ({ account }) => {
   const { currentUser } = useAuth();
   const { showToast, confirmAction } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
-  const [cronJobs, setCronJobs] = useState<CronJobItem[]>(() => db.getCronJobs(account.id));
+  const [cronJobs, setCronJobs] = useState<CronJobItem[]>(() => account?.id ? db.getCronJobs(account.id) : []);
   const [showAddModal, setShowAddModal] = useState(false);
   const [schedulePreset, setSchedulePreset] = useState('0 * * * *');
   const [command, setCommand] = useState(`/usr/bin/php /home/${account.username}/public_html/cron.php`);
