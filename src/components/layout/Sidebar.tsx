@@ -69,19 +69,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
     // Admin Groups
     admin_infra: true,
     admin_network: true,
+    admin_dns: true,
     admin_vps: true,
-    admin_hosting: true,
+    admin_vhost: true,
+    admin_domain_ssl: true,
+    admin_files_content: true,
+    admin_database: true,
+    admin_runtime: true,
+    admin_email: true,
+    admin_storage_backup: true,
     admin_tenancy: true,
     admin_finance: true,
     // Reseller Groups
     reseller_portal: true,
-    reseller_hosting: true,
+    reseller_vhost: true,
+    reseller_domain_ssl: true,
+    reseller_dns: true,
+    reseller_files_content: true,
+    reseller_database: true,
+    reseller_runtime: true,
+    reseller_email: true,
+    reseller_storage_backup: true,
     reseller_branding: true,
     // Customer Groups
     customer_overview: true,
-    customer_website: true,
-    customer_db: true,
-    customer_ops: true,
+    customer_domain_ssl: true,
+    customer_dns: true,
+    customer_files_content: true,
+    customer_database: true,
+    customer_runtime: true,
+    customer_email: true,
+    customer_storage_backup: true,
     customer_billing: true,
   });
 
@@ -120,7 +138,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       },
       {
         key: 'admin_network',
-        title: 'Jaringan, Tunnel & DNS',
+        title: 'Jaringan & Tunnel Gateway',
         items: [
           {
             id: 'gateway-tunnel',
@@ -133,6 +151,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Network,
           },
           {
+            id: 'ip-manager',
+            label: 'Dedicated IP & Pool',
+            icon: Globe,
+          },
+        ],
+      },
+      {
+        key: 'admin_dns',
+        title: 'DNS & Zone Management',
+        items: [
+          {
             id: 'dns-zones',
             aliases: ['cpanel-dns'],
             label: 'DNS Zone Editor',
@@ -143,11 +172,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             aliases: ['dns-manager', 'private-ns'],
             label: 'Private Nameserver',
             icon: Server,
-          },
-          {
-            id: 'ip-manager',
-            label: 'Dedicated IP & Pool',
-            icon: Globe,
           },
         ],
       },
@@ -163,8 +187,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'admin_hosting',
-        title: 'Hosting & Web Suite',
+        key: 'admin_vhost',
+        title: 'Hosting & Virtual Host',
         items: [
           {
             id: 'accounts',
@@ -172,12 +196,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
             label: 'Akun Hosting (vHosts)',
             icon: Globe,
           },
+        ],
+      },
+      {
+        key: 'admin_domain_ssl',
+        title: 'Domain & Keamanan Web',
+        items: [
           {
             id: 'domains',
             aliases: ['cpanel-domains', 'subdomains'],
             label: 'Domain & Subdomain',
             icon: Globe,
           },
+          {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL & Let's Encrypt",
+            icon: Lock,
+          },
+        ],
+      },
+      {
+        key: 'admin_files_content',
+        title: 'Berkas & Konten Web',
+        items: [
           {
             id: 'file-manager',
             aliases: ['cpanel-files', 'files'],
@@ -187,15 +229,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {
             id: 'website-cloner',
             aliases: ['cloner'],
-            label: 'Kloning Website',
+            label: 'Kloning Website (1-Click)',
             icon: Sparkles,
           },
+          {
+            id: 'media-storage',
+            aliases: ['cpanel-media', 'media'],
+            label: 'Cloudflare R2 & Media',
+            icon: Cloud,
+          },
+        ],
+      },
+      {
+        key: 'admin_database',
+        title: 'Basis Data & MySQL',
+        items: [
           {
             id: 'databases',
             aliases: ['cpanel-database'],
             label: 'MySQL & phpMyAdmin',
             icon: Database,
           },
+        ],
+      },
+      {
+        key: 'admin_runtime',
+        title: 'Engine & Runtime Aplikasi',
+        items: [
           {
             id: 'php-selector',
             aliases: ['cpanel-php', 'php'],
@@ -203,28 +263,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Cpu,
           },
           {
-            id: 'ssl',
-            aliases: ['cpanel-ssl'],
-            label: "SSL & Let's Encrypt",
-            icon: Lock,
-          },
-          {
-            id: 'emails',
-            aliases: ['cpanel-email'],
-            label: 'Email & Webmail',
-            icon: Mail,
-          },
-          {
             id: 'cron-jobs',
             aliases: ['cpanel-cron', 'cron'],
             label: 'Cron Jobs Otomasi',
             icon: Clock,
           },
+        ],
+      },
+      {
+        key: 'admin_email',
+        title: 'Email & Komunikasi',
+        items: [
           {
-            id: 'media-storage',
-            aliases: ['cpanel-media', 'media'],
-            label: 'Cloudflare R2 & Media',
-            icon: Cloud,
+            id: 'emails',
+            aliases: ['cpanel-email'],
+            label: 'Email & Webmail',
+            icon: Mail,
           },
         ],
       },
@@ -340,14 +394,68 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'reseller_hosting',
-        title: 'Kelola Hosting Klien',
+        key: 'reseller_vhost',
+        title: 'Hosting & Virtual Host',
         items: [
           {
             id: 'accounts',
             aliases: ['hosting-accounts'],
             label: 'Akun Hosting (vHosts)',
             icon: Globe,
+          },
+        ],
+      },
+      {
+        key: 'reseller_domain_ssl',
+        title: 'Domain & Keamanan Web',
+        items: [
+          {
+            id: 'domains',
+            aliases: ['cpanel-domains', 'subdomains'],
+            label: 'Domain & Subdomain',
+            icon: Globe,
+          },
+          {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL Let's Encrypt",
+            icon: Lock,
+          },
+        ],
+      },
+      {
+        key: 'reseller_dns',
+        title: 'DNS & Zone Management',
+        items: [
+          {
+            id: 'dns-zones',
+            aliases: ['cpanel-dns'],
+            label: 'DNS Zone Editor',
+            icon: Globe,
+          },
+          {
+            id: 'nameservers',
+            aliases: ['dns-manager'],
+            label: 'Private Nameserver (NS)',
+            icon: Server,
+          },
+        ],
+      },
+      {
+        key: 'reseller_files_content',
+        title: 'Berkas & Konten Web',
+        items: [
+          {
+            id: 'file-manager',
+            aliases: ['cpanel-files'],
+            label: 'File Manager',
+            icon: FolderOpen,
+          },
+          {
+            id: 'website-cloner',
+            aliases: ['cloner'],
+            label: 'Kloning Website (1-Click)',
+            icon: Sparkles,
           },
           {
             id: 'media-storage',
@@ -358,6 +466,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
               text: 'R2',
             },
           },
+        ],
+      },
+      {
+        key: 'reseller_database',
+        title: 'Basis Data & MySQL',
+        items: [
+          {
+            id: 'databases',
+            aliases: ['cpanel-database'],
+            label: 'MySQL & phpMyAdmin',
+            icon: Database,
+          },
+        ],
+      },
+      {
+        key: 'reseller_runtime',
+        title: 'Engine & Runtime Aplikasi',
+        items: [
           {
             id: 'php-selector',
             aliases: ['cpanel-php'],
@@ -365,52 +491,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Cpu,
           },
           {
-            id: 'ssl',
-            aliases: ['cpanel-ssl'],
-            label: "SSL Let's Encrypt",
-            icon: Lock,
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron'],
+            label: 'Cron Jobs Otomasi',
+            icon: Clock,
           },
-          {
-            id: 'domains',
-            aliases: ['cpanel-domains', 'subdomains'],
-            label: 'Domain & Subdomain',
-            icon: Globe,
-          },
-          {
-            id: 'dns-zones',
-            aliases: ['cpanel-dns'],
-            label: 'DNS Zone Editor',
-            icon: Globe,
-          },
-          {
-            id: 'databases',
-            aliases: ['cpanel-database'],
-            label: 'MySQL & phpMyAdmin',
-            icon: Database,
-          },
-          {
-            id: 'file-manager',
-            aliases: ['cpanel-files'],
-            label: 'File Manager',
-            icon: FolderOpen,
-          },
-          {
-            id: 'website-cloner',
-            aliases: ['cloner'],
-            label: 'Kloning Website',
-            icon: Sparkles,
-          },
+        ],
+      },
+      {
+        key: 'reseller_email',
+        title: 'Email & Komunikasi',
+        items: [
           {
             id: 'emails',
             aliases: ['cpanel-email'],
             label: 'Email & Webmail',
             icon: Mail,
-          },
-          {
-            id: 'cron-jobs',
-            aliases: ['cpanel-cron'],
-            label: 'Cron Jobs',
-            icon: Clock,
           },
         ],
       },
@@ -455,12 +551,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Palette,
           },
           {
-            id: 'nameservers',
-            aliases: ['dns-manager'],
-            label: 'Private Nameserver (NS)',
-            icon: Server,
-          },
-          {
             id: 'billing',
             aliases: ['invoices'],
             label: 'Billing & Invoice',
@@ -497,8 +587,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'customer_website',
-        title: 'Website & Domain',
+        key: 'customer_domain_ssl',
+        title: 'Domain & Keamanan Web',
+        items: [
+          {
+            id: 'domains',
+            aliases: ['cpanel-domains', 'subdomains'],
+            label: 'Domain & Subdomain',
+            icon: Globe,
+          },
+          {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL Let's Encrypt",
+            icon: Lock,
+          },
+        ],
+      },
+      {
+        key: 'customer_dns',
+        title: 'DNS & Zone Management',
+        items: [
+          {
+            id: 'dns-zones',
+            aliases: ['cpanel-dns'],
+            label: 'DNS Zone Editor',
+            icon: Globe,
+          },
+        ],
+      },
+      {
+        key: 'customer_files_content',
+        title: 'Berkas & Konten Web',
         items: [
           {
             id: 'file-manager',
@@ -509,9 +629,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {
             id: 'website-cloner',
             aliases: ['cloner'],
-            label: 'Kloning Website',
+            label: 'Kloning & Deploy Web',
             icon: Sparkles,
           },
+          {
+            id: 'media-storage',
+            aliases: ['cpanel-media'],
+            label: 'Media & Cloudflare R2',
+            icon: Cloud,
+          },
+        ],
+      },
+      {
+        key: 'customer_database',
+        title: 'Basis Data & MySQL',
+        items: [
+          {
+            id: 'databases',
+            aliases: ['cpanel-database'],
+            label: 'MySQL & phpMyAdmin',
+            icon: Database,
+          },
+        ],
+      },
+      {
+        key: 'customer_runtime',
+        title: 'Engine & Runtime Aplikasi',
+        items: [
           {
             id: 'php-selector',
             aliases: ['cpanel-php'],
@@ -519,28 +663,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Cpu,
           },
           {
-            id: 'ssl',
-            aliases: ['cpanel-ssl'],
-            label: "SSL Let's Encrypt",
-            icon: Lock,
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron'],
+            label: 'Cron Jobs Otomasi',
+            icon: Clock,
           },
+        ],
+      },
+      {
+        key: 'customer_email',
+        title: 'Email & Komunikasi',
+        items: [
           {
-            id: 'domains',
-            aliases: ['cpanel-domains', 'subdomains'],
-            label: 'Domain & Subdomain',
-            icon: Globe,
-          },
-          {
-            id: 'dns-zones',
-            aliases: ['cpanel-dns'],
-            label: 'DNS Zone Editor',
-            icon: Globe,
-          },
-          {
-            id: 'media-storage',
-            aliases: ['cpanel-media'],
-            label: 'Media & Cloudflare R2',
-            icon: Cloud,
+            id: 'emails',
+            aliases: ['cpanel-email'],
+            label: 'Email & Webmail',
+            icon: Mail,
           },
         ],
       },
@@ -575,32 +713,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'customer_db',
-        title: 'Database & Email',
+        key: 'customer_billing',
+        title: 'Tagihan & Layanan',
         items: [
           {
-            id: 'databases',
-            aliases: ['cpanel-database'],
-            label: 'MySQL & phpMyAdmin',
-            icon: Database,
-          },
-          {
-            id: 'emails',
-            aliases: ['cpanel-email'],
-            label: 'Email & Webmail',
-            icon: Mail,
-          },
-        ],
-      },
-      {
-        key: 'customer_ops',
-        title: 'Otomasi & Pemeliharaan',
-        items: [
-          {
-            id: 'cron-jobs',
-            aliases: ['cpanel-cron'],
-            label: 'Cron Jobs',
-            icon: Clock,
+            id: 'billing',
+            aliases: ['invoices'],
+            label: 'Billing & Invoices',
+            icon: CreditCard,
           },
         ],
       },
