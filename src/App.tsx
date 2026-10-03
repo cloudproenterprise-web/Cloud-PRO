@@ -43,7 +43,6 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ServerProvider, useServer } from './context/ServerContext';
 import { ConfirmationModal } from './components/common/ConfirmationModal';
 import { Footer } from './components/layout/Footer';
-import { FloatingGlassDock } from './components/layout/FloatingGlassDock';
 import { WhatsAppFloatingButton } from './components/common/WhatsAppFloatingButton';
 import { WebsitePreviewModal } from './components/hosting/WebsitePreviewModal';
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X, Globe, PlusCircle, Zap, ExternalLink, ArrowLeft, ChevronDown } from 'lucide-react';
@@ -1161,7 +1160,7 @@ const AppContent: React.FC = () => {
           canGoBack={!isRootDashboard || navHistory.length > 0}
           onNavigate={setActiveTab}
         />
-        <main className="flex-1 min-w-0 w-full max-w-full overflow-x-clip bg-exec-canvas p-3 pb-24 sm:p-6 sm:pb-24 lg:py-8 lg:pl-8 lg:pr-18">
+        <main className="flex-1 min-w-0 w-full max-w-full overflow-x-clip bg-exec-canvas p-3 sm:p-6 lg:p-8">
           <div className="mx-auto max-w-7xl w-full min-w-0">
             <ModuleErrorBoundary
               activeTab={activeTab}
@@ -1175,14 +1174,6 @@ const AppContent: React.FC = () => {
           </div>
         </main>
       </div>
-
-      {/* Unified Floating Glass Micro-Dock with Integrated WhatsApp Support */}
-      <FloatingGlassDock
-        activeTab={activeTab}
-        onNavigate={setActiveTab}
-        activeDomain={selectedAccount?.primaryDomain}
-        defaultPhoneNumber="6281226738883"
-      />
 
       {/* Global Modals & Drawers */}
       {selectedAccount && (

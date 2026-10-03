@@ -8508,7 +8508,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   const distDir = path.resolve(process.cwd(), "dist");
   const distIndex = path.join(distDir, "index.html");
   const hasDist = fs.existsSync(distIndex);
-  const shouldServeDist = (process.env.NODE_ENV === "production" || !process.env.VITE_DEV) && hasDist;
+  const shouldServeDist = process.env.NODE_ENV === "production" && hasDist;
   if (shouldServeDist) {
     console.log(`[CloudPRO] Serving production static bundle from ${distDir}`);
     app.use(express.static(distDir, {

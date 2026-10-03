@@ -191,7 +191,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   return (
     <footer
       id="cloudpro-main-footer"
-      className="exec-card-ring relative overflow-hidden mt-12 mb-16 lg:mb-4 rounded-2xl text-slate-600 transition-all"
+      className="exec-card-ring relative overflow-hidden mt-12 mb-6 rounded-2xl text-slate-600 transition-all"
     >
       <div className="p-5 sm:p-7">
         {/* Top Header: Brand Identity & Telemetri Realtime */}
