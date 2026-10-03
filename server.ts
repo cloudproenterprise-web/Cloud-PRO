@@ -1714,6 +1714,7 @@ function renderVirtualHostResponse(
       cleanHost.endsWith('.lan') ||
       cleanHost.endsWith('.run.app') ||
       cleanHost.endsWith('.trycloudflare.com') ||
+      cleanHost.startsWith('cloudpro.') ||
       cleanHost.startsWith('cloud.') ||
       cleanHost.startsWith('servercloud.') ||
       cleanHost.startsWith('panel.') ||
@@ -5531,6 +5532,7 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
     const cnameTarget = `${activeTunnelId}.cfargotunnel.com`;
     const rootDomain = ddnsConfig.domain || vhostStore.accounts[0]?.primaryDomain || 'denbaguse.my.id';
     const hostsToCheck = [
+      `cloudpro.${rootDomain}`,
       `servercloud.${rootDomain}`,
       rootDomain,
       `panel.${rootDomain}`,
@@ -5654,6 +5656,7 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
       const targetHostnames = [
         rootDomain,
         `*.${rootDomain}`,
+        `cloudpro.${rootDomain}`,
         `servercloud.${rootDomain}`,
         `panel.${rootDomain}`,
       ];
@@ -9035,6 +9038,8 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       rawHost === '127.0.0.1' ||
       rawHost.endsWith('.run.app') ||
       rawHost.endsWith('.trycloudflare.com') ||
+      rawHost.startsWith('cloudpro.') ||
+      rawHost.startsWith('cloud.') ||
       rawHost.startsWith('servercloud.') ||
       rawHost.startsWith('panel.') ||
       rawHost.startsWith('cpanel.') ||
@@ -9107,6 +9112,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       cleanHost === '127.0.0.1' ||
       cleanHost.endsWith('.run.app') ||
       cleanHost.endsWith('.trycloudflare.com') ||
+      cleanHost.startsWith('cloudpro.') ||
       cleanHost.startsWith('cloud.') ||
       cleanHost.startsWith('servercloud.') ||
       cleanHost.startsWith('panel.') ||

@@ -2123,7 +2123,7 @@ if (rootEl && typeof App !== 'undefined') {
 function renderVirtualHostResponse(hostHeader, reqPath, forceAccountAndDir) {
   const cleanHost = hostHeader.split(":")[0].toLowerCase().replace(/^www\./, "");
   const isRawIp = /^(\d{1,3}\.){3}\d{1,3}$/.test(cleanHost) || cleanHost.includes(":") || cleanHost.startsWith("[");
-  if (!forceAccountAndDir && (!cleanHost || isRawIp || !cleanHost.includes(".") || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost === "desktop-djq024c" || cleanHost.endsWith(".ts.net") || cleanHost.endsWith(".local") || cleanHost.endsWith(".lan") || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin."))) {
+  if (!forceAccountAndDir && (!cleanHost || isRawIp || !cleanHost.includes(".") || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost === "desktop-djq024c" || cleanHost.endsWith(".ts.net") || cleanHost.endsWith(".local") || cleanHost.endsWith(".lan") || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloudpro.") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin."))) {
     return null;
   }
   const lowerReqPath = (reqPath || "").toLowerCase();
@@ -5326,6 +5326,7 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
     const cnameTarget = `${activeTunnelId}.cfargotunnel.com`;
     const rootDomain = ddnsConfig.domain || vhostStore.accounts[0]?.primaryDomain || "denbaguse.my.id";
     const hostsToCheck = [
+      `cloudpro.${rootDomain}`,
       `servercloud.${rootDomain}`,
       rootDomain,
       `panel.${rootDomain}`
@@ -5429,6 +5430,7 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
       const targetHostnames = [
         rootDomain,
         `*.${rootDomain}`,
+        `cloudpro.${rootDomain}`,
         `servercloud.${rootDomain}`,
         `panel.${rootDomain}`
       ];
@@ -8306,7 +8308,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     const rawFwd = req.headers["x-forwarded-host"] || req.headers["x-original-host"];
     const fwdHost = Array.isArray(rawFwd) ? rawFwd[0] : typeof rawFwd === "string" ? rawFwd.split(",")[0].trim() : "";
     const rawHost = (fwdHost || req.headers.host || "").split(":")[0].toLowerCase().replace(/^www\./, "");
-    const isPanel = !rawHost || rawHost === "localhost" || rawHost === "127.0.0.1" || rawHost.endsWith(".run.app") || rawHost.endsWith(".trycloudflare.com") || rawHost.startsWith("servercloud.") || rawHost.startsWith("panel.") || rawHost.startsWith("cpanel.") || rawHost.startsWith("whm.") || rawHost.startsWith("admin.");
+    const isPanel = !rawHost || rawHost === "localhost" || rawHost === "127.0.0.1" || rawHost.endsWith(".run.app") || rawHost.endsWith(".trycloudflare.com") || rawHost.startsWith("cloudpro.") || rawHost.startsWith("cloud.") || rawHost.startsWith("servercloud.") || rawHost.startsWith("panel.") || rawHost.startsWith("cpanel.") || rawHost.startsWith("whm.") || rawHost.startsWith("admin.");
     const hostDocRootRel = resolveHostDocRoot(rawHost).replace(/^\//, "");
     const candidates = isPanel ? [
       path.join(process.cwd(), "dist", "assets", fileName),
@@ -8340,7 +8342,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       res.setHeader("Expires", "0");
       return res.status(200).send(renderWebTerminalHtml(incomingHost, activeTerminalCwd));
     }
-    const isPanelHost = !cleanHost || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin.");
+    const isPanelHost = !cleanHost || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloudpro.") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin.");
     const isExplicitPanelParam = req.query.panel === "1" || req.query.cp === "1" || req.query.cloudpro === "1" || req.query.login === "admin";
     const isExplicitPanelRoute = lowerPath === "/cloudpro-login" || lowerPath.startsWith("/cloudpro-login/") || lowerPath === "/cloudpro-admin" || lowerPath.startsWith("/cloudpro-admin/") || lowerPath === "/cp-admin";
     const isControlPanelRoute = isExplicitPanelParam || isExplicitPanelRoute || isPanelHost && (lowerPath === "/" || lowerPath === "/index.html" || lowerPath === "/cpanel" || lowerPath.startsWith("/cpanel/") || lowerPath === "/login" || lowerPath.startsWith("/login/") || lowerPath === "/admin" || lowerPath.startsWith("/admin/") || lowerPath === "/panel" || lowerPath.startsWith("/panel/") || lowerPath === "/whm" || lowerPath.startsWith("/whm/") || lowerPath === "/dashboard" || lowerPath.startsWith("/dashboard/"));
