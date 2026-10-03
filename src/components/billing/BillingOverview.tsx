@@ -269,9 +269,13 @@ export const BillingOverview: React.FC = () => {
   const resellerCloudProInvoices = roleScopedInvoices.filter(inv => isCloudProToResellerInvoice(inv));
   const resellerClientInvoices = roleScopedInvoices.filter(inv => !isCloudProToResellerInvoice(inv));
 
-  // Auto-seed official Cloud PRO -> Reseller subscription invoice so Function 1 is always ready
+  const hasSeededResellerInvRef = useRef(false);
+  const hasSeededCustomerInvRef = useRef(false);
+
+  // Auto-seed official Cloud PRO -> Reseller subscription invoice so Function 1 is always ready (runs once)
   useEffect(() => {
-    if (isResellerRole && resellerCloudProInvoices.length === 0) {
+    if (isResellerRole && resellerCloudProInvoices.length === 0 && !hasSeededResellerInvRef.current) {
+      hasSeededResellerInvRef.current = true;
       const now = new Date();
       const due = new Date(now.getTime() + 7 * 86400000);
       const resellerBrand = currentResellerProfile?.brandName || currentUser.name;
@@ -301,13 +305,13 @@ export const BillingOverview: React.FC = () => {
         ],
       };
       db.saveInvoice(cloudProInv);
-      refreshAll();
     }
   }, [isResellerRole, resellerCloudProInvoices.length, currentUser.id]);
 
-  // Auto-generate automatic hosting invoice for Customer if none exists yet
+  // Auto-generate automatic hosting invoice for Customer if none exists yet (runs once)
   useEffect(() => {
-    if (isCustomerRole && accessibleAccounts.length > 0 && roleScopedInvoices.length === 0) {
+    if (isCustomerRole && accessibleAccounts.length > 0 && roleScopedInvoices.length === 0 && !hasSeededCustomerInvRef.current) {
+      hasSeededCustomerInvRef.current = true;
       const acc = accessibleAccounts[0];
       const now = new Date();
       const due = new Date(now.getTime() + 7 * 86400000);
@@ -338,7 +342,6 @@ export const BillingOverview: React.FC = () => {
         ],
       };
       db.saveInvoice(autoInv);
-      refreshAll();
     }
   }, [isCustomerRole, accessibleAccounts.length, roleScopedInvoices.length]);
 
