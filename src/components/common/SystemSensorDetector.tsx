@@ -95,24 +95,50 @@ export const SystemSensorDetector: React.FC = () => {
     };
   }, [addErrorLog]);
 
-  // 2. UI Heartbeat & Event-Loop Lag Detector (Detects when browser hangs/freezes)
+  // 2. UI Heartbeat & Event-Loop Lag Detector (Detects when browser hangs/freezes during active usage)
   useEffect(() => {
     let active = true;
+    let isFirstTick = true;
+    const mountTime = performance.now();
+
+    const handleVisibilityChange = () => {
+      // When user returns from another tab, reset heartbeat ref so background tab throttling is not counted as freeze
+      lastHeartbeatRef.current = performance.now();
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     const tick = (now: number) => {
       if (!active) return;
 
+      // Ignore if tab is hidden/backgrounded (browsers pause requestAnimationFrame by design)
+      if (document.hidden) {
+        lastHeartbeatRef.current = now;
+        animationFrameRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      // First tick synchronization
+      if (isFirstTick) {
+        isFirstTick = false;
+        lastHeartbeatRef.current = now;
+        animationFrameRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
       const delta = now - lastHeartbeatRef.current;
       lastHeartbeatRef.current = now;
 
-      // If tick was delayed by > 280ms, the main thread froze (user felt a hang!)
-      if (delta > 280) {
+      // Allow 3.5s initial boot warmup grace period for browser asset parsing, styles, and hydration
+      const isWarmupPhase = now - mountTime < 3500;
+
+      // If tick was delayed by > 380ms while tab is visibly active and warmed up, user felt an actual hang!
+      if (!isWarmupPhase && delta > 380) {
         const freezeDuration = Math.round(delta);
         setLagSpikes(prev => prev + 1);
         addErrorLog({
           type: 'lag_freeze',
           title: `Browser Hang Terdeteksi (${freezeDuration}ms)`,
-          detail: `Prosesor browser/komputer sibuk selama ${freezeDuration}ms sehingga sentuhan/klik sempat tertunda. Sensor mendeteksi jeda ini.`,
+          detail: `Prosesor browser/komputer sibuk selama ${freezeDuration}ms saat interaksi aktif sehingga sentuhan/klik sempat tertunda. Sensor mendeteksi jeda ini.`,
           source: 'Main Event Loop Heartbeat',
         });
       }
@@ -132,6 +158,7 @@ export const SystemSensorDetector: React.FC = () => {
 
     return () => {
       active = false;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
