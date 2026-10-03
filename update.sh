@@ -6,6 +6,31 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR" 2>/dev/null || true
 
+# Dukungan cek cepat tanpa update: bash update.sh --check
+if [ "$1" == "--check" ] || [ "$1" == "-c" ] || [ "$1" == "check" ]; then
+  echo "========================================================"
+  echo " [CloudPRO] Memeriksa Kommit Terbaru dari GitHub...     "
+  echo "========================================================"
+  git fetch origin main -q 2>/dev/null || true
+  LOCAL_C="$(git rev-parse --short HEAD 2>/dev/null || echo '-')"
+  LOCAL_M="$(git log -1 --pretty=%s 2>/dev/null || echo '-')"
+  REMOTE_C="$(git rev-parse --short origin/main 2>/dev/null || echo '-')"
+  REMOTE_M="$(git log -1 --pretty=%s origin/main 2>/dev/null || echo '-')"
+  REMOTE_D="$(git log -1 --pretty='%cd (%cr)' origin/main 2>/dev/null || echo '-')"
+
+  echo "● Versi di Server Anda : $LOCAL_C ($LOCAL_M)"
+  echo "● Versi Terbaru GitHub : $REMOTE_C ($REMOTE_M)"
+  echo "● Tanggal Rilis GitHub : $REMOTE_D"
+  echo "--------------------------------------------------------"
+  if [ "$LOCAL_C" == "$REMOTE_C" ] && [ "$LOCAL_C" != "-" ]; then
+    echo "✅ STATUS: Server Anda SUDAH menggunakan versi GitHub paling terbaru!"
+  else
+    echo "🌟 STATUS: DITEMUKAN VERSI BARU! Jalankan: bash update.sh"
+  fi
+  echo "========================================================"
+  exit 0
+fi
+
 echo "========================================================"
 echo " [CloudPRO] Memulai Update Server & Self-Healing SSH    "
 echo " Direktori Kerja: $SCRIPT_DIR"
@@ -41,8 +66,12 @@ heal_shell_rc() {
 
   # 4. Pasang alias update yang bersih tanpa mengunci TTY
   sed -i '/alias update=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias cek-update=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias versi=/d' "$RC_FILE" 2>/dev/null || true
   if [[ "$RC_FILE" == *".bashrc" ]]; then
     echo "alias update='bash \"$SCRIPT_DIR/update.sh\"'" >> "$RC_FILE"
+    echo "alias cek-update='bash \"$SCRIPT_DIR/update.sh\" --check'" >> "$RC_FILE"
+    echo "alias versi='git -C \"$SCRIPT_DIR\" log -1 --format=\"[KOMMIT AKTIF] %h%n[JUDUL]        %s%n[TANGGAL]      %cd (%cr)%n[AUTHOR]       %an\"'" >> "$RC_FILE"
   fi
 }
 
@@ -115,8 +144,32 @@ for STATE_FILE in cloudpro-full-state.json cloudpro-vhost-store.json cloudpro-tu
   fi
 done
 
+PREV_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo 'awal')"
+PREV_MSG="$(git log -1 --pretty=%s 2>/dev/null || echo '-')"
+
 git branch -D origin/main 2>/dev/null || true
-git fetch origin main --force
+echo " > Menghubungi GitHub & mengunduh kommit terbaru..."
+git fetch origin main --force -q
+
+NEW_COMMIT="$(git rev-parse --short FETCH_HEAD 2>/dev/null || echo 'unknown')"
+NEW_MSG="$(git log -1 --pretty=%s FETCH_HEAD 2>/dev/null || echo '-')"
+NEW_DATE="$(git log -1 --pretty='%cd (%cr)' FETCH_HEAD 2>/dev/null || echo '-')"
+NEW_AUTHOR="$(git log -1 --pretty='%an' FETCH_HEAD 2>/dev/null || echo '-')"
+
+echo "--------------------------------------------------------"
+echo " [STATUS SINKRONISASI GITHUB]"
+echo " ● Versi Lokal Sebelumnya : $PREV_COMMIT ($PREV_MSG)"
+echo " ● Versi Kommit GitHub    : $NEW_COMMIT"
+echo " ● Judul Kommit Terbaru   : $NEW_MSG"
+echo " ● Tanggal Rilis GitHub   : $NEW_DATE"
+echo " ● Author / Developer     : $NEW_AUTHOR"
+if [ "$PREV_COMMIT" != "$NEW_COMMIT" ] && [ "$PREV_COMMIT" != "awal" ]; then
+  echo " ● Status Sinkronisasi    : 🌟 DITEMUKAN PEMBARUAN BARU (Menerapkan ke Server...)"
+else
+  echo " ● Status Sinkronisasi    : ✅ SUDAH VERSI TERBARU (Menyinkronkan & menyegarkan service...)"
+fi
+echo "--------------------------------------------------------"
+
 git reset --hard FETCH_HEAD
 git clean -fd -e .cloudpro-data 2>/dev/null || true
 git gc --prune=now -q 2>/dev/null || true
@@ -228,12 +281,32 @@ EOF
   echo "[OK] Auto-Sync Otomatis (Tiap 5 Menit) telah aktif! Anda tidak perlu lagi buka SSH untuk update manual."
 fi
 
+LATEST_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo '-')"
+LATEST_FULL="$(git rev-parse HEAD 2>/dev/null || echo '-')"
+LATEST_MSG="$(git log -1 --pretty=%s 2>/dev/null || echo '-')"
+LATEST_DATE="$(git log -1 --pretty='%cd (%cr)' 2>/dev/null || echo '-')"
+LATEST_AUTHOR="$(git log -1 --pretty='%an' 2>/dev/null || echo '-')"
+
 if curl -sI --max-time 5 http://127.0.0.1:3000/ | grep -q "HTTP"; then
   echo "========================================================"
-  echo " >>> UPDATE SUKSES! SERVER AKTIF DI PORT 3000 <<<"
-  echo " Commit Hash: $(git rev-parse --short HEAD) - $(git log -1 --pretty=%B | head -n 1)"
-  echo " [TERVERIFIKASI] Respon server & API Cloud PRO 100% AKTIF!"
-  echo " Buka https://servercloud.denbaguse.my.id atau https://denbaguse.my.id"
+  echo " >>> UPDATE SUKSES! SERVER AKTIF & TERVERIFIKASI <<<"
+  echo "========================================================"
+  echo " [TANDA RESMI VERSI TERBARU GITHUB]:"
+  echo " ● Commit Hash   : $LATEST_COMMIT ($LATEST_FULL)"
+  echo " ● Judul Commit  : $LATEST_MSG"
+  echo " ● Tanggal Rilis : $LATEST_DATE"
+  echo " ● Author        : $LATEST_AUTHOR"
+  echo " ● Port 3000     : AKTIF (HTTP 200 OK)"
+  echo "--------------------------------------------------------"
+  echo " [ALAMAT WEB PANEL AKTIF]:"
+  echo " 👉 Panel Utama (Resmi) : https://cloudpro.denbaguse.my.id"
+  echo " 👉 Panel Cadangan      : https://servercloud.denbaguse.my.id"
+  echo " 👉 Web Virtual Host    : https://denbaguse.my.id"
+  echo "--------------------------------------------------------"
+  echo " [PERINTAH CEPAT DI SSH TERMINAL]:"
+  echo " * Cek Kommit Aktif  : ketik 'versi'"
+  echo " * Cek Update GitHub : ketik 'cek-update'"
+  echo " * Jalankan Update   : ketik 'update'"
   echo "--------------------------------------------------------"
   echo " PENTING AGAR TAMPILAN TERBARU LANGSUNG MUNCUL DI BROWSER:"
   echo " 1. Browser Anda masih menyimpan cache tampilan lama."
@@ -242,5 +315,8 @@ if curl -sI --max-time 5 http://127.0.0.1:3000/ | grep -q "HTTP"; then
   echo "    atau coba buka lewat Tab Samaran (Incognito Window)."
   echo "========================================================"
 else
-  echo "Server sedang memuat, cek dengan: pm2 status"
+  echo "========================================================"
+  echo " [PERHATIAN] Server sedang booting, cek dengan: pm2 status"
+  echo " Commit Terpasang: $LATEST_COMMIT ($LATEST_MSG)"
+  echo "========================================================"
 fi

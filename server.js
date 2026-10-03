@@ -296,6 +296,8 @@ function renderWebTerminalHtml(host, initialCwd) {
     <!-- Quick Action Pills for Mobile -->
     <div class="quick-bar">
       <button class="quick-btn" onclick="runCommand('bash update.sh')">\u{1F680} 1-Click Update</button>
+      <button class="quick-btn" onclick="runCommand('bash update.sh --check')">\u{1F50D} Cek Kommit GitHub</button>
+      <button class="quick-btn" onclick="runCommand('git log -1 --pretty=format:"Commit: %h%nJudul  : %s%nWaktu  : %cd (%cr)%nAuthor : %an"')">\u{1F3F7}\uFE0F Versi Aktif</button>
       <button class="quick-btn" onclick="runCommand('for h in /root /home/*; do [ -d "$h" ] && for f in .bashrc .profile .bash_profile; do [ -f "$h/$f" ] && sed -i "s/\\r$//" "$h/$f" && sed -i -E "s/^[[:space:]]*(exit|logout|exec |source .*update|\\. .*update|fuser -k|\\.?\\/?update\\.sh)/# [Auto-Heal] &/" "$h/$f"; done; done; mkdir -p /run/sshd 2>/dev/null; service ssh start 2>/dev/null || true; echo "[OK] Terminal Ubuntu & SSH di Komputer berhasil diperbaiki! Silakan buka kembali aplikasi Ubuntu di PC."')">\u{1F6E0}\uFE0F Perbaiki SSH PC</button>
       <button class="quick-btn" onclick="runCommand('pm2 status')">\u{1F4CA} PM2 Status</button>
       <button class="quick-btn" onclick="runCommand('pm2 restart cloudpro')">\u{1F504} PM2 Restart</button>
