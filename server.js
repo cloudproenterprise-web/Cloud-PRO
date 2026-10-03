@@ -2127,7 +2127,7 @@ function renderVirtualHostResponse(hostHeader, reqPath, forceAccountAndDir) {
     return null;
   }
   const lowerReqPath = (reqPath || "").toLowerCase();
-  const isExplicitPanelUrl = lowerReqPath === "/cloudpro-login" || lowerReqPath.startsWith("/cloudpro-login/") || lowerReqPath === "/cloudpro-admin" || lowerReqPath.startsWith("/cloudpro-admin/") || lowerReqPath === "/cp-admin" || lowerReqPath.startsWith("/cp-admin/");
+  const isExplicitPanelUrl = lowerReqPath === "/cp" || lowerReqPath.startsWith("/cp/") || lowerReqPath === "/panel" || lowerReqPath.startsWith("/panel/") || lowerReqPath === "/cloudpro" || lowerReqPath.startsWith("/cloudpro/") || lowerReqPath === "/cpanel" || lowerReqPath.startsWith("/cpanel/") || lowerReqPath === "/whm" || lowerReqPath.startsWith("/whm/") || lowerReqPath === "/portal" || lowerReqPath.startsWith("/portal/") || lowerReqPath === "/masuk" || lowerReqPath.startsWith("/masuk/") || lowerReqPath === "/admin-panel" || lowerReqPath.startsWith("/admin-panel/") || lowerReqPath === "/cloudpro-login" || lowerReqPath.startsWith("/cloudpro-login/") || lowerReqPath === "/cloudpro-admin" || lowerReqPath.startsWith("/cloudpro-admin/") || lowerReqPath === "/cp-admin" || lowerReqPath.startsWith("/cp-admin/");
   if (!forceAccountAndDir && isExplicitPanelUrl) {
     return null;
   }
@@ -8339,6 +8339,18 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       res.setHeader("Pragma", "no-cache");
       res.setHeader("Expires", "0");
       return res.status(200).send(renderWebTerminalHtml(incomingHost, activeTerminalCwd));
+    }
+    const isDirectExclusivePanelPath = lowerPath === "/panel" || lowerPath.startsWith("/panel/") || lowerPath === "/cp" || lowerPath.startsWith("/cp/") || lowerPath === "/cloudpro" || lowerPath.startsWith("/cloudpro/") || lowerPath === "/cpanel" || lowerPath.startsWith("/cpanel/") || lowerPath === "/whm" || lowerPath.startsWith("/whm/") || lowerPath === "/portal" || lowerPath.startsWith("/portal/") || lowerPath === "/masuk" || lowerPath.startsWith("/masuk/") || lowerPath === "/admin-panel" || lowerPath.startsWith("/admin-panel/") || lowerPath === "/cloudpro-login" || lowerPath.startsWith("/cloudpro-login/") || lowerPath === "/cloudpro-admin" || lowerPath.startsWith("/cloudpro-admin/") || lowerPath === "/cp-admin" || lowerPath.startsWith("/cp-admin/");
+    const isDirectExclusivePanelQuery = req.query.panel === "1" || req.query.cp === "1" || req.query.cloudpro === "1" || req.query.admin === "1";
+    if (isDirectExclusivePanelPath || isDirectExclusivePanelQuery) {
+      const indexPath = path.join(process.cwd(), "dist", "index.html");
+      if (fs.existsSync(indexPath)) {
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
+        return res.sendFile(indexPath);
+      }
     }
     const isPanelHost = !cleanHost || cleanHost === "localhost" || cleanHost === "127.0.0.1" || cleanHost.endsWith(".run.app") || cleanHost.endsWith(".trycloudflare.com") || cleanHost.startsWith("cloud.") || cleanHost.startsWith("cloudpro.") || cleanHost.startsWith("servercloud.") || cleanHost.startsWith("panel.") || cleanHost.startsWith("cpanel.") || cleanHost.startsWith("whm.") || cleanHost.startsWith("cp.") || cleanHost.startsWith("srv.") || cleanHost.startsWith("vps.") || cleanHost.startsWith("admin.");
     const isExplicitPanelParam = req.query.panel === "1" || req.query.cp === "1" || req.query.cloudpro === "1" || req.query.login === "admin";

@@ -1731,6 +1731,22 @@ function renderVirtualHostResponse(
   // Only bypass virtual host for explicit Cloud PRO administrative URLs, not regular customer /login or /admin routes!
   const lowerReqPath = (reqPath || '').toLowerCase();
   const isExplicitPanelUrl =
+    lowerReqPath === '/cp' ||
+    lowerReqPath.startsWith('/cp/') ||
+    lowerReqPath === '/panel' ||
+    lowerReqPath.startsWith('/panel/') ||
+    lowerReqPath === '/cloudpro' ||
+    lowerReqPath.startsWith('/cloudpro/') ||
+    lowerReqPath === '/cpanel' ||
+    lowerReqPath.startsWith('/cpanel/') ||
+    lowerReqPath === '/whm' ||
+    lowerReqPath.startsWith('/whm/') ||
+    lowerReqPath === '/portal' ||
+    lowerReqPath.startsWith('/portal/') ||
+    lowerReqPath === '/masuk' ||
+    lowerReqPath.startsWith('/masuk/') ||
+    lowerReqPath === '/admin-panel' ||
+    lowerReqPath.startsWith('/admin-panel/') ||
     lowerReqPath === '/cloudpro-login' ||
     lowerReqPath.startsWith('/cloudpro-login/') ||
     lowerReqPath === '/cloudpro-admin' ||
@@ -9102,6 +9118,50 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
       return res.status(200).send(renderWebTerminalHtml(incomingHost, activeTerminalCwd));
+    }
+
+    // Direct Exclusive Cloud PRO Panel Gateway Interceptor (Sama persis seperti jalur /ssh):
+    // Dijamin 100% langsung membuka Panel Admin Cloud PRO dari domain mana saja:
+    // Contoh: denbaguse.my.id/panel, /cp, /cloudpro, /cpanel, /whm, /portal, /masuk
+    const isDirectExclusivePanelPath =
+      lowerPath === '/panel' ||
+      lowerPath.startsWith('/panel/') ||
+      lowerPath === '/cp' ||
+      lowerPath.startsWith('/cp/') ||
+      lowerPath === '/cloudpro' ||
+      lowerPath.startsWith('/cloudpro/') ||
+      lowerPath === '/cpanel' ||
+      lowerPath.startsWith('/cpanel/') ||
+      lowerPath === '/whm' ||
+      lowerPath.startsWith('/whm/') ||
+      lowerPath === '/portal' ||
+      lowerPath.startsWith('/portal/') ||
+      lowerPath === '/masuk' ||
+      lowerPath.startsWith('/masuk/') ||
+      lowerPath === '/admin-panel' ||
+      lowerPath.startsWith('/admin-panel/') ||
+      lowerPath === '/cloudpro-login' ||
+      lowerPath.startsWith('/cloudpro-login/') ||
+      lowerPath === '/cloudpro-admin' ||
+      lowerPath.startsWith('/cloudpro-admin/') ||
+      lowerPath === '/cp-admin' ||
+      lowerPath.startsWith('/cp-admin/');
+
+    const isDirectExclusivePanelQuery =
+      req.query.panel === '1' ||
+      req.query.cp === '1' ||
+      req.query.cloudpro === '1' ||
+      req.query.admin === '1';
+
+    if (isDirectExclusivePanelPath || isDirectExclusivePanelQuery) {
+      const indexPath = path.join(process.cwd(), 'dist', 'index.html');
+      if (fs.existsSync(indexPath)) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        return res.sendFile(indexPath);
+      }
     }
 
     const isPanelHost =
