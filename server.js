@@ -4116,13 +4116,6 @@ with zipfile.ZipFile('${tmpZipPath}', 'r') as zf:
         break;
       }
     }
-    if (foundBaseDir) {
-      if (path.basename(foundBaseDir).toLowerCase() === "assets") {
-        pruneDeadViteAssets(path.dirname(foundBaseDir));
-      } else {
-        pruneDeadViteAssets(foundBaseDir);
-      }
-    }
     const subRoots = /* @__PURE__ */ new Set([
       ...getSubdomainDocRoots(),
       "/public_html/siakad-madrasah",
@@ -8207,10 +8200,10 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     let actualCommand = command;
     if (actualCommand === "./update.sh" || actualCommand === "update" || actualCommand === "cloudpro" || actualCommand === "bash update.sh") {
       const appRoot = fs.existsSync(path.join(execCwd, "update.sh")) ? execCwd : process.cwd();
-      actualCommand = `cd "${appRoot}" && ( [ -d .git ] || (git init && git remote add origin https://github.com/siakadmadrasah-lang/CloudPRO-Server.git) ) && git remote set-url origin https://github.com/siakadmadrasah-lang/CloudPRO-Server.git 2>/dev/null || true && bash update.sh`;
+      actualCommand = `cd "${appRoot}" && ( [ -d .git ] || (git init && git remote add origin https://github.com/cloudproenterprise-web/Cloud-PRO.git) ) && git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true && bash update.sh`;
     } else if (actualCommand.startsWith("git pull") || actualCommand.startsWith("git fetch") || actualCommand.startsWith("git status")) {
       const appRoot = fs.existsSync(path.join(execCwd, "package.json")) ? execCwd : process.cwd();
-      actualCommand = `cd "${appRoot}" && ( [ -d .git ] || (git init && git remote add origin https://github.com/siakadmadrasah-lang/CloudPRO-Server.git && git fetch origin main && git reset --hard FETCH_HEAD) ) && ${command}`;
+      actualCommand = `cd "${appRoot}" && ( [ -d .git ] || (git init && git remote add origin https://github.com/cloudproenterprise-web/Cloud-PRO.git && git fetch origin main && git reset --hard FETCH_HEAD) ) && ${command}`;
     }
     exec(
       actualCommand,
@@ -8476,8 +8469,8 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   const distDir = path.resolve(process.cwd(), "dist");
   const distIndex = path.join(distDir, "index.html");
   const hasDist = fs.existsSync(distIndex);
-  const isAiStudio = Boolean(process.env.AIS_APPLET_ID || process.env.AI_STUDIO_DEV);
-  if (hasDist && (!isAiStudio || process.env.NODE_ENV === "production")) {
+  const isProduction = process.env.NODE_ENV === "production";
+  if (isProduction && hasDist) {
     console.log(`[CloudPRO] Serving production static bundle from ${distDir}`);
     app.use(express.static(distDir, {
       setHeaders: (res, filePath) => {
@@ -8508,6 +8501,19 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
         next();
       });
       app.use(vite.middlewares);
+      app.use("*", async (req, res, next) => {
+        const url = req.originalUrl;
+        try {
+          const indexHtmlPath = path.resolve(process.cwd(), "index.html");
+          if (!fs.existsSync(indexHtmlPath)) return next();
+          let template = fs.readFileSync(indexHtmlPath, "utf-8");
+          template = await vite.transformIndexHtml(url, template);
+          res.status(200).set({ "Content-Type": "text/html", "Cache-Control": "no-cache" }).end(template);
+        } catch (e) {
+          vite.ssrFixStacktrace(e);
+          next(e);
+        }
+      });
     } catch (viteErr) {
       console.warn("[CloudPRO] Vite dev server fallback to dist:", viteErr);
       if (fs.existsSync(distDir)) {
@@ -8545,8 +8551,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
         }
       }
       if (typeof process.getuid === "function" && process.getuid() === 0) {
-        execSync("mkdir -p /run/sshd 2>/dev/null || true; service ssh start 2>/dev/null < /dev/null || true", {
-          stdio: "ignore"
+        exec("mkdir -p /run/sshd 2>/dev/null || true; service ssh start 2>/dev/null < /dev/null || true", () => {
         });
       }
     }

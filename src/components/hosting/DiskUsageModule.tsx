@@ -141,10 +141,10 @@ export const DiskUsageModule: React.FC<DiskUsageModuleProps> = ({
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
-      acc.primaryDomain.toLowerCase().includes(q) ||
-      acc.customerName.toLowerCase().includes(q) ||
-      acc.username.toLowerCase().includes(q) ||
-      acc.domains.some(d => d.domain.toLowerCase().includes(q) || d.documentRoot.toLowerCase().includes(q))
+      (acc.primaryDomain || '').toLowerCase().includes(q) ||
+      (acc.customerName || '').toLowerCase().includes(q) ||
+      (acc.username || '').toLowerCase().includes(q) ||
+      (acc.domains || []).some(d => (d.domain || '').toLowerCase().includes(q) || (d.documentRoot || '').toLowerCase().includes(q))
     );
   });
 
@@ -153,10 +153,10 @@ export const DiskUsageModule: React.FC<DiskUsageModuleProps> = ({
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
-      d.domain.toLowerCase().includes(q) ||
-      d.documentRoot.toLowerCase().includes(q) ||
-      d.customerName.toLowerCase().includes(q) ||
-      d.username.toLowerCase().includes(q)
+      (d.domain || '').toLowerCase().includes(q) ||
+      (d.documentRoot || '').toLowerCase().includes(q) ||
+      (d.customerName || '').toLowerCase().includes(q) ||
+      (d.username || '').toLowerCase().includes(q)
     );
   });
 
@@ -221,17 +221,17 @@ export const DiskUsageModule: React.FC<DiskUsageModuleProps> = ({
           <div className="space-y-1">
             <div className="text-xs text-slate-500 dark:text-slate-400">Total Pemakaian Disk Riil</div>
             <div className="font-mono text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
-              {report?.summary.totalActiveFormatted || '0 B'}
+              {report?.summary?.totalActiveFormatted || '0 B'}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-mono tabular-nums">
-              {report?.summary.totalActiveFiles || 0} berkas aktif terverifikasi
+              {report?.summary?.totalActiveFiles || 0} berkas aktif terverifikasi
             </div>
           </div>
 
           <div className="space-y-1">
             <div className="text-xs text-slate-500 dark:text-slate-400">Total Akun &amp; Hostname</div>
             <div className="font-mono text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
-              {report?.summary.accountsCount || 0} Akun · {report?.summary.domainsCount || 0} Web
+              {report?.summary?.accountsCount || 0} Akun · {report?.summary?.domainsCount || 0} Web
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400">
               Isolasi penuh domain utama &amp; subdomain
@@ -241,17 +241,17 @@ export const DiskUsageModule: React.FC<DiskUsageModuleProps> = ({
           <div className="space-y-1">
             <div className="text-xs text-slate-500 dark:text-slate-400">Cadangan Arsip .ZIP Server</div>
             <div className="font-mono text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
-              {report?.summary.totalBackupFormatted || '0 B'}
+              {report?.summary?.totalBackupFormatted || '0 B'}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-mono tabular-nums">
-              {report?.summary.totalBackupFiles || 0} arsip backup permanen
+              {report?.summary?.totalBackupFiles || 0} arsip backup permanen
             </div>
           </div>
 
           <div className="space-y-1">
             <div className="text-xs text-slate-500 dark:text-slate-400">Peluang Optimasi Sampah</div>
             <div className="font-mono text-2xl font-bold tabular-nums text-amber-600 dark:text-amber-400">
-              {report?.summary.totalJunkFormatted || '0 B'}
+              {report?.summary?.totalJunkFormatted || '0 B'}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400">
               <button
@@ -409,7 +409,7 @@ export const DiskUsageModule: React.FC<DiskUsageModuleProps> = ({
 
               {/* Daftar Subdomain & Folder di dalam Akun ini */}
               <div className="mt-4 divide-y divide-slate-100 border-t border-slate-100 dark:divide-slate-800 dark:border-slate-800">
-                {acc.domains.map(dom => (
+                {(acc.domains || []).map(dom => (
                   <div key={dom.id} className="py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs">
                     <div className="flex items-center gap-2.5">
                       <Globe className={`h-4 w-4 ${dom.type === 'primary' ? 'text-sky-600' : 'text-slate-400'}`} />

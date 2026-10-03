@@ -74,6 +74,10 @@ class ModuleErrorBoundary extends React.Component<ModuleErrorBoundaryProps, Modu
     };
   }
 
+  componentDidCatch(error: unknown, errorInfo: React.ErrorInfo) {
+    console.error('[CloudPRO Module Error in tab:', this.props.activeTab, ']', error, errorInfo);
+  }
+
   componentDidUpdate(prevProps: ModuleErrorBoundaryProps) {
     if (prevProps.activeTab !== this.props.activeTab && this.state.hasError) {
       this.setState({ hasError: false, errorMsg: '' });
@@ -1091,10 +1095,13 @@ const AppContent: React.FC = () => {
           <SecurityCenter />
         );
       case 'tailscale-mesh':
+      case 'terminal':
+      case 'ssh':
+      case 'ssh-direct':
         return renderSystemModuleWrapper(
-          'WIREGUARD MESH VPN',
-          'Tailscale Mesh VPN & Remote SSH Sync',
-          'Akses terminal SSH jarak jauh tanpa port-forwarding dan sinkronisasi GitHub otomatis',
+          'TERMINAL & MESH SSH',
+          'Tailscale Mesh VPN & Web Terminal SSH',
+          'Akses terminal SSH jarak jauh, console command line, dan sinkronisasi GitHub otomatis',
           <TailscaleMeshNode />
         );
       case 'whitelabel':

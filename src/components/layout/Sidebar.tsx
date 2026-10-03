@@ -733,15 +733,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     })
     .filter(group => group.items.length > 0);
 
-  // High-frequency Pinned Tools for 1-Click Access
-  const pinnedTools = [
-    { id: 'file-manager', label: 'Files', icon: FolderOpen, title: 'Buka File Manager' },
-    { id: 'databases', label: 'MySQL', icon: Database, title: 'Buka Database MySQL' },
-    { id: 'website-cloner', label: 'Cloner', icon: Sparkles, title: 'Kloning Website' },
-    { id: 'ssl', label: 'SSL', icon: Lock, title: 'Kelola Sertifikat SSL' },
-    { id: 'ssh-direct', label: 'SSH', icon: Terminal, externalHref: '/ssh', title: 'Terminal SSH' },
-  ];
-
   const primaryServer = servers && servers.length > 0 ? servers[0] : null;
 
   return (
@@ -845,51 +836,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 ? 'WHM RESELLER'
                 : 'CPANEL USER'}
             </span>
-          </div>
-
-          {/* High-Frequency Pinned Quick-Launch Orbit */}
-          <div className="mt-2.5 pt-2 border-t border-slate-800/60">
-            <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center justify-between">
-              <span>Akses Cepat Favorit</span>
-              <Zap className="h-2.5 w-2.5 text-amber-400" />
-            </div>
-            <div className="grid grid-cols-5 gap-1">
-              {pinnedTools.map(pt => {
-                const Icon = pt.icon;
-                const active = currentTab === pt.id;
-                if (pt.externalHref) {
-                  return (
-                    <a
-                      key={pt.id}
-                      href={pt.externalHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={pt.title}
-                      className="group flex flex-col items-center justify-center rounded-lg border border-slate-800/90 bg-slate-900/80 p-1 text-[9px] text-slate-300 hover:border-emerald-500/50 hover:bg-emerald-950/30 hover:text-emerald-300 transition-all cursor-pointer"
-                    >
-                      <Icon className="h-3.5 w-3.5 mb-0.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                      <span className="truncate max-w-[42px]">{pt.label}</span>
-                    </a>
-                  );
-                }
-                return (
-                  <button
-                    key={pt.id}
-                    type="button"
-                    onClick={() => handleNav(pt.id)}
-                    title={pt.title}
-                    className={`group flex flex-col items-center justify-center rounded-lg border p-1 text-[9px] transition-all cursor-pointer ${
-                      active
-                        ? 'border-sky-500 bg-sky-500/20 text-white font-bold ring-1 ring-sky-500/40 shadow-xs'
-                        : 'border-slate-800/90 bg-slate-900/80 text-slate-300 hover:border-sky-500/40 hover:bg-slate-800/80 hover:text-white'
-                    }`}
-                  >
-                    <Icon className={`h-3.5 w-3.5 mb-0.5 group-hover:scale-110 transition-transform ${active ? 'text-sky-400' : 'text-slate-400'}`} />
-                    <span className="truncate max-w-[42px]">{pt.label}</span>
-                  </button>
-                );
-              })}
-            </div>
           </div>
         </div>
 

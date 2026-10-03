@@ -110,9 +110,15 @@ for STATE_FILE in cloudpro-full-state.json cloudpro-vhost-store.json cloudpro-tu
   fi
 done
 
-echo "[2/3] Menyinkronkan Service CloudPRO (Bebas Hang & Bebas Konflik Port 3000)..."
+echo "[2/3] Meng-compile aset web terbaru & menyinkronkan Service CloudPRO..."
 export NODE_ENV=production
 export PATH="$PATH:/usr/local/bin:$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node 2>/dev/null | tail -n 1)/bin"
+
+# Compile web assets dan server jika node/npm tersedia agar perubahan langsung sampai di web
+if command -v npm &> /dev/null; then
+  echo "[BUILD] Meng-compile dist/ dan server.js terbaru..."
+  npm run build 2>&1 | tail -n 5 || true
+fi
 
 # Hentikan proses node server.js / tsx server.ts liar di luar PM2 agar tidak berebut port 3000 (tanpa memutus terminal)
 if [ "$(id -u)" -ne 0 ]; then

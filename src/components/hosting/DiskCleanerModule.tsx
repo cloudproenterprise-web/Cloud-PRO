@@ -233,7 +233,7 @@ export const DiskCleanerModule: React.FC<DiskCleanerModuleProps> = ({
               )}
               <span>
                 {hasAnyJunk
-                  ? `Bersihkan Semua Sampah (${report?.summary.totalJunkFiles} Item)`
+                  ? `Bersihkan Semua Sampah (${report?.summary?.totalJunkFiles || 0} Item)`
                   : 'Bersihkan & Optimasi Disk (Aman)'}
               </span>
             </button>
@@ -270,11 +270,11 @@ export const DiskCleanerModule: React.FC<DiskCleanerModuleProps> = ({
                 hasAnyJunk ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
               }`}
             >
-              {hasAnyJunk ? report?.summary.totalJunkFormatted : '0 B (100% Bersih)'}
+              {hasAnyJunk ? (report?.summary?.totalJunkFormatted || '0 B') : '0 B (100% Bersih)'}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-mono tabular-nums">
               {hasAnyJunk
-                ? `${report?.summary.totalJunkFiles} file sisa instalasi siap dilepas`
+                ? `${report?.summary?.totalJunkFiles || 0} file sisa instalasi siap dilepas`
                 : 'Penyimpanan server dalam kondisi prima'}
             </div>
           </div>
@@ -293,10 +293,10 @@ export const DiskCleanerModule: React.FC<DiskCleanerModuleProps> = ({
           <div className="space-y-1">
             <div className="text-xs text-slate-500 dark:text-slate-400">Pemakaian Berkas Aktif</div>
             <div className="font-mono text-2xl font-bold tabular-nums text-slate-900 dark:text-white">
-              {report?.summary.totalActiveFormatted || '0 B'}
+              {report?.summary?.totalActiveFormatted || '0 B'}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 font-mono tabular-nums">
-              {report?.summary.totalActiveFiles || 0} berkas aktif yang dipertahankan
+              {report?.summary?.totalActiveFiles || 0} berkas aktif yang dipertahankan
             </div>
           </div>
         </div>
