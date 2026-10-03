@@ -127,10 +127,9 @@ if command -v pm2 &> /dev/null; then
       kill -9 "$pid" 2>/dev/null || sudo -n kill -9 "$pid" 2>/dev/null || true
     done
   fi
+  pm2 restart cloudpro --update-env 2>/dev/null || pm2 start server.js --name cloudpro --update-env 2>/dev/null || true
   pm2 save < /dev/null 2>/dev/null || true
-  # Jalankan reload PM2 setelah jeda 1.5 detik agar respon terminal HTTP terkirim utuh tanpa terputus
-  (sleep 1.5 && (pm2 reload cloudpro --update-env < /dev/null 2>/dev/null || pm2 restart cloudpro --update-env < /dev/null 2>/dev/null || pm2 start server.js --name cloudpro --update-env < /dev/null)) >/dev/null 2>&1 &
-  echo "[OK] Server CloudPRO berhasil disinkronkan & dijadwalkan reload via PM2!"
+  echo "[OK] Server CloudPRO aktif & berjalan segar via PM2!"
 else
   OLD_NODE_PIDS=$(pgrep -f "node.*server\.js|tsx.*server\.ts" 2>/dev/null | grep -v "^$$\$" | grep -v "^$PPID\$" || true)
   if [ -n "$OLD_NODE_PIDS" ]; then
