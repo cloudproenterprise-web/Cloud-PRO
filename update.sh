@@ -58,15 +58,27 @@ for TARGET_HOME in /root /home/*; do
   fi
 done
 
-# Jalankan sshd secara non-blocking (tanpa memicu prompt password polkit yang bikin hang)
+# Jalankan sshd secara non-blocking & pasang keepalive agar koneksi SSH tidak pernah putus/dc otomatis
+SSHD_CFG="/etc/ssh/sshd_config"
+if [ -f "$SSHD_CFG" ]; then
+  if [ "$(id -u)" -eq 0 ]; then
+    sed -i '/ClientAliveInterval/d' "$SSHD_CFG" 2>/dev/null || true
+    sed -i '/ClientAliveCountMax/d' "$SSHD_CFG" 2>/dev/null || true
+    sed -i '/TCPKeepAlive/d' "$SSHD_CFG" 2>/dev/null || true
+    echo "ClientAliveInterval 30" >> "$SSHD_CFG"
+    echo "ClientAliveCountMax 120" >> "$SSHD_CFG"
+    echo "TCPKeepAlive yes" >> "$SSHD_CFG"
+  fi
+fi
+
 if [ "$(id -u)" -eq 0 ]; then
   mkdir -p /run/sshd 2>/dev/null || true
-  service ssh start 2>/dev/null < /dev/null || true
+  service ssh restart 2>/dev/null || service ssh start 2>/dev/null < /dev/null || true
 else
   sudo -n mkdir -p /run/sshd 2>/dev/null || true
-  sudo -n service ssh start 2>/dev/null < /dev/null || true
+  sudo -n service ssh restart 2>/dev/null || sudo -n service ssh start 2>/dev/null < /dev/null || true
 fi
-echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH telah diperbaiki!"
+echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH (Anti-Disconnect) telah dipasang!"
 
 echo "[1/3] Mengambil kode terbaru dari GitHub..."
 CURRENT_ORIGIN="$(git remote get-url origin 2>/dev/null || echo "")"
@@ -163,6 +175,50 @@ CLEAN_RES=$(curl -s --max-time 5 -X POST http://127.0.0.1:3000/api/system/clean-
 if [ -n "$CLEAN_RES" ]; then
   echo " [DISK CLEANER] Sampah sisa instalasi lama berhasil dibersihkan otomatis!"
 fi
+
+# -------------------------------------------------------------------------
+# [AUTO-SYNC PERMANEN] PASANG CRONJOB OTOMATIS TIAP 5 MENIT
+# Server akan secara otomatis menarik update GitHub tanpa harus buka SSH lagi
+# -------------------------------------------------------------------------
+AUTO_SYNC_SCRIPT="/usr/local/bin/cloudpro-auto-sync.sh"
+if [ "$(id -u)" -eq 0 ] || sudo -n true 2>/dev/null; then
+  cat << 'EOF' > /tmp/cloudpro-auto-sync.sh
+#!/usr/bin/env bash
+for d in /root/Cloud-PRO /var/www/Cloud-PRO /home/*/*/Cloud-PRO /home/*/Cloud-PRO; do
+  if [ -d "$d/.git" ]; then
+    cd "$d" || exit 0
+    git fetch origin main -q 2>/dev/null || exit 0
+    LOCAL_COMMIT=$(git rev-parse HEAD 2>/dev/null)
+    REMOTE_COMMIT=$(git rev-parse origin/main 2>/dev/null)
+    if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ] && [ -n "$REMOTE_COMMIT" ]; then
+      git reset --hard origin/main -q 2>/dev/null
+      if command -v npm &>/dev/null; then
+        npm run build:server 2>&1 >/dev/null || true
+      fi
+      if command -v pm2 &>/dev/null; then
+        pm2 reload cloudpro --update-env 2>/dev/null || true
+      fi
+    fi
+    break
+  fi
+done
+EOF
+  if [ "$(id -u)" -eq 0 ]; then
+    mv -f /tmp/cloudpro-auto-sync.sh "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    chmod +x "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    if ! crontab -l 2>/dev/null | grep -q "cloudpro-auto-sync.sh"; then
+      (crontab -l 2>/dev/null; echo "*/5 * * * * $AUTO_SYNC_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
+    fi
+  else
+    sudo -n mv -f /tmp/cloudpro-auto-sync.sh "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    sudo -n chmod +x "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    if ! crontab -l 2>/dev/null | grep -q "cloudpro-auto-sync.sh"; then
+      (crontab -l 2>/dev/null; echo "*/5 * * * * $AUTO_SYNC_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
+    fi
+  fi
+  echo "[OK] Auto-Sync Otomatis (Tiap 5 Menit) telah aktif! Anda tidak perlu lagi buka SSH untuk update manual."
+fi
+
 if curl -sI --max-time 5 http://127.0.0.1:3000/ | grep -q "HTTP"; then
   echo "========================================================"
   echo " >>> UPDATE SUKSES! SERVER AKTIF DI PORT 3000 <<<"

@@ -5094,7 +5094,7 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
         if (githubToken && typeof githubToken === "string" && githubToken.trim()) {
           const cleanTok = githubToken.trim();
           execSync2(
-            `git remote set-url origin "https://${cleanTok}@github.com/siakadmadrasah-lang/CloudPRO-Server.git"`,
+            `git remote set-url origin "https://${cleanTok}@github.com/cloudproenterprise-web/Cloud-PRO.git"`,
             { cwd: process.cwd(), timeout: 5e3 }
           );
           gitOutput += execSync2("git push origin main --force 2>&1", {
@@ -5102,15 +5102,15 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
             timeout: 25e3
           }).toString() + "\n";
           execSync2(
-            `git remote set-url origin "https://github.com/siakadmadrasah-lang/CloudPRO-Server.git"`,
+            `git remote set-url origin "https://github.com/cloudproenterprise-web/Cloud-PRO.git"`,
             { cwd: process.cwd(), timeout: 5e3 }
           );
         } else {
           gitOutput = execSync2(
-            'git fetch origin main 2>&1; if git merge-base --is-ancestor FETCH_HEAD HEAD 2>/dev/null; then echo "Kode lokal sudah versi paling baru (lebih baru atau sama dengan origin/main)."; else git reset --hard FETCH_HEAD 2>&1; fi',
+            "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1",
             {
               cwd: process.cwd(),
-              timeout: 2e4
+              timeout: 3e4
             }
           ).toString();
         }
@@ -5139,6 +5139,43 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
         ok: false,
         message: err?.message || "Gagal menjalankan sinkronisasi Git."
       });
+    }
+  });
+  app.post("/api/system/git-sync", async (_req, res) => {
+    try {
+      const { exec: exec2 } = await import("child_process");
+      const backupVhost = JSON.stringify(vhostStore, null, 2);
+      const backupFull = persistedFullAppState ? JSON.stringify(persistedFullAppState, null, 2) : null;
+      exec2(
+        "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1 && (npm run build:server 2>&1 || true) && (pm2 reload cloudpro --update-env 2>&1 || true)",
+        { cwd: process.cwd(), timeout: 45e3 },
+        (err, stdout, stderr) => {
+          try {
+            writeVaultJson(
+              VHOST_STORE_PATH,
+              [path.join(LOCAL_DATA_DIR, "cloudpro-vhost-store.json"), LEGACY_VHOST_STORE_PATH],
+              JSON.parse(backupVhost)
+            );
+            if (backupFull) {
+              writeVaultJson(
+                FULL_STATE_VAULT_PATH,
+                [LOCAL_FULL_STATE_PATH, path.join(TMP_DIR, "cloudpro-full-state.json")],
+                JSON.parse(backupFull)
+              );
+            }
+          } catch {
+          }
+          if (err) {
+            console.warn("[Git Auto-Sync] Warning during sync execution:", err.message);
+          }
+        }
+      );
+      return res.json({
+        ok: true,
+        message: "Perintah pembaruan otomatis telah dikirim ke server. Server sedang menyinkronkan kode dari GitHub..."
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, message: err?.message || "Gagal memulai sinkronisasi." });
     }
   });
   app.post("/api/vhost/sync", (req, res) => {
