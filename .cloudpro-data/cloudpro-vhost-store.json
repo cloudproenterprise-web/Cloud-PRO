@@ -1,0 +1,2248 @@
+{
+  "accounts": [
+    {
+      "id": "acc-rdm-01",
+      "primaryDomain": "denbaguse.my.id",
+      "domain": "denbaguse.my.id",
+      "username": "cloudpro",
+      "customerId": "usr-admin-01",
+      "customerName": "Jaenal Maskun (Website Pribadi)",
+      "customerEmail": "admin@denbaguse.my.id",
+      "serverId": "srv-sg-01",
+      "serverName": "SG-Edge-01 (Singapore)",
+      "planId": "plan-pro",
+      "planName": "Cloud Pro SSD",
+      "diskUsedMb": 23,
+      "diskLimitMb": 25600,
+      "bandwidthUsedMb": 8450,
+      "bandwidthLimitMb": 512000,
+      "phpVersion": "8.2",
+      "phpExtensions": [
+        "ioncube",
+        "mysqli",
+        "pdo",
+        "curl",
+        "gd",
+        "mbstring",
+        "zip",
+        "xml",
+        "fileinfo",
+        "intl",
+        "bcmath",
+        "soap",
+        "opcache"
+      ],
+      "status": "active",
+      "sslStatus": "active",
+      "sslProvider": "Let's Encrypt / ZeroSSL",
+      "sslExpiresAt": "2027-01-01T00:00:00Z",
+      "forceHttps": true,
+      "documentRoot": "/home/cloudpro/public_html",
+      "ipAddress": "103.147.154.21",
+      "databaseCount": 1,
+      "emailCount": 2,
+      "ftpCount": 1,
+      "nameservers": [
+        "ns1.denbaguse.my.id",
+        "ns2.denbaguse.my.id"
+      ],
+      "createdAt": "2026-09-25T10:00:00Z"
+    },
+    {
+      "id": "acc-school-02",
+      "primaryDomain": "websitepelanggan.my.id",
+      "domain": "websitepelanggan.my.id",
+      "username": "pelanggan",
+      "customerId": "usr-cust-02",
+      "customerName": "Pelanggan Hosting cPanel",
+      "customerEmail": "admin@websitepelanggan.my.id",
+      "serverId": "srv-id-01",
+      "serverName": "ID-Cyber-01 (Jakarta)",
+      "planId": "plan-starter",
+      "planName": "Cloud Starter NVMe",
+      "diskUsedMb": 1,
+      "diskLimitMb": 10240,
+      "bandwidthUsedMb": 2150,
+      "bandwidthLimitMb": 102400,
+      "phpVersion": "8.2",
+      "phpExtensions": [
+        "mysqli",
+        "pdo",
+        "curl",
+        "opcache",
+        "gd",
+        "mbstring",
+        "zip"
+      ],
+      "status": "active",
+      "sslStatus": "active",
+      "sslProvider": "Let's Encrypt",
+      "sslExpiresAt": "2026-12-15T00:00:00Z",
+      "forceHttps": true,
+      "documentRoot": "/home/pelanggan/public_html",
+      "ipAddress": "172.67.223.133",
+      "databaseCount": 1,
+      "emailCount": 1,
+      "ftpCount": 1,
+      "nameservers": [
+        "ns1.denbaguse.my.id",
+        "ns2.denbaguse.my.id"
+      ],
+      "createdAt": "2026-09-26T14:30:00Z"
+    }
+  ],
+  "subdomains": [
+    {
+      "id": "dom-1790860281257-amam",
+      "accountId": "acc-rdm-01",
+      "fullDomain": "siakad-madrasah.denbaguse.my.id",
+      "documentRoot": "/public_html/siakad-madrasah"
+    },
+    {
+      "id": "dom-1790860258687-un1o",
+      "accountId": "acc-rdm-01",
+      "fullDomain": "rdm.denbaguse.my.id",
+      "documentRoot": "/public_html/rdm"
+    },
+    {
+      "id": "dom-1790860261766-ao51",
+      "accountId": "acc-rdm-01",
+      "fullDomain": "cbt.denbaguse.my.id",
+      "documentRoot": "/public_html/cbt"
+    },
+    {
+      "id": "dom-1790860263159-b5gq",
+      "accountId": "acc-rdm-01",
+      "fullDomain": "elearning.denbaguse.my.id",
+      "documentRoot": "/public_html/elearning"
+    },
+    {
+      "id": "dom-primary-01",
+      "accountId": "acc-rdm-01",
+      "fullDomain": "denbaguse.my.id",
+      "documentRoot": "/public_html",
+      "phpVersion": "8.2"
+    },
+    {
+      "id": "dom-primary-02",
+      "accountId": "acc-school-02",
+      "fullDomain": "websitepelanggan.my.id",
+      "documentRoot": "/public_html",
+      "phpVersion": "8.2"
+    }
+  ],
+  "filesByAccount": {
+    "acc-rdm-01": [
+      {
+        "id": "vf-phys-index_html",
+        "accountId": "acc-rdm-01",
+        "name": "index.html",
+        "path": "/public_html/index.html",
+        "type": "file",
+        "size": 36863,
+        "content": "<!doctype html>\n<html lang=\"id\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>Jaenal Maskun, S.Pd.I. | Pendidik, Akademisi &amp; Penggerak Madrasah</title>\n    <meta name=\"description\" content=\"Website Resmi Jaenal Maskun, S.Pd.I. - Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat. Eksplorasi profil, modul pembelajaran madrasah, tasbih digital, dan agenda kajian.\" />\n    <meta name=\"keywords\" content=\"Jaenal Maskun, Ust Jaenal Maskun, Madrasah, Pendidikan Islam, Kurikulum Madrasah, Karya Ilmiah, Modul Ajar, Tasbih Digital, Agenda Kajian\" />\n    <meta name=\"author\" content=\"Ust. Jaenal Maskun, S.Pd.I.\" />\n    <meta name=\"theme-color\" content=\"#064e3b\" />\n    <!-- Ultra-fast Resource Preconnect & DNS Prefetch -->\n    <link rel=\"dns-prefetch\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"dns-prefetch\" href=\"https://fonts.gstatic.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" crossorigin>\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link rel=\"preload\" as=\"image\" href=\"/avatar-jaenal.jpg\" fetchpriority=\"high\">\n    <link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap\">\n\n    <!-- Open Graph / WhatsApp / Facebook Meta Tags -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:site_name\" content=\"Website Resmi Ust. Jaenal Maskun\" />\n    <meta property=\"og:url\" content=\"https://jaenalmaskun.biz.id/\" />\n    <meta property=\"og:title\" content=\"Jaenal Maskun, S.Pd.I. | Pendidik, Akademisi &amp; Penggerak Madrasah\" />\n    <meta property=\"og:description\" content=\"Website Resmi Jaenal Maskun, S.Pd.I. - Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat. Eksplorasi profil, modul pembelajaran madrasah, tasbih digital, dan agenda kajian.\" />\n    <meta property=\"og:image\" content=\"https://jaenalmaskun.biz.id/og-image.jpg\" />\n    <meta property=\"og:image:secure_url\" content=\"https://jaenalmaskun.biz.id/og-image.jpg\" />\n    <meta property=\"og:image:type\" content=\"image/jpeg\" />\n    <meta property=\"og:image:width\" content=\"1200\" />\n    <meta property=\"og:image:height\" content=\"630\" />\n    <meta property=\"og:image:alt\" content=\"Thumbnail Banner Resmi Ust. Jaenal Maskun, S.Pd.I.\" />\n    <meta property=\"og:locale\" content=\"id_ID\" />\n\n    <!-- Twitter / X Meta Tags -->\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <meta name=\"twitter:url\" content=\"https://jaenalmaskun.biz.id/\" />\n    <meta name=\"twitter:title\" content=\"Jaenal Maskun, S.Pd.I. | Pendidik, Akademisi &amp; Penggerak Madrasah\" />\n    <meta name=\"twitter:description\" content=\"Website Resmi Jaenal Maskun, S.Pd.I. - Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat. Eksplorasi profil, modul pembelajaran madrasah, tasbih digital, dan agenda kajian.\" />\n    <meta name=\"twitter:image\" content=\"https://jaenalmaskun.biz.id/og-image.jpg\" />\n    <meta name=\"twitter:image:src\" content=\"https://jaenalmaskun.biz.id/og-image.jpg\" />\n    <meta name=\"twitter:image:alt\" content=\"Ust. Jaenal Maskun Portofolio Madrasah\" />\n\n    <!-- Schema.org, Discord & Search Engines Thumbnail Tags -->\n    <meta itemprop=\"name\" content=\"Ust. Jaenal Maskun, S.Pd.I. - Website Resmi\" />\n    <meta itemprop=\"description\" content=\"Website personal dan portofolio keilmuan madrasah Ust. Jaenal Maskun.\" />\n    <meta itemprop=\"image\" content=\"/og-image.jpg\" />\n    <meta name=\"thumbnail\" content=\"/og-image.jpg\" />\n    <link rel=\"image_src\" href=\"/og-image.jpg\" />\n    <link rel=\"icon\" href=\"/uploads/favicon_1788507233_abba34.png\" />\n    <link rel=\"icon\" href=\"/uploads/favicon_1788507233_abba34.png\" />\n    <link rel=\"shortcut icon\" href=\"/uploads/favicon_1788507233_abba34.png\" />\n    <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\" />\n    <link rel=\"canonical\" href=\"https://jaenalmaskun.biz.id/\" />\n\n    <!-- JSON-LD Structured Data for Google & Social Crawlers -->\n    <script type=\"application/ld+json\">\n      {\n        \"@context\": \"https://schema.org\",\n        \"@type\": \"Person\",\n        \"name\": \"Ust. Jaenal Maskun, S.Pd.I.\",\n        \"alternateName\": \"Jaenal Maskun\",\n        \"jobTitle\": \"Pendidik, Akademisi & Penggerak Inovasi Madrasah\",\n        \"description\": \"Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat.\",\n        \"image\": \"https://jaenalmaskun.biz.id/og-image.jpg\",\n        \"url\": \"https://jaenalmaskun.biz.id/\",\n        \"sameAs\": [\n          \"https://youtube.com/@jaenalmaskun\",\n          \"https://instagram.com/jaenalmaskun\",\n          \"https://facebook.com/jaenalmaskun\"\n        ]\n      }\n    </script>\n    <script type=\"module\" crossorigin src=\"/assets/index-Dx_-uADC.js?v=cp4\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-ChpYJ0ys.css\">\n  <script id=\"__INITIAL_SITE_DATA__\">window.__INITIAL_SITE_DATA__ = {\"siteContent\":{\"profile\":{\"name\":\"Ust. Jaenal Maskun\",\"arabicName\":\"الأستاذ زين الماسكون\",\"title\":\" Jaenal Maskun\",\"degrees\":\"S.Pd.I.\",\"role\":\"Pendidik & Dev APP Madrasah\",\"institution\":\"MI Ma'arif NU 2 Sanggreman\",\"tagline\":\"Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat\",\"bio\":\"Lebih dari 15 tahun mendedikasikan diri dalam dunia pendidikan Islam, pengembangan kurikulum madrasah terpadu, serta pembinaan akhlak santri dan generasi muda. Berkomitmen menghadirkan ekosistem madrasah yang adaptif terhadap sains-teknologi modern tanpa mencabut akar tradisi keilmuan Islam dan kearifan pesantren.\",\"motto\":\"العِلْمُ بِلَا عَمَلٍ كَالشَّجَرِ بِلَا ثَمَرٍ — Ilmu tanpa amal laksana pohon tanpa buah.\",\"location\":\"Gentawangi, Indonesia\",\"email\":\"jaenalmaskun@gmail.com\",\"phone\":\"+62 812-2673-8883\",\"avatarUrl\":\"/uploads/hero_1787971417_48afa4.jpg\",\"socials\":{\"whatsapp\":\"https://wa.me/6281226738883\",\"youtube\":\"https://www.youtube.com/@jaenalmaskunofficial3977\",\"instagram\":\"https://instagram.com/jaenalmaskun\",\"facebook\":\"https://facebook.com/jaenalmaskun\",\"linkedin\":\"https://linkedin.com/in/jaenalmaskun\"},\"stats\":[{\"label\":\"Tahun Pengabdian\",\"value\":\"15+\",\"subtext\":\"Di Dunia Pendidikan Madrasah\"},{\"label\":\"Karya Tulis & Modul\",\"value\":\"24+\",\"subtext\":\"Modul  Ajar\"},{\"label\":\"Guru Terlatih\",\"value\":\"3+\",\"subtext\":\"Pelatihan PKB & Pedagogi\"},{\"label\":\"Santri & Siswa Dibina\",\"value\":\"12+\",\"subtext\":\"Alumni Berprestasi\"}]},\"education\":[{\"year\":\"2013\",\"degree\":\"Sarjana Pendidikan S1\",\"institution\":\"IAIIG Cilacap\",\"focus\":\"Konsentrasi Manajemen Pendidikan Islam\",\"field\":\"Konsentrasi Manajemen Pendidikan Islam\"},{\"year\":\"2013\",\"degree\":\"Sarjana Pendidikan Agama Islam (S.Pd.I.)\",\"institution\":\"Fakultas Tarbiyah dan Keguruan\",\"focus\":\"Pendidikan Agama Islam\",\"field\":\"Pendidikan Agama Islam\"},{\"year\":\"1995\",\"degree\":\"Pendidikan Pesantren & Madrasah Aliyah\",\"institution\":\"Pondok Pesantren  As Syafi'iyah Situbondo\",\"focus\":\"Tafsir Al-Qur'an, Hadits, Fiqh Syafi'iyah, & Tahfidzul Qur'an\"}],\"pillars\":[{\"title\":\"Adab & Karakter Luhur\",\"arabic\":\"الأخلاق الكريمة\",\"desc\":\"Menempatkan pembentukan adab dan tata krama islami sebagai pondasi utama sebelum penanaman keilmuan akademis.\",\"icon\":\"HeartHandshake\"},{\"title\":\"Tradisi & Nalar Kritis\",\"arabic\":\"التراث والتجديد\",\"desc\":\"Melestarikan khazanah turots pesantren klasik seraya menumbuhkan daya analitis terhadap tantangan sains modern.\",\"icon\":\"BookOpenCheck\"},{\"title\":\"Inovasi & Adaptasi Digital\",\"arabic\":\"مواكبة العصر\",\"desc\":\"Pemanfaatan teknologi mutakhir untuk memperluas syiar dakwah, memperkaya media ajar, dan meningkatkan efisiensi madrasah.\",\"icon\":\"Sparkles\"},{\"title\":\"Keteladanan Nyata\",\"arabic\":\"الأسوة الحسنة\",\"desc\":\"Mendidik dengan tindakan nyata, integritas kepribadian, serta konsistensi antara lisan dan perbuatan sehari-hari.\",\"icon\":\"ShieldCheck\"}],\"quotes\":[{\"id\":\"q1\",\"arabicText\":\"يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ\",\"translation\":\"Allah akan meninggikan orang-orang yang beriman di antaramu dan orang-orang yang diberi ilmu pengetahuan beberapa derajat.\",\"source\":\"QS. Al-Mujadilah [58]: 11\",\"theme\":\"Keutamaan Ilmu\"},{\"id\":\"q2\",\"arabicText\":\"طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ\",\"translation\":\"Menuntut ilmu itu wajib atas setiap muslim.\",\"source\":\"HR. Ibnu Majah no. 224\",\"theme\":\"Kewajiban Belajar\"},{\"id\":\"q3\",\"arabicText\":\"الأَدَبُ قَبْلَ العِلْمِ\",\"translation\":\"Adab dan budi pekerti mendahului ilmu pengetahuan.\",\"source\":\"Imam Malik rahimahullah\",\"theme\":\"Pilar Adab\"},{\"id\":\"q4\",\"arabicText\":\"مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ\",\"translation\":\"Barangsiapa menempuh jalan untuk mencari ilmu, maka Allah akan memudahkan baginya jalan menuju surga.\",\"source\":\"HR. Muslim no. 2699\",\"theme\":\"Jalan Menuju Surga\"},{\"id\":\"q5\",\"arabicText\":\"خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ\",\"translation\":\"Sebaik-baik kalian adalah orang yang belajar Al-Qur'an dan mengajarkannya.\",\"source\":\"HR. Al-Bukhari no. 5027\",\"theme\":\"Keberkahan Al-Qur'an\"}],\"publications\":[{\"id\":\"pub-1\",\"title\":\"Harmonisasi Adab & Sains: Desain Pembelajaran Integratif di Madrasah Abad 21\",\"category\":\"Buku\",\"year\":\"2024\",\"publisher\":\"Pustaka Cendekia Nusantara\",\"description\":\"Kajian komprehensif tentang perumusan strategi integrasi nilai-nilai keislaman dengan metodologi sains dan computational thinking di ruang kelas madrasah.\",\"tags\":[\"Kurikulum Madrasah\",\"Integrasi Sains-Islam\",\"Pedagogi\"],\"featured\":true},{\"id\":\"pub-2\",\"title\":\"Panduan Praktis Manajemen Kelas Humanis Berbasis Pesantren\",\"category\":\"Buku\",\"year\":\"2023\",\"publisher\":\"Lentera Ilmu Publishing\",\"description\":\"Pendekatan keteladanan (Uswah Hasanah) dalam mengelola kedisiplinan santri dengan cinta dan dialog yang memberdayakan.\",\"tags\":[\"Manajemen Pendidikan\",\"Karakter Santri\",\"Psikologi Anak\"],\"featured\":true},{\"id\":\"pub-3\",\"title\":\"Efektivitas Model Flipped Classroom Berorientasi Fiqh Tematik terhadap Literasi Keagamaan Siswa MA\",\"category\":\"Jurnal & Riset\",\"year\":\"2023\",\"publisher\":\"Jurnal Pendidikan Islam Terakreditasi SINTA\",\"description\":\"Penelitian kuantitatif-kualitatif terkait penerapan media digital dalam kajian fiqh muamalah di tingkat Madrasah Aliyah.\",\"tags\":[\"Riset Pendidikan\",\"Fiqh Kontemporer\",\"EdTech\"]},{\"id\":\"pub-4\",\"title\":\"Modul Ajar Pembelajaran Berdiferensiasi Mata Pelajaran Akidah Akhlak\",\"category\":\"Modul Pembelajaran\",\"year\":\"2024\",\"publisher\":\"Kelompok Kerja Guru (KKG) & MGMP\",\"description\":\"Panduan guru dalam memetakan kesiapan, minat, dan profil belajar siswa madrasah dengan asesmen diagnostik yang terstruktur.\",\"tags\":[\"Kurikulum Merdeka\",\"Akidah Akhlak\",\"Modul Guru\"]},{\"id\":\"pub-5\",\"title\":\"Menjaga Nalar Kritis di Balik Jubah Tradisi: Refleksi Pendidikan Madrasah\",\"category\":\"Opini & Artikel\",\"year\":\"2024\",\"publisher\":\"Kolom Literasi Keislaman & Media Nasional\",\"description\":\"Tulisan esai populer mengenai pentingnya membangun tradisi tadabbur dan dialektika ilmu dalam lingkungan santri.\",\"tags\":[\"Opini Publik\",\"Transformasi Madrasah\"]}],\"experience\":[{\"id\":\"exp-1\",\"period\":\"2019 — Sekarang\",\"role\":\"Kepala Pusat Penjaminan Mutu & Kurikulum\",\"organization\":\"Yayasan Pendidikan Islam & Madrasah Terpadu\",\"type\":\"Pengabdian\",\"description\":\"Memimpin perancangan kurikulum khas madrasah yang menyinergikan Kurikulum Nasional, Kemenag, dan Kurikulum Kepesantrenan Klasik (Kuning).\",\"achievements\":[\"Meningkatkan akreditasi madrasah menjadi Unggul (A) secara konsisten\",\"Menginisiasi program Tahfidz Berbasis Pemahaman Makna (Fahmul Qur'an)\",\"Digitalisasi rapor dan sistem evaluasi pembelajaran madrasah\"],\"isActive\":false},{\"id\":\"exp-2\",\"period\":\"2021 — Sekarang\",\"role\":\"Fasilitator & Instruktur Pengembangan Keprofesian Berkelanjutan (PKB)\",\"organization\":\"Kementerian Agama RI / Forum MGMP\",\"type\":\"Pendidikan\",\"description\":\"Memberikan pelatihan dan mentoring intensif bagi ratusan guru madrasah se-wilayah dalam penyusunan modul ajar inovatif, asesmen autentik, dan literasi digital.\",\"achievements\":[\"Telah melatih lebih dari 3.500 guru Madrasah Ibtidaiyah, Tsanawiyah, & Aliyah\",\"Penyusun instrumen workshop literasi numerasi madrasah\"],\"isActive\":false},{\"id\":\"exp-3\",\"period\":\"2015 — 2019\",\"role\":\"Wakil Kepala Bidang Akademik & Kesiswaan\",\"organization\":\"Madrasah Tsanawiyah Unggulan\",\"type\":\"Pendidikan\",\"description\":\"Mengkoordinir pembinaan olimpiade sains madrasah (KSM), kepanduan Pramuka Santri, serta program pembiasaan sholat dhuha dan tadarus harian.\",\"achievements\":[\"Membimbing santri meraih medali emas KSM (Kompetisi Sains Madrasah) tingkat provinsi\",\"Membangun program Duta Akhlak dan Budaya Literasi 15 Menit\"],\"isActive\":false},{\"id\":\"exp-4\",\"period\":\"2010 — 2015\",\"role\":\"Guru Pendidikan Agama Islam & Bahasa Arab\",\"organization\":\"Madrasah\",\"type\":\"Pengabdian\",\"description\":\"Mengajar ilmu Fiqh, Nahwu Shorof dasar, serta pendampingan asrama santri.\",\"achievements\":[\"Pengelola data lembaga Madrasah. \"]}],\"agenda\":[{\"id\":\"ag-1\",\"title\":\"Kajian Rutin Kitab Ta'lim Muta'allim: Etika Murid dan Guru\",\"date\":\"Setiap Ahad Pagi\",\"time\":\"06.30 — 08.00 WIB\",\"location\":\"Masjid Baitul 'Ilmi & Live Streaming YouTube\",\"type\":\"Kajian Kitab\",\"status\":\"Rutin\"},{\"id\":\"ag-2\",\"title\":\"Workshop Desain Modul Ajar Digital Interaktif untuk Guru Madrasah\",\"date\":\"Sabtu, 28 Agustus 2026\",\"time\":\"08.30 — 15.00 WIB\",\"location\":\"Aula Kemenag Wilayah & Hybrid Zoom\",\"type\":\"Pelatihan Guru\",\"status\":\"Akan Datang\"},{\"id\":\"ag-3\",\"title\":\"Seminar Parenting Islami: Menemani Generasi Alpha Bersahabat dengan Al-Qur'an\",\"date\":\"Ahad, 06 September 2026\",\"time\":\"09.00 — 11.45 WIB\",\"location\":\"Gedung Pusat Dakwah Islam (Pusdai)\",\"type\":\"Seminar Nasional\",\"status\":\"Akan Datang\"},{\"id\":\"ag-4\",\"title\":\"Bimbingan Tahsin & Fahmul Ayat Tematik bagi Calon Asatidz\",\"date\":\"Setiap Malam Kamis\",\"time\":\"Ba'da Maghrib — Isya\",\"location\":\"Halaqah Pesantren\",\"type\":\"Bimbingan Santri\",\"status\":\"Rutin\"}],\"gallery\":[{\"id\":\"gal-1787971755762\",\"title\":\"Dokumentasi Aktivitas Santri\",\"category\":\"Kegiatan Ziaroh Makam \",\"image\":\"/uploads/gallery_1787972017_520578.jpg\",\"videoUrl\":\"\",\"description\":\"Deskripsi singkat suasana dan momentum kegiatan. Ziaroh Makam Pendiri NU Tanggal 5 Maulid bertepatan tanggal 17 Agustus 2026.\"}],\"youtubeChannel\":{\"enabled\":true,\"channelHandle\":\"@jaenalmaskun\",\"channelTitle\":\"Kanal YouTube Ust. Jaenal Maskun\",\"channelId\":\"\",\"channelUrl\":\"https://www.youtube.com/@jaenalmaskunofficial3977\",\"playlistId\":\"\",\"autoFetch\":true,\"videos\":[{\"id\":\"vid-1787972226166\",\"videoId\":\"1KpAN-YhwC0\",\"title\":\"Mars Madrasah\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/1KpAN-YhwC0/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/1KpAN-YhwC0/hqdefault.jpg\",\"videoUrl\":\"https://youtu.be/1KpAN-YhwC0?si=ObTm04qydybwotu7\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787972169943\",\"videoId\":\"qcvt8-M5nEg\",\"title\":\"Mars Ma'arif NU\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/qcvt8-M5nEg/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/qcvt8-M5nEg/hqdefault.jpg\",\"videoUrl\":\"https://youtu.be/qcvt8-M5nEg?si=pPwZnNSPTnvfONQh\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787972105010\",\"videoId\":\"gSRIT25inx4\",\"title\":\"Lagu Sedih\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/gSRIT25inx4/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/gSRIT25inx4/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/live/gSRIT25inx4?si=7YNcAn5SnXwolV9m\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787971358290\",\"videoId\":\"p-unGL9l7Jk\",\"title\":\"Kalisadang Bersholawat\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"/uploads/video_thumb_1787971380_80db05.jpg\",\"thumbnail\":\"/uploads/video_thumb_1787971380_80db05.jpg\",\"videoUrl\":\"https://youtu.be/p-unGL9l7Jk?si=pn1YeaSXCky7GT3m\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787971179287\",\"videoId\":\"6zp1vEyBBr4\",\"title\":\"Mahallul Qiyam\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/6zp1vEyBBr4/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/6zp1vEyBBr4/hqdefault.jpg\",\"videoUrl\":\"https://youtu.be/6zp1vEyBBr4?si=wTSQvBqAx4kG8_Ab\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"yt-vid-3VMTHgGM_HY\",\"videoId\":\"3VMTHgGM_HY\",\"title\":\"PROYEK KELAS 4\",\"description\":\"KEGIATAN MEMBUAT PROYEK POSTER SURAT AL ASR\",\"thumbnail\":\"https://img.youtube.com/vi/3VMTHgGM_HY/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=3VMTHgGM_HY\",\"publishedAt\":\"31 Jul 2025\",\"views\":\"1 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-PDY0zq86Cjo\",\"videoId\":\"PDY0zq86Cjo\",\"title\":\"P5RA IZZATI PEMANFAATAN LIMBAH KERTAS DISULAP MENJADI WADAH PENSIL\",\"description\":\"Pemanfaatan limbah kertas karya santri Izzati menjadi wadah pensil yang estetik dan bernilai guna.\",\"thumbnail\":\"https://img.youtube.com/vi/PDY0zq86Cjo/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=PDY0zq86Cjo\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-UZn726QfQcg\",\"videoId\":\"UZn726QfQcg\",\"title\":\"P5RA LIA PEMANFAATAN LIMBAH SAMPAH MENJADI TEMPAT BERGUNA\",\"description\":\"Kreativitas santri madrasah dalam proyek penguatan profil pelajar Pancasila & Rahmatan Lil Alamin.\",\"thumbnail\":\"https://img.youtube.com/vi/UZn726QfQcg/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=UZn726QfQcg\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-soDxFQnksoU\",\"videoId\":\"soDxFQnksoU\",\"title\":\"P5RA SAFA PEMANFAATAN LIMBAH MENJADI TEMPAT PENSIL\",\"description\":\"Kreasi santriwati Safa mengolah limbah anorganik menjadi perlengkapan belajar yang bermanfaat.\",\"thumbnail\":\"https://img.youtube.com/vi/soDxFQnksoU/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=soDxFQnksoU\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-Q_xR5d0aQD4\",\"videoId\":\"Q_xR5d0aQD4\",\"title\":\"P5RA FADHIL PEMANFAATN LIMBAH SAMPAH MENJADI KREASI\",\"description\":\"Dokumentasi karya proyek P5RA santri Fadhil dalam daur ulang limbah madrasah.\",\"thumbnail\":\"https://img.youtube.com/vi/Q_xR5d0aQD4/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=Q_xR5d0aQD4\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-V4PYiei0vWk\",\"videoId\":\"V4PYiei0vWk\",\"title\":\"KEGIATAN PAS 1 TAHUN 2024\",\"description\":\"Pelaksanaan Penilaian Akhir Semester (PAS) 1 Tahun Ajaran 2024 MI Ma'arif NU 2 Sanggreman.\",\"thumbnail\":\"https://img.youtube.com/vi/V4PYiei0vWk/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=V4PYiei0vWk\",\"publishedAt\":\"6 Des 2024\",\"views\":\"4 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-EjoWi0uaqLw\",\"videoId\":\"EjoWi0uaqLw\",\"title\":\"JADWAL PAS 1 2024\",\"description\":\"Pengumuman dan sosialisasi jadwal asesmen akhir semester madrasah.\",\"thumbnail\":\"https://img.youtube.com/vi/EjoWi0uaqLw/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=EjoWi0uaqLw\",\"publishedAt\":\"6 Des 2024\",\"views\":\"24 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-QQCwic3yObA\",\"videoId\":\"QQCwic3yObA\",\"title\":\"ZIAROH WALI SE BANYUMAS\",\"description\":\"Rihlah religi ziarah auliya dan sesepuh pejuang Islam se-Kabupaten Banyumas.\",\"thumbnail\":\"https://img.youtube.com/vi/QQCwic3yObA/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=QQCwic3yObA\",\"publishedAt\":\"24 Jul 2023\",\"views\":\"2 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-s2HEgG5ymg8\",\"videoId\":\"s2HEgG5ymg8\",\"title\":\"BAHAGIA ITU SEDERHANA\",\"description\":\"Keceriaan dan kebersamaan di lingkungan madrasah bersama para pendidik dan peserta didik.\",\"thumbnail\":\"https://img.youtube.com/vi/s2HEgG5ymg8/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=s2HEgG5ymg8\",\"publishedAt\":\"28 Sep 2022\",\"views\":\"4 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-HR_gu-3Isdo\",\"videoId\":\"HR_gu-3Isdo\",\"title\":\"ZIAROH WALI BANYUMAS\",\"description\":\"Dokumentasi perjalanan spiritual ziarah makam wali Banyumas meneladani jejak dakwah.\",\"thumbnail\":\"https://img.youtube.com/vi/HR_gu-3Isdo/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=HR_gu-3Isdo\",\"publishedAt\":\"28 Sep 2022\",\"views\":\"15 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"tiktok-vid-1\",\"videoId\":\"7320000000000000001\",\"title\":\"Kutipan Hikmah Santri: Adab & Keberkahan Menuntut Ilmu di Madrasah\",\"description\":\"Pesan singkat penuh inspirasi tentang keutamaan tawadhu', adab kepada guru, dan semangat belajar santri.\",\"thumbnail\":\"https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=800&q=80\",\"thumbnailUrl\":\"https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=800&q=80\",\"videoUrl\":\"https://www.tiktok.com/@jaenalmaskun\",\"platform\":\"tiktok\",\"channelName\":\"Ust. Jaenal Maskun (@jaenalmaskun)\",\"publishedAt\":\"Siaran TikTok\",\"views\":\"12.8K Pengikut\"},{\"id\":\"tiktok-live-1\",\"videoId\":\"live\",\"title\":\"Siaran Langsung Dakwah & Tanya Jawab Fikih Santri\",\"description\":\"Kajian siaran langsung interaktif membahas adab harian, tanya jawab hukum Islam, dan motivasi mengajar.\",\"thumbnail\":\"https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=800&q=80\",\"thumbnailUrl\":\"https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=800&q=80\",\"videoUrl\":\"https://www.tiktok.com/@jaenalmaskun/live\",\"platform\":\"tiktok\",\"channelName\":\"Ust. Jaenal Maskun (@jaenalmaskun)\",\"publishedAt\":\"Siaran Langsung\",\"views\":\"Live Streaming\"}],\"channels\":[{\"id\":\"channel-yt\",\"platform\":\"youtube\",\"channelName\":\"Jaenal Maskun Official\",\"channelHandle\":\"@jaenalmaskun\",\"channelUrl\":\"https://www.youtube.com/@jaenalmaskun\",\"subscribersOrFollowers\":\"3.5K Pelanggan\",\"description\":\"Saluran resmi kajian kitab, ceramah ilmiah madrasah, dan tutorial pendidikan Islam.\",\"isPrimary\":true},{\"id\":\"channel-tiktok\",\"platform\":\"tiktok\",\"channelName\":\"Jaenal Maskun (@jaenalmaskun)\",\"channelHandle\":\"@jaenalmaskun\",\"channelUrl\":\"https://www.tiktok.com/@jaenalmaskun\",\"subscribersOrFollowers\":\"12.8K Pengikut\",\"description\":\"Kutipan hikmah santri, video singkat dakwah milenial, dan inspirasi harian guru madrasah.\",\"isPrimary\":false},{\"id\":\"channel-ig\",\"platform\":\"instagram\",\"channelName\":\"Jaenal Maskun Official IG\",\"channelHandle\":\"@jaenalmaskun\",\"channelUrl\":\"https://www.instagram.com/jaenalmaskun\",\"subscribersOrFollowers\":\"5.2K Pengikut\",\"description\":\"Galeri foto pengabdian, cuplikan Reels motivasi, dan liputan kegiatan madrasah.\",\"isPrimary\":false},{\"id\":\"channel-fb\",\"platform\":\"facebook\",\"channelName\":\"Jaenal Maskun (Facebook Page)\",\"channelHandle\":\"jaenal.maskun\",\"channelUrl\":\"https://www.facebook.com/jaenal.maskun\",\"subscribersOrFollowers\":\"4.1K Sahabat\",\"description\":\"Wadah silaturahmi alumni madrasah, wali santri, dan komunitas pendidik Islam.\",\"isPrimary\":false}],\"lastFetched\":1787576602014},\"youtubeVideos\":[{\"id\":\"vid-1787972226166\",\"videoId\":\"1KpAN-YhwC0\",\"title\":\"Mars Madrasah\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/1KpAN-YhwC0/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/1KpAN-YhwC0/hqdefault.jpg\",\"videoUrl\":\"https://youtu.be/1KpAN-YhwC0?si=ObTm04qydybwotu7\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787972169943\",\"videoId\":\"qcvt8-M5nEg\",\"title\":\"Mars Ma'arif NU\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/qcvt8-M5nEg/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/qcvt8-M5nEg/hqdefault.jpg\",\"videoUrl\":\"https://youtu.be/qcvt8-M5nEg?si=pPwZnNSPTnvfONQh\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787972105010\",\"videoId\":\"gSRIT25inx4\",\"title\":\"Lagu Sedih\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/gSRIT25inx4/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/gSRIT25inx4/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/live/gSRIT25inx4?si=7YNcAn5SnXwolV9m\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787971358290\",\"videoId\":\"p-unGL9l7Jk\",\"title\":\"Kalisadang Bersholawat\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"/uploads/video_thumb_1787971380_80db05.jpg\",\"thumbnail\":\"/uploads/video_thumb_1787971380_80db05.jpg\",\"videoUrl\":\"https://youtu.be/p-unGL9l7Jk?si=pn1YeaSXCky7GT3m\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"vid-1787971179287\",\"videoId\":\"6zp1vEyBBr4\",\"title\":\"Mahallul Qiyam\",\"description\":\"Penjelasan materi dan ringkasan isi video kajian.\",\"publishedAt\":\"Terbaru\",\"thumbnailUrl\":\"https://img.youtube.com/vi/6zp1vEyBBr4/hqdefault.jpg\",\"thumbnail\":\"https://img.youtube.com/vi/6zp1vEyBBr4/hqdefault.jpg\",\"videoUrl\":\"https://youtu.be/6zp1vEyBBr4?si=wTSQvBqAx4kG8_Ab\",\"platform\":\"youtube\",\"channelName\":\"Ust. Jaenal Maskun Official\",\"duration\":\"10:00\",\"views\":\"1K tayangan\"},{\"id\":\"yt-vid-3VMTHgGM_HY\",\"videoId\":\"3VMTHgGM_HY\",\"title\":\"PROYEK KELAS 4\",\"description\":\"KEGIATAN MEMBUAT PROYEK POSTER SURAT AL ASR\",\"thumbnail\":\"https://img.youtube.com/vi/3VMTHgGM_HY/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=3VMTHgGM_HY\",\"publishedAt\":\"31 Jul 2025\",\"views\":\"1 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-PDY0zq86Cjo\",\"videoId\":\"PDY0zq86Cjo\",\"title\":\"P5RA IZZATI PEMANFAATAN LIMBAH KERTAS DISULAP MENJADI WADAH PENSIL\",\"description\":\"Pemanfaatan limbah kertas karya santri Izzati menjadi wadah pensil yang estetik dan bernilai guna.\",\"thumbnail\":\"https://img.youtube.com/vi/PDY0zq86Cjo/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=PDY0zq86Cjo\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-UZn726QfQcg\",\"videoId\":\"UZn726QfQcg\",\"title\":\"P5RA LIA PEMANFAATAN LIMBAH SAMPAH MENJADI TEMPAT BERGUNA\",\"description\":\"Kreativitas santri madrasah dalam proyek penguatan profil pelajar Pancasila & Rahmatan Lil Alamin.\",\"thumbnail\":\"https://img.youtube.com/vi/UZn726QfQcg/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=UZn726QfQcg\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-soDxFQnksoU\",\"videoId\":\"soDxFQnksoU\",\"title\":\"P5RA SAFA PEMANFAATAN LIMBAH MENJADI TEMPAT PENSIL\",\"description\":\"Kreasi santriwati Safa mengolah limbah anorganik menjadi perlengkapan belajar yang bermanfaat.\",\"thumbnail\":\"https://img.youtube.com/vi/soDxFQnksoU/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=soDxFQnksoU\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-Q_xR5d0aQD4\",\"videoId\":\"Q_xR5d0aQD4\",\"title\":\"P5RA FADHIL PEMANFAATN LIMBAH SAMPAH MENJADI KREASI\",\"description\":\"Dokumentasi karya proyek P5RA santri Fadhil dalam daur ulang limbah madrasah.\",\"thumbnail\":\"https://img.youtube.com/vi/Q_xR5d0aQD4/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=Q_xR5d0aQD4\",\"publishedAt\":\"9 Des 2024\",\"views\":\"Resmi\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-V4PYiei0vWk\",\"videoId\":\"V4PYiei0vWk\",\"title\":\"KEGIATAN PAS 1 TAHUN 2024\",\"description\":\"Pelaksanaan Penilaian Akhir Semester (PAS) 1 Tahun Ajaran 2024 MI Ma'arif NU 2 Sanggreman.\",\"thumbnail\":\"https://img.youtube.com/vi/V4PYiei0vWk/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=V4PYiei0vWk\",\"publishedAt\":\"6 Des 2024\",\"views\":\"4 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-EjoWi0uaqLw\",\"videoId\":\"EjoWi0uaqLw\",\"title\":\"JADWAL PAS 1 2024\",\"description\":\"Pengumuman dan sosialisasi jadwal asesmen akhir semester madrasah.\",\"thumbnail\":\"https://img.youtube.com/vi/EjoWi0uaqLw/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=EjoWi0uaqLw\",\"publishedAt\":\"6 Des 2024\",\"views\":\"24 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-QQCwic3yObA\",\"videoId\":\"QQCwic3yObA\",\"title\":\"ZIAROH WALI SE BANYUMAS\",\"description\":\"Rihlah religi ziarah auliya dan sesepuh pejuang Islam se-Kabupaten Banyumas.\",\"thumbnail\":\"https://img.youtube.com/vi/QQCwic3yObA/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=QQCwic3yObA\",\"publishedAt\":\"24 Jul 2023\",\"views\":\"2 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-s2HEgG5ymg8\",\"videoId\":\"s2HEgG5ymg8\",\"title\":\"BAHAGIA ITU SEDERHANA\",\"description\":\"Keceriaan dan kebersamaan di lingkungan madrasah bersama para pendidik dan peserta didik.\",\"thumbnail\":\"https://img.youtube.com/vi/s2HEgG5ymg8/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=s2HEgG5ymg8\",\"publishedAt\":\"28 Sep 2022\",\"views\":\"4 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"yt-vid-HR_gu-3Isdo\",\"videoId\":\"HR_gu-3Isdo\",\"title\":\"ZIAROH WALI BANYUMAS\",\"description\":\"Dokumentasi perjalanan spiritual ziarah makam wali Banyumas meneladani jejak dakwah.\",\"thumbnail\":\"https://img.youtube.com/vi/HR_gu-3Isdo/hqdefault.jpg\",\"videoUrl\":\"https://www.youtube.com/watch?v=HR_gu-3Isdo\",\"publishedAt\":\"28 Sep 2022\",\"views\":\"15 tayangan\",\"channelName\":\"JAENAL MASKUN OFFICIAL\",\"platform\":\"youtube\"},{\"id\":\"tiktok-vid-1\",\"videoId\":\"7320000000000000001\",\"title\":\"Kutipan Hikmah Santri: Adab & Keberkahan Menuntut Ilmu di Madrasah\",\"description\":\"Pesan singkat penuh inspirasi tentang keutamaan tawadhu', adab kepada guru, dan semangat belajar santri.\",\"thumbnail\":\"https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=800&q=80\",\"thumbnailUrl\":\"https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=800&q=80\",\"videoUrl\":\"https://www.tiktok.com/@jaenalmaskun\",\"platform\":\"tiktok\",\"channelName\":\"Ust. Jaenal Maskun (@jaenalmaskun)\",\"publishedAt\":\"Siaran TikTok\",\"views\":\"12.8K Pengikut\"},{\"id\":\"tiktok-live-1\",\"videoId\":\"live\",\"title\":\"Siaran Langsung Dakwah & Tanya Jawab Fikih Santri\",\"description\":\"Kajian siaran langsung interaktif membahas adab harian, tanya jawab hukum Islam, dan motivasi mengajar.\",\"thumbnail\":\"https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=800&q=80\",\"thumbnailUrl\":\"https://images.unsplash.com/photo-1519452635265-7b1fbfd1e4e0?auto=format&fit=crop&w=800&q=80\",\"videoUrl\":\"https://www.tiktok.com/@jaenalmaskun/live\",\"platform\":\"tiktok\",\"channelName\":\"Ust. Jaenal Maskun (@jaenalmaskun)\",\"publishedAt\":\"Siaran Langsung\",\"views\":\"Live Streaming\"}],\"mediaChannels\":[{\"id\":\"channel-yt\",\"platform\":\"youtube\",\"channelName\":\"Jaenal Maskun Official\",\"channelHandle\":\"@jaenalmaskun\",\"channelUrl\":\"https://www.youtube.com/@jaenalmaskun\",\"subscribersOrFollowers\":\"3.5K Pelanggan\",\"description\":\"Saluran resmi kajian kitab, ceramah ilmiah madrasah, dan tutorial pendidikan Islam.\",\"isPrimary\":true},{\"id\":\"channel-tiktok\",\"platform\":\"tiktok\",\"channelName\":\"Jaenal Maskun (@jaenalmaskun)\",\"channelHandle\":\"@jaenalmaskun\",\"channelUrl\":\"https://www.tiktok.com/@jaenalmaskun\",\"subscribersOrFollowers\":\"12.8K Pengikut\",\"description\":\"Kutipan hikmah santri, video singkat dakwah milenial, dan inspirasi harian guru madrasah.\",\"isPrimary\":false},{\"id\":\"channel-ig\",\"platform\":\"instagram\",\"channelName\":\"Jaenal Maskun Official IG\",\"channelHandle\":\"@jaenalmaskun\",\"channelUrl\":\"https://www.instagram.com/jaenalmaskun\",\"subscribersOrFollowers\":\"5.2K Pengikut\",\"description\":\"Galeri foto pengabdian, cuplikan Reels motivasi, dan liputan kegiatan madrasah.\",\"isPrimary\":false},{\"id\":\"channel-fb\",\"platform\":\"facebook\",\"channelName\":\"Jaenal Maskun (Facebook Page)\",\"channelHandle\":\"jaenal.maskun\",\"channelUrl\":\"https://www.facebook.com/jaenal.maskun\",\"subscribersOrFollowers\":\"4.1K Sahabat\",\"description\":\"Wadah silaturahmi alumni madrasah, wali santri, dan komunitas pendidik Islam.\",\"isPrimary\":false}],\"visibility\":{\"hero\":true,\"about\":true,\"pillars\":true,\"publications\":false,\"experience\":true,\"agenda\":true,\"islamicTools\":true,\"gallery\":true,\"youtubeChannel\":true,\"contact\":true},\"heroSettings\":{\"badgeText\":\"Guru\",\"greetingTitle\":\"Assalamu’alaikum Warahmatullahi Wabarakatuh\",\"greetingSub\":\"Khidmat untuk Madrasah\",\"showStats\":true,\"showDownloadCV\":true,\"heroImage\":\"/uploads/hero_1787971417_48afa4.jpg\",\"photoBadgeText\":\"Pejuang MI\"},\"shareSettings\":{\"title\":\"Jaenal Maskun, S.Pd.I. | Pendidik, Akademisi & Penggerak Madrasah\",\"description\":\"Website Resmi Jaenal Maskun, S.Pd.I. - Menyemai Adab, Menumbuhkan Intelektual, Mengabdi untuk Kemuliaan Umat. Eksplorasi profil, modul pembelajaran madrasah, tasbih digital, dan agenda kajian.\",\"thumbnailUrl\":\"/uploads/share_thumb_1787972377.jpg\",\"authorName\":\"Jaenal Maskun, S.Pd.I.\",\"badgeText\":\"Website Resmi Madrasah\"}},\"logoConfig\":{\"type\":\"custom_image\",\"monogramText\":\"HJ\",\"brandName\":\"GARDA\",\"badgeText\":\"MADRASAH NU\",\"taglineText\":\"Pendidik & Dev APP Madrasah\",\"shape\":\"circle\",\"borderStyle\":\"gold\",\"showTagline\":true,\"showBadge\":true,\"size\":\"large\",\"fitMode\":\"cover\",\"zoomLevel\":115,\"backgroundColor\":\"transparent\",\"faviconUrl\":\"/uploads/favicon_1788507233_abba34.png\",\"footerLogoType\":\"sync_header\",\"customImageUrl\":\"/uploads/logo_1788507216_652bd7.jpg\",\"blendMode\":\"normal\",\"footerLogoMode\":\"match_header\"},\"stickyFooterConfig\":{\"enabled\":true,\"showOnDesktop\":true,\"showOnMobile\":true,\"position\":\"floating\",\"theme\":\"emerald_gold\",\"maxWidth\":\"max-w-4xl\",\"showLabels\":true,\"showBadges\":true,\"allowCollapse\":true,\"collapseDefault\":false,\"collapseText\":\"Menu Pintas Madrasah\",\"showAdminButton\":true,\"adminButtonText\":\"Login\",\"showQuickLogoButton\":false,\"showAudioButton\":false,\"showEditShortcut\":false,\"items\":[{\"id\":\"item-beranda\",\"label\":\"Beranda\",\"sectionId\":\"beranda\",\"icon\":\"Home\",\"visible\":true},{\"id\":\"item-karya\",\"label\":\"Si@Kad Madrasah\",\"sectionId\":\"karya\",\"icon\":\"BookOpen\",\"badgeText\":\"Si@Kad\",\"badgeColor\":\"gold\",\"visible\":true,\"linkType\":\"url\",\"url\":\"https://siakad-madrasah.jaenalmaskun.biz.id\",\"externalUrl\":\"https://siakad-madrasah.jaenalmaskun.biz.id\",\"isExternal\":true,\"openInNewTab\":true},{\"id\":\"item-agenda\",\"label\":\"Agenda\",\"sectionId\":\"agenda\",\"icon\":\"Calendar\",\"badgeText\":\"Jadwal\",\"badgeColor\":\"emerald\",\"visible\":true},{\"id\":\"item-fitur-islami\",\"label\":\"Absensi GTK\",\"sectionId\":\"fitur-islami\",\"icon\":\"Sparkles\",\"visible\":true,\"linkType\":\"url\",\"url\":\"https://absensi.jaenalmaskun.biz.id\",\"externalUrl\":\"https://absensi.jaenalmaskun.biz.id\",\"isExternal\":true,\"openInNewTab\":true,\"badgeText\":\"Absensi GTK\"},{\"id\":\"item-1786987370070\",\"label\":\"Modul Ajar KBC\",\"linkType\":\"url\",\"sectionId\":\"kustom-url\",\"url\":\"https://modul-ajar-kbc.jaenalmaskun.biz.id\",\"externalUrl\":\"https://modul-ajar-kbc.jaenalmaskun.biz.id\",\"openInNewTab\":true,\"isExternal\":true,\"icon\":\"Sparkles\",\"badgeColor\":\"gold\",\"visible\":true,\"badgeText\":\"Modul KBC\"},{\"id\":\"item-1788567481871\",\"label\":\"Kartu Pelajar\",\"linkType\":\"url\",\"sectionId\":\"kustom-url\",\"url\":\"https://kartu-pelajar.jaenalmaskun.biz.id\",\"externalUrl\":\"https://kartu-pelajar.jaenalmaskun.biz.id\",\"openInNewTab\":true,\"isExternal\":true,\"icon\":\"Sparkles\",\"badgeText\":\"Kartu Pelajar\",\"badgeColor\":\"gold\",\"visible\":true}]},\"lastUpdated\":1790734710000};</script>\n</head>\n  <body class=\"bg-[#faf8f5] text-[#1c2e24] antialiased selection:bg-emerald-700 selection:text-white font-sans\">\n    <div id=\"root\"></div>\n  </body>\n</html>\n\n",
+        "updatedAt": "2026-10-03T05:56:49.861Z"
+      },
+      {
+        "id": "vf-phys-assets_index-Dx_-uADC_js",
+        "accountId": "acc-rdm-01",
+        "name": "index-Dx_-uADC.js",
+        "path": "/public_html/assets/index-Dx_-uADC.js",
+        "type": "file",
+        "size": 683343,
+        "updatedAt": "2026-10-03T05:55:44.981Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah__htaccess",
+        "accountId": "acc-rdm-01",
+        "name": ".htaccess",
+        "path": "/public_html/siakad-madrasah/.htaccess",
+        "type": "file",
+        "size": 2354,
+        "updatedAt": "2026-10-03T05:55:44.981Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah__well-known_acme-challenge__htaccess",
+        "accountId": "acc-rdm-01",
+        "name": ".htaccess",
+        "path": "/public_html/siakad-madrasah/.well-known/acme-challenge/.htaccess",
+        "type": "file",
+        "size": 225,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_PANDUAN_HOSTING_PLESK_txt",
+        "accountId": "acc-rdm-01",
+        "name": "PANDUAN_HOSTING_PLESK.txt",
+        "path": "/public_html/siakad-madrasah/PANDUAN_HOSTING_PLESK.txt",
+        "type": "file",
+        "size": 2172,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_PLESK_HOSTING_GUIDE_txt",
+        "accountId": "acc-rdm-01",
+        "name": "PLESK_HOSTING_GUIDE.txt",
+        "path": "/public_html/siakad-madrasah/PLESK_HOSTING_GUIDE.txt",
+        "type": "file",
+        "size": 7664,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_README_PLESK_md",
+        "accountId": "acc-rdm-01",
+        "name": "README_PLESK.md",
+        "path": "/public_html/siakad-madrasah/README_PLESK.md",
+        "type": "file",
+        "size": 2172,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_api_config_php",
+        "accountId": "acc-rdm-01",
+        "name": "config.php",
+        "path": "/public_html/siakad-madrasah/api/config.php",
+        "type": "file",
+        "size": 2646,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_api_messages_php",
+        "accountId": "acc-rdm-01",
+        "name": "messages.php",
+        "path": "/public_html/siakad-madrasah/api/messages.php",
+        "type": "file",
+        "size": 3470,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_api_settings_php",
+        "accountId": "acc-rdm-01",
+        "name": "settings.php",
+        "path": "/public_html/siakad-madrasah/api/settings.php",
+        "type": "file",
+        "size": 9943,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_api_php",
+        "accountId": "acc-rdm-01",
+        "name": "api.php",
+        "path": "/public_html/siakad-madrasah/api.php",
+        "type": "file",
+        "size": 52990,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_AITeaching-C3EvzFTP_js",
+        "accountId": "acc-rdm-01",
+        "name": "AITeaching-C3EvzFTP.js",
+        "path": "/public_html/siakad-madrasah/assets/AITeaching-C3EvzFTP.js",
+        "type": "file",
+        "size": 19039,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_AITeaching-CvItLj9F_js",
+        "accountId": "acc-rdm-01",
+        "name": "AITeaching-CvItLj9F.js",
+        "path": "/public_html/siakad-madrasah/assets/AITeaching-CvItLj9F.js",
+        "type": "file",
+        "size": 101416,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_APIConfig-BUxH5Tqw_js",
+        "accountId": "acc-rdm-01",
+        "name": "APIConfig-BUxH5Tqw.js",
+        "path": "/public_html/siakad-madrasah/assets/APIConfig-BUxH5Tqw.js",
+        "type": "file",
+        "size": 17035,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_AbsensiSiswa-O4deTo9t_js",
+        "accountId": "acc-rdm-01",
+        "name": "AbsensiSiswa-O4deTo9t.js",
+        "path": "/public_html/siakad-madrasah/assets/AbsensiSiswa-O4deTo9t.js",
+        "type": "file",
+        "size": 18947,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_AdminLayout-C3pm3JEp_js",
+        "accountId": "acc-rdm-01",
+        "name": "AdminLayout-C3pm3JEp.js",
+        "path": "/public_html/siakad-madrasah/assets/AdminLayout-C3pm3JEp.js",
+        "type": "file",
+        "size": 31680,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_AnnouncementsAdmin-tOmMIjM6_js",
+        "accountId": "acc-rdm-01",
+        "name": "AnnouncementsAdmin-tOmMIjM6.js",
+        "path": "/public_html/siakad-madrasah/assets/AnnouncementsAdmin-tOmMIjM6.js",
+        "type": "file",
+        "size": 8225,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ArsipAkademik-CTKXdRHt_js",
+        "accountId": "acc-rdm-01",
+        "name": "ArsipAkademik-CTKXdRHt.js",
+        "path": "/public_html/siakad-madrasah/assets/ArsipAkademik-CTKXdRHt.js",
+        "type": "file",
+        "size": 37941,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_BackupAdmin-B4cgD5w0_js",
+        "accountId": "acc-rdm-01",
+        "name": "BackupAdmin-B4cgD5w0.js",
+        "path": "/public_html/siakad-madrasah/assets/BackupAdmin-B4cgD5w0.js",
+        "type": "file",
+        "size": 132913,
+        "updatedAt": "2026-10-03T05:55:44.982Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_BankSoal-ljCjvdL0_js",
+        "accountId": "acc-rdm-01",
+        "name": "BankSoal-ljCjvdL0.js",
+        "path": "/public_html/siakad-madrasah/assets/BankSoal-ljCjvdL0.js",
+        "type": "file",
+        "size": 28593,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_BedahCP--Y9-u22X_js",
+        "accountId": "acc-rdm-01",
+        "name": "BedahCP--Y9-u22X.js",
+        "path": "/public_html/siakad-madrasah/assets/BedahCP--Y9-u22X.js",
+        "type": "file",
+        "size": 48136,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_BedahCPPublic-BuguE-Xn_js",
+        "accountId": "acc-rdm-01",
+        "name": "BedahCPPublic-BuguE-Xn.js",
+        "path": "/public_html/siakad-madrasah/assets/BedahCPPublic-BuguE-Xn.js",
+        "type": "file",
+        "size": 22598,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_BookCatalog-5rydht6i_js",
+        "accountId": "acc-rdm-01",
+        "name": "BookCatalog-5rydht6i.js",
+        "path": "/public_html/siakad-madrasah/assets/BookCatalog-5rydht6i.js",
+        "type": "file",
+        "size": 9905,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_BrosurSPMB-B4ULofOT_js",
+        "accountId": "acc-rdm-01",
+        "name": "BrosurSPMB-B4ULofOT.js",
+        "path": "/public_html/siakad-madrasah/assets/BrosurSPMB-B4ULofOT.js",
+        "type": "file",
+        "size": 37603,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Calendar-C1lVa1tv_js",
+        "accountId": "acc-rdm-01",
+        "name": "Calendar-C1lVa1tv.js",
+        "path": "/public_html/siakad-madrasah/assets/Calendar-C1lVa1tv.js",
+        "type": "file",
+        "size": 14872,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CalendarAdmin-CbYy5YFk_js",
+        "accountId": "acc-rdm-01",
+        "name": "CalendarAdmin-CbYy5YFk.js",
+        "path": "/public_html/siakad-madrasah/assets/CalendarAdmin-CbYy5YFk.js",
+        "type": "file",
+        "size": 8263,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CalendarHolidayPicker-CafYTGTx_js",
+        "accountId": "acc-rdm-01",
+        "name": "CalendarHolidayPicker-CafYTGTx.js",
+        "path": "/public_html/siakad-madrasah/assets/CalendarHolidayPicker-CafYTGTx.js",
+        "type": "file",
+        "size": 9272,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CetakJadwal-D6eIlkp7_js",
+        "accountId": "acc-rdm-01",
+        "name": "CetakJadwal-D6eIlkp7.js",
+        "path": "/public_html/siakad-madrasah/assets/CetakJadwal-D6eIlkp7.js",
+        "type": "file",
+        "size": 11272,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CetakLaporanPembiasaan-BN0JCGCZ_js",
+        "accountId": "acc-rdm-01",
+        "name": "CetakLaporanPembiasaan-BN0JCGCZ.js",
+        "path": "/public_html/siakad-madrasah/assets/CetakLaporanPembiasaan-BN0JCGCZ.js",
+        "type": "file",
+        "size": 19029,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CetakPengumumanBerita-DCTIrieD_js",
+        "accountId": "acc-rdm-01",
+        "name": "CetakPengumumanBerita-DCTIrieD.js",
+        "path": "/public_html/siakad-madrasah/assets/CetakPengumumanBerita-DCTIrieD.js",
+        "type": "file",
+        "size": 11031,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CetakPiagamPrestasiModal-CJETFNtK_js",
+        "accountId": "acc-rdm-01",
+        "name": "CetakPiagamPrestasiModal-CJETFNtK.js",
+        "path": "/public_html/siakad-madrasah/assets/CetakPiagamPrestasiModal-CJETFNtK.js",
+        "type": "file",
+        "size": 10992,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CetakRapor-BSnlV1VR_js",
+        "accountId": "acc-rdm-01",
+        "name": "CetakRapor-BSnlV1VR.js",
+        "path": "/public_html/siakad-madrasah/assets/CetakRapor-BSnlV1VR.js",
+        "type": "file",
+        "size": 11140,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Circulation-DgR33Eqb_js",
+        "accountId": "acc-rdm-01",
+        "name": "Circulation-DgR33Eqb.js",
+        "path": "/public_html/siakad-madrasah/assets/Circulation-DgR33Eqb.js",
+        "type": "file",
+        "size": 9052,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Combination-BLaXy8Oi_js",
+        "accountId": "acc-rdm-01",
+        "name": "Combination-BLaXy8Oi.js",
+        "path": "/public_html/siakad-madrasah/assets/Combination-BLaXy8Oi.js",
+        "type": "file",
+        "size": 18002,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Contact-oDY_RF8y_js",
+        "accountId": "acc-rdm-01",
+        "name": "Contact-oDY_RF8y.js",
+        "path": "/public_html/siakad-madrasah/assets/Contact-oDY_RF8y.js",
+        "type": "file",
+        "size": 5931,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CoverGenerator-DLxBX2nm_js",
+        "accountId": "acc-rdm-01",
+        "name": "CoverGenerator-DLxBX2nm.js",
+        "path": "/public_html/siakad-madrasah/assets/CoverGenerator-DLxBX2nm.js",
+        "type": "file",
+        "size": 10796,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_CoverGeneratorPublic-DveYJqv4_js",
+        "accountId": "acc-rdm-01",
+        "name": "CoverGeneratorPublic-DveYJqv4.js",
+        "path": "/public_html/siakad-madrasah/assets/CoverGeneratorPublic-DveYJqv4.js",
+        "type": "file",
+        "size": 14383,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_DaftarPendaftar-LuJkeRoM_js",
+        "accountId": "acc-rdm-01",
+        "name": "DaftarPendaftar-LuJkeRoM.js",
+        "path": "/public_html/siakad-madrasah/assets/DaftarPendaftar-LuJkeRoM.js",
+        "type": "file",
+        "size": 15688,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_DashboardHome-BRQx3Cg1_js",
+        "accountId": "acc-rdm-01",
+        "name": "DashboardHome-BRQx3Cg1.js",
+        "path": "/public_html/siakad-madrasah/assets/DashboardHome-BRQx3Cg1.js",
+        "type": "file",
+        "size": 17777,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_DataPrestasi-DaOp3OcK_js",
+        "accountId": "acc-rdm-01",
+        "name": "DataPrestasi-DaOp3OcK.js",
+        "path": "/public_html/siakad-madrasah/assets/DataPrestasi-DaOp3OcK.js",
+        "type": "file",
+        "size": 23258,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_DataTamatan-BxkPoA60_js",
+        "accountId": "acc-rdm-01",
+        "name": "DataTamatan-BxkPoA60.js",
+        "path": "/public_html/siakad-madrasah/assets/DataTamatan-BxkPoA60.js",
+        "type": "file",
+        "size": 24314,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_DocumentCover-f29x8wzd_js",
+        "accountId": "acc-rdm-01",
+        "name": "DocumentCover-f29x8wzd.js",
+        "path": "/public_html/siakad-madrasah/assets/DocumentCover-f29x8wzd.js",
+        "type": "file",
+        "size": 3838,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ExamCard-vXfPXUat_js",
+        "accountId": "acc-rdm-01",
+        "name": "ExamCard-vXfPXUat.js",
+        "path": "/public_html/siakad-madrasah/assets/ExamCard-vXfPXUat.js",
+        "type": "file",
+        "size": 10714,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ExamCardGenerator-2W3dpjVA_js",
+        "accountId": "acc-rdm-01",
+        "name": "ExamCardGenerator-2W3dpjVA.js",
+        "path": "/public_html/siakad-madrasah/assets/ExamCardGenerator-2W3dpjVA.js",
+        "type": "file",
+        "size": 148712,
+        "updatedAt": "2026-10-03T05:55:44.983Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ExamCards-Be3pkI1e_js",
+        "accountId": "acc-rdm-01",
+        "name": "ExamCards-Be3pkI1e.js",
+        "path": "/public_html/siakad-madrasah/assets/ExamCards-Be3pkI1e.js",
+        "type": "file",
+        "size": 7359,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Footer-DfEV-EyK_js",
+        "accountId": "acc-rdm-01",
+        "name": "Footer-DfEV-EyK.js",
+        "path": "/public_html/siakad-madrasah/assets/Footer-DfEV-EyK.js",
+        "type": "file",
+        "size": 11505,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_GalleryAdmin-Dae5U7nH_js",
+        "accountId": "acc-rdm-01",
+        "name": "GalleryAdmin-Dae5U7nH.js",
+        "path": "/public_html/siakad-madrasah/assets/GalleryAdmin-Dae5U7nH.js",
+        "type": "file",
+        "size": 17383,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_GoogleSheetsSyncModal-BKbLBg_k_js",
+        "accountId": "acc-rdm-01",
+        "name": "GoogleSheetsSyncModal-BKbLBg_k.js",
+        "path": "/public_html/siakad-madrasah/assets/GoogleSheetsSyncModal-BKbLBg_k.js",
+        "type": "file",
+        "size": 1003965,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_HeaderTitleAnimation-WCiW01JS_js",
+        "accountId": "acc-rdm-01",
+        "name": "HeaderTitleAnimation-WCiW01JS.js",
+        "path": "/public_html/siakad-madrasah/assets/HeaderTitleAnimation-WCiW01JS.js",
+        "type": "file",
+        "size": 4813,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_HeroTypewriterTitle-CC1ZGE5y_js",
+        "accountId": "acc-rdm-01",
+        "name": "HeroTypewriterTitle-CC1ZGE5y.js",
+        "path": "/public_html/siakad-madrasah/assets/HeroTypewriterTitle-CC1ZGE5y.js",
+        "type": "file",
+        "size": 5209,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_IdentitasMadrasah-MKUP0Y5T_js",
+        "accountId": "acc-rdm-01",
+        "name": "IdentitasMadrasah-MKUP0Y5T.js",
+        "path": "/public_html/siakad-madrasah/assets/IdentitasMadrasah-MKUP0Y5T.js",
+        "type": "file",
+        "size": 67876,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Index-D4Le3YCJ_js",
+        "accountId": "acc-rdm-01",
+        "name": "Index-D4Le3YCJ.js",
+        "path": "/public_html/siakad-madrasah/assets/Index-D4Le3YCJ.js",
+        "type": "file",
+        "size": 111945,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_InitialPageLoader-olj5ro7n_js",
+        "accountId": "acc-rdm-01",
+        "name": "InitialPageLoader-olj5ro7n.js",
+        "path": "/public_html/siakad-madrasah/assets/InitialPageLoader-olj5ro7n.js",
+        "type": "file",
+        "size": 8192,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_InputNilai-CQW4kGxz_js",
+        "accountId": "acc-rdm-01",
+        "name": "InputNilai-CQW4kGxz.js",
+        "path": "/public_html/siakad-madrasah/assets/InputNilai-CQW4kGxz.js",
+        "type": "file",
+        "size": 9367,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_InputNilaiPublic-ga2n_TGT_js",
+        "accountId": "acc-rdm-01",
+        "name": "InputNilaiPublic-ga2n_TGT.js",
+        "path": "/public_html/siakad-madrasah/assets/InputNilaiPublic-ga2n_TGT.js",
+        "type": "file",
+        "size": 10872,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_JadwalPelajaran-BF7458fd_js",
+        "accountId": "acc-rdm-01",
+        "name": "JadwalPelajaran-BF7458fd.js",
+        "path": "/public_html/siakad-madrasah/assets/JadwalPelajaran-BF7458fd.js",
+        "type": "file",
+        "size": 7586,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_JadwalPelajaran-tMpr_373_js",
+        "accountId": "acc-rdm-01",
+        "name": "JadwalPelajaran-tMpr_373.js",
+        "path": "/public_html/siakad-madrasah/assets/JadwalPelajaran-tMpr_373.js",
+        "type": "file",
+        "size": 50723,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_KelolaMadrasah-56al-cXP_js",
+        "accountId": "acc-rdm-01",
+        "name": "KelolaMadrasah-56al-cXP.js",
+        "path": "/public_html/siakad-madrasah/assets/KelolaMadrasah-56al-cXP.js",
+        "type": "file",
+        "size": 29692,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_KisiKisi-CrySED_Q_js",
+        "accountId": "acc-rdm-01",
+        "name": "KisiKisi-CrySED_Q.js",
+        "path": "/public_html/siakad-madrasah/assets/KisiKisi-CrySED_Q.js",
+        "type": "file",
+        "size": 25708,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_KisiKisiPublic-Cin44_44_js",
+        "accountId": "acc-rdm-01",
+        "name": "KisiKisiPublic-Cin44_44.js",
+        "path": "/public_html/siakad-madrasah/assets/KisiKisiPublic-Cin44_44.js",
+        "type": "file",
+        "size": 17629,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_KopSurat-DHAa3G6R_js",
+        "accountId": "acc-rdm-01",
+        "name": "KopSurat-DHAa3G6R.js",
+        "path": "/public_html/siakad-madrasah/assets/KopSurat-DHAa3G6R.js",
+        "type": "file",
+        "size": 5903,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_LCKH-Na2GhtgE_js",
+        "accountId": "acc-rdm-01",
+        "name": "LCKH-Na2GhtgE.js",
+        "path": "/public_html/siakad-madrasah/assets/LCKH-Na2GhtgE.js",
+        "type": "file",
+        "size": 60860,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_LCKHPublic-DezFxmDT_js",
+        "accountId": "acc-rdm-01",
+        "name": "LCKHPublic-DezFxmDT.js",
+        "path": "/public_html/siakad-madrasah/assets/LCKHPublic-DezFxmDT.js",
+        "type": "file",
+        "size": 48163,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Library-D_XWqRKt_js",
+        "accountId": "acc-rdm-01",
+        "name": "Library-D_XWqRKt.js",
+        "path": "/public_html/siakad-madrasah/assets/Library-D_XWqRKt.js",
+        "type": "file",
+        "size": 4578,
+        "updatedAt": "2026-10-03T05:55:44.984Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Links-DpjrVpdL_js",
+        "accountId": "acc-rdm-01",
+        "name": "Links-DpjrVpdL.js",
+        "path": "/public_html/siakad-madrasah/assets/Links-DpjrVpdL.js",
+        "type": "file",
+        "size": 4084,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_LinksAdmin-CXB9QyNX_js",
+        "accountId": "acc-rdm-01",
+        "name": "LinksAdmin-CXB9QyNX.js",
+        "path": "/public_html/siakad-madrasah/assets/LinksAdmin-CXB9QyNX.js",
+        "type": "file",
+        "size": 12068,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Login-0pE20iqD_js",
+        "accountId": "acc-rdm-01",
+        "name": "Login-0pE20iqD.js",
+        "path": "/public_html/siakad-madrasah/assets/Login-0pE20iqD.js",
+        "type": "file",
+        "size": 8283,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_LogoDesigner-DkVMxa1a_js",
+        "accountId": "acc-rdm-01",
+        "name": "LogoDesigner-DkVMxa1a.js",
+        "path": "/public_html/siakad-madrasah/assets/LogoDesigner-DkVMxa1a.js",
+        "type": "file",
+        "size": 11337,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ManajemenRombel-4edQQjT3_js",
+        "accountId": "acc-rdm-01",
+        "name": "ManajemenRombel-4edQQjT3.js",
+        "path": "/public_html/siakad-madrasah/assets/ManajemenRombel-4edQQjT3.js",
+        "type": "file",
+        "size": 92992,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ManajemenSiswa-B9-0E8Hc_js",
+        "accountId": "acc-rdm-01",
+        "name": "ManajemenSiswa-B9-0E8Hc.js",
+        "path": "/public_html/siakad-madrasah/assets/ManajemenSiswa-B9-0E8Hc.js",
+        "type": "file",
+        "size": 87083,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_MataPelajaran-Dvvx5ydm_js",
+        "accountId": "acc-rdm-01",
+        "name": "MataPelajaran-Dvvx5ydm.js",
+        "path": "/public_html/siakad-madrasah/assets/MataPelajaran-Dvvx5ydm.js",
+        "type": "file",
+        "size": 31999,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_MateriInteraktif-BNAjQiYd_js",
+        "accountId": "acc-rdm-01",
+        "name": "MateriInteraktif-BNAjQiYd.js",
+        "path": "/public_html/siakad-madrasah/assets/MateriInteraktif-BNAjQiYd.js",
+        "type": "file",
+        "size": 15249,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_MateriInteraktif-CJaTaqEV_js",
+        "accountId": "acc-rdm-01",
+        "name": "MateriInteraktif-CJaTaqEV.js",
+        "path": "/public_html/siakad-madrasah/assets/MateriInteraktif-CJaTaqEV.js",
+        "type": "file",
+        "size": 25976,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_MatrikKurikulum-N85B2c9k_js",
+        "accountId": "acc-rdm-01",
+        "name": "MatrikKurikulum-N85B2c9k.js",
+        "path": "/public_html/siakad-madrasah/assets/MatrikKurikulum-N85B2c9k.js",
+        "type": "file",
+        "size": 8411,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_MediaLibraryModal-BfizSWio_js",
+        "accountId": "acc-rdm-01",
+        "name": "MediaLibraryModal-BfizSWio.js",
+        "path": "/public_html/siakad-madrasah/assets/MediaLibraryModal-BfizSWio.js",
+        "type": "file",
+        "size": 7893,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Navbar-DjgRInFf_js",
+        "accountId": "acc-rdm-01",
+        "name": "Navbar-DjgRInFf.js",
+        "path": "/public_html/siakad-madrasah/assets/Navbar-DjgRInFf.js",
+        "type": "file",
+        "size": 5483,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_NotFound-_Wz3mMIK_js",
+        "accountId": "acc-rdm-01",
+        "name": "NotFound-_Wz3mMIK.js",
+        "path": "/public_html/siakad-madrasah/assets/NotFound-_Wz3mMIK.js",
+        "type": "file",
+        "size": 1298,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PaymentEntry-CoF2Zv35_js",
+        "accountId": "acc-rdm-01",
+        "name": "PaymentEntry-CoF2Zv35.js",
+        "path": "/public_html/siakad-madrasah/assets/PaymentEntry-CoF2Zv35.js",
+        "type": "file",
+        "size": 7558,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PaymentHistory-CcVgeRKV_js",
+        "accountId": "acc-rdm-01",
+        "name": "PaymentHistory-CcVgeRKV.js",
+        "path": "/public_html/siakad-madrasah/assets/PaymentHistory-CcVgeRKV.js",
+        "type": "file",
+        "size": 7984,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PembiasaanAdmin-A8eYbuv6_js",
+        "accountId": "acc-rdm-01",
+        "name": "PembiasaanAdmin-A8eYbuv6.js",
+        "path": "/public_html/siakad-madrasah/assets/PembiasaanAdmin-A8eYbuv6.js",
+        "type": "file",
+        "size": 47276,
+        "updatedAt": "2026-10-03T05:55:44.985Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PembiasaanPublic-BBHNr103_js",
+        "accountId": "acc-rdm-01",
+        "name": "PembiasaanPublic-BBHNr103.js",
+        "path": "/public_html/siakad-madrasah/assets/PembiasaanPublic-BBHNr103.js",
+        "type": "file",
+        "size": 36824,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Penandatangan-CbrMWeJw_js",
+        "accountId": "acc-rdm-01",
+        "name": "Penandatangan-CbrMWeJw.js",
+        "path": "/public_html/siakad-madrasah/assets/Penandatangan-CbrMWeJw.js",
+        "type": "file",
+        "size": 12322,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PenandatanganDokumen-khKoKHi6_js",
+        "accountId": "acc-rdm-01",
+        "name": "PenandatanganDokumen-khKoKHi6.js",
+        "path": "/public_html/siakad-madrasah/assets/PenandatanganDokumen-khKoKHi6.js",
+        "type": "file",
+        "size": 6431,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PortalPengisianGTK-DEiJFzEI_js",
+        "accountId": "acc-rdm-01",
+        "name": "PortalPengisianGTK-DEiJFzEI.js",
+        "path": "/public_html/siakad-madrasah/assets/PortalPengisianGTK-DEiJFzEI.js",
+        "type": "file",
+        "size": 30704,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PostsAdmin-BDvP_OgJ_js",
+        "accountId": "acc-rdm-01",
+        "name": "PostsAdmin-BDvP_OgJ.js",
+        "path": "/public_html/siakad-madrasah/assets/PostsAdmin-BDvP_OgJ.js",
+        "type": "file",
+        "size": 8321,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PrestasiPublic-DyeHuQZn_js",
+        "accountId": "acc-rdm-01",
+        "name": "PrestasiPublic-DyeHuQZn.js",
+        "path": "/public_html/siakad-madrasah/assets/PrestasiPublic-DyeHuQZn.js",
+        "type": "file",
+        "size": 24621,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PrintPreviewPage-DNrdk9y__js",
+        "accountId": "acc-rdm-01",
+        "name": "PrintPreviewPage-DNrdk9y_.js",
+        "path": "/public_html/siakad-madrasah/assets/PrintPreviewPage-DNrdk9y_.js",
+        "type": "file",
+        "size": 5626,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PrintSecurityIndicator-BU0wWbXk_js",
+        "accountId": "acc-rdm-01",
+        "name": "PrintSecurityIndicator-BU0wWbXk.js",
+        "path": "/public_html/siakad-madrasah/assets/PrintSecurityIndicator-BU0wWbXk.js",
+        "type": "file",
+        "size": 6293,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PrintSecurityManager-BDxRexoW_js",
+        "accountId": "acc-rdm-01",
+        "name": "PrintSecurityManager-BDxRexoW.js",
+        "path": "/public_html/siakad-madrasah/assets/PrintSecurityManager-BDxRexoW.js",
+        "type": "file",
+        "size": 12457,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PrintSettings-CijCRonB_js",
+        "accountId": "acc-rdm-01",
+        "name": "PrintSettings-CijCRonB.js",
+        "path": "/public_html/siakad-madrasah/assets/PrintSettings-CijCRonB.js",
+        "type": "file",
+        "size": 7946,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ProfilMadrasah-DS7TCUNF_js",
+        "accountId": "acc-rdm-01",
+        "name": "ProfilMadrasah-DS7TCUNF.js",
+        "path": "/public_html/siakad-madrasah/assets/ProfilMadrasah-DS7TCUNF.js",
+        "type": "file",
+        "size": 25522,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_PusatKendali-D9eLOwCZ_js",
+        "accountId": "acc-rdm-01",
+        "name": "PusatKendali-D9eLOwCZ.js",
+        "path": "/public_html/siakad-madrasah/assets/PusatKendali-D9eLOwCZ.js",
+        "type": "file",
+        "size": 7055,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_RPPKarakter-DrmRTghL_js",
+        "accountId": "acc-rdm-01",
+        "name": "RPPKarakter-DrmRTghL.js",
+        "path": "/public_html/siakad-madrasah/assets/RPPKarakter-DrmRTghL.js",
+        "type": "file",
+        "size": 62647,
+        "updatedAt": "2026-10-03T05:55:44.986Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_RPPKarakterPublic-C3z5hFj8_js",
+        "accountId": "acc-rdm-01",
+        "name": "RPPKarakterPublic-C3z5hFj8.js",
+        "path": "/public_html/siakad-madrasah/assets/RPPKarakterPublic-C3z5hFj8.js",
+        "type": "file",
+        "size": 60234,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_ReceiptGenerator-DLFU3lFZ_js",
+        "accountId": "acc-rdm-01",
+        "name": "ReceiptGenerator-DLFU3lFZ.js",
+        "path": "/public_html/siakad-madrasah/assets/ReceiptGenerator-DLFU3lFZ.js",
+        "type": "file",
+        "size": 21926,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_RekapAbsensi-v6FsiHR2_js",
+        "accountId": "acc-rdm-01",
+        "name": "RekapAbsensi-v6FsiHR2.js",
+        "path": "/public_html/siakad-madrasah/assets/RekapAbsensi-v6FsiHR2.js",
+        "type": "file",
+        "size": 15669,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_RekapSiswaAdmin-Bw-zIxfb_js",
+        "accountId": "acc-rdm-01",
+        "name": "RekapSiswaAdmin-Bw-zIxfb.js",
+        "path": "/public_html/siakad-madrasah/assets/RekapSiswaAdmin-Bw-zIxfb.js",
+        "type": "file",
+        "size": 38915,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_RuangGuruAdmin-De3W_FHW_js",
+        "accountId": "acc-rdm-01",
+        "name": "RuangGuruAdmin-De3W_FHW.js",
+        "path": "/public_html/siakad-madrasah/assets/RuangGuruAdmin-De3W_FHW.js",
+        "type": "file",
+        "size": 28235,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_RuangGuruPublic-BEt8dwDz_js",
+        "accountId": "acc-rdm-01",
+        "name": "RuangGuruPublic-BEt8dwDz.js",
+        "path": "/public_html/siakad-madrasah/assets/RuangGuruPublic-BEt8dwDz.js",
+        "type": "file",
+        "size": 85185,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_SPMB-CvK3Yqib_js",
+        "accountId": "acc-rdm-01",
+        "name": "SPMB-CvK3Yqib.js",
+        "path": "/public_html/siakad-madrasah/assets/SPMB-CvK3Yqib.js",
+        "type": "file",
+        "size": 25573,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_SettingsAdmin-Dr5MBGD8_js",
+        "accountId": "acc-rdm-01",
+        "name": "SettingsAdmin-Dr5MBGD8.js",
+        "path": "/public_html/siakad-madrasah/assets/SettingsAdmin-Dr5MBGD8.js",
+        "type": "file",
+        "size": 162713,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Signup-lc0ir4Id_js",
+        "accountId": "acc-rdm-01",
+        "name": "Signup-lc0ir4Id.js",
+        "path": "/public_html/siakad-madrasah/assets/Signup-lc0ir4Id.js",
+        "type": "file",
+        "size": 12476,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_SppSettings-DBso2Zrv_js",
+        "accountId": "acc-rdm-01",
+        "name": "SppSettings-DBso2Zrv.js",
+        "path": "/public_html/siakad-madrasah/assets/SppSettings-DBso2Zrv.js",
+        "type": "file",
+        "size": 5072,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_StudentsList-C3FB_BAC_js",
+        "accountId": "acc-rdm-01",
+        "name": "StudentsList-C3FB_BAC.js",
+        "path": "/public_html/siakad-madrasah/assets/StudentsList-C3FB_BAC.js",
+        "type": "file",
+        "size": 125917,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_TahunPelajaran-CdcWHy3O_js",
+        "accountId": "acc-rdm-01",
+        "name": "TahunPelajaran-CdcWHy3O.js",
+        "path": "/public_html/siakad-madrasah/assets/TahunPelajaran-CdcWHy3O.js",
+        "type": "file",
+        "size": 14861,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_TeacherAuthModal-CsuoU5wz_js",
+        "accountId": "acc-rdm-01",
+        "name": "TeacherAuthModal-CsuoU5wz.js",
+        "path": "/public_html/siakad-madrasah/assets/TeacherAuthModal-CsuoU5wz.js",
+        "type": "file",
+        "size": 8095,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_TeachersAdmin-CyWXKzwX_js",
+        "accountId": "acc-rdm-01",
+        "name": "TeachersAdmin-CyWXKzwX.js",
+        "path": "/public_html/siakad-madrasah/assets/TeachersAdmin-CyWXKzwX.js",
+        "type": "file",
+        "size": 78048,
+        "updatedAt": "2026-10-03T05:55:44.987Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_TeachersList-CG9JQMaB_js",
+        "accountId": "acc-rdm-01",
+        "name": "TeachersList-CG9JQMaB.js",
+        "path": "/public_html/siakad-madrasah/assets/TeachersList-CG9JQMaB.js",
+        "type": "file",
+        "size": 82278,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_TeachingAids-C8-vnV9X_js",
+        "accountId": "acc-rdm-01",
+        "name": "TeachingAids-C8-vnV9X.js",
+        "path": "/public_html/siakad-madrasah/assets/TeachingAids-C8-vnV9X.js",
+        "type": "file",
+        "size": 24116,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_TeachingAids-D662So3Z_js",
+        "accountId": "acc-rdm-01",
+        "name": "TeachingAids-D662So3Z.js",
+        "path": "/public_html/siakad-madrasah/assets/TeachingAids-D662So3Z.js",
+        "type": "file",
+        "size": 15966,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_Translator-C9J2VpqD_js",
+        "accountId": "acc-rdm-01",
+        "name": "Translator-C9J2VpqD.js",
+        "path": "/public_html/siakad-madrasah/assets/Translator-C9J2VpqD.js",
+        "type": "file",
+        "size": 10201,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_UpdateSystem-B36LrrFd_js",
+        "accountId": "acc-rdm-01",
+        "name": "UpdateSystem-B36LrrFd.js",
+        "path": "/public_html/siakad-madrasah/assets/UpdateSystem-B36LrrFd.js",
+        "type": "file",
+        "size": 24009,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_UsersAdmin-COXDSDkr_js",
+        "accountId": "acc-rdm-01",
+        "name": "UsersAdmin-COXDSDkr.js",
+        "path": "/public_html/siakad-madrasah/assets/UsersAdmin-COXDSDkr.js",
+        "type": "file",
+        "size": 10928,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_academicHolidays-DTsP0EGI_js",
+        "accountId": "acc-rdm-01",
+        "name": "academicHolidays-DTsP0EGI.js",
+        "path": "/public_html/siakad-madrasah/assets/academicHolidays-DTsP0EGI.js",
+        "type": "file",
+        "size": 5841,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_activity-CRGNDYHg_js",
+        "accountId": "acc-rdm-01",
+        "name": "activity-CRGNDYHg.js",
+        "path": "/public_html/siakad-madrasah/assets/activity-CRGNDYHg.js",
+        "type": "file",
+        "size": 403,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_archive-CUduRbSg_js",
+        "accountId": "acc-rdm-01",
+        "name": "archive-CUduRbSg.js",
+        "path": "/public_html/siakad-madrasah/assets/archive-CUduRbSg.js",
+        "type": "file",
+        "size": 422,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_arrow-left-CEeBlXHE_js",
+        "accountId": "acc-rdm-01",
+        "name": "arrow-left-CEeBlXHE.js",
+        "path": "/public_html/siakad-madrasah/assets/arrow-left-CEeBlXHE.js",
+        "type": "file",
+        "size": 333,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_arrow-right-CUG7dFvf_js",
+        "accountId": "acc-rdm-01",
+        "name": "arrow-right-CUG7dFvf.js",
+        "path": "/public_html/siakad-madrasah/assets/arrow-right-CUG7dFvf.js",
+        "type": "file",
+        "size": 333,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_arrow-right-left-HkyeCogR_js",
+        "accountId": "acc-rdm-01",
+        "name": "arrow-right-left-HkyeCogR.js",
+        "path": "/public_html/siakad-madrasah/assets/arrow-right-left-HkyeCogR.js",
+        "type": "file",
+        "size": 415,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_badge-SWT9k8Sx_js",
+        "accountId": "acc-rdm-01",
+        "name": "badge-SWT9k8Sx.js",
+        "path": "/public_html/siakad-madrasah/assets/badge-SWT9k8Sx.js",
+        "type": "file",
+        "size": 710,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_banknote-YrdkFNiP_js",
+        "accountId": "acc-rdm-01",
+        "name": "banknote-YrdkFNiP.js",
+        "path": "/public_html/siakad-madrasah/assets/banknote-YrdkFNiP.js",
+        "type": "file",
+        "size": 414,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_book-marked-ygpEe_me_js",
+        "accountId": "acc-rdm-01",
+        "name": "book-marked-ygpEe_me.js",
+        "path": "/public_html/siakad-madrasah/assets/book-marked-ygpEe_me.js",
+        "type": "file",
+        "size": 415,
+        "updatedAt": "2026-10-03T05:55:44.988Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_building-BdFguEX8_js",
+        "accountId": "acc-rdm-01",
+        "name": "building-BdFguEX8.js",
+        "path": "/public_html/siakad-madrasah/assets/building-BdFguEX8.js",
+        "type": "file",
+        "size": 711,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_calculator-DYvCNLRB_js",
+        "accountId": "acc-rdm-01",
+        "name": "calculator-DYvCNLRB.js",
+        "path": "/public_html/siakad-madrasah/assets/calculator-DYvCNLRB.js",
+        "type": "file",
+        "size": 699,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_calendar-days-B6b73NEo_js",
+        "accountId": "acc-rdm-01",
+        "name": "calendar-days-B6b73NEo.js",
+        "path": "/public_html/siakad-madrasah/assets/calendar-days-B6b73NEo.js",
+        "type": "file",
+        "size": 662,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_calendar-range-V2aHlQCg_js",
+        "accountId": "acc-rdm-01",
+        "name": "calendar-range-V2aHlQCg.js",
+        "path": "/public_html/siakad-madrasah/assets/calendar-range-V2aHlQCg.js",
+        "type": "file",
+        "size": 583,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_camera-D_Zb2-wW_js",
+        "accountId": "acc-rdm-01",
+        "name": "camera-D_Zb2-wW.js",
+        "path": "/public_html/siakad-madrasah/assets/camera-D_Zb2-wW.js",
+        "type": "file",
+        "size": 417,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_chart-pie-C7y-CRf-_js",
+        "accountId": "acc-rdm-01",
+        "name": "chart-pie-C7y-CRf-.js",
+        "path": "/public_html/siakad-madrasah/assets/chart-pie-C7y-CRf-.js",
+        "type": "file",
+        "size": 441,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_check-DIB8RHiI_js",
+        "accountId": "acc-rdm-01",
+        "name": "check-DIB8RHiI.js",
+        "path": "/public_html/siakad-madrasah/assets/check-DIB8RHiI.js",
+        "type": "file",
+        "size": 288,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_checkbox-DlaeT8yW_js",
+        "accountId": "acc-rdm-01",
+        "name": "checkbox-DlaeT8yW.js",
+        "path": "/public_html/siakad-madrasah/assets/checkbox-DlaeT8yW.js",
+        "type": "file",
+        "size": 17917,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_chevron-left-HoQ50LSb_js",
+        "accountId": "acc-rdm-01",
+        "name": "chevron-left-HoQ50LSb.js",
+        "path": "/public_html/siakad-madrasah/assets/chevron-left-HoQ50LSb.js",
+        "type": "file",
+        "size": 298,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_chevron-right-CfrJgNS4_js",
+        "accountId": "acc-rdm-01",
+        "name": "chevron-right-CfrJgNS4.js",
+        "path": "/public_html/siakad-madrasah/assets/chevron-right-CfrJgNS4.js",
+        "type": "file",
+        "size": 298,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_chevron-up-BU179vMV_js",
+        "accountId": "acc-rdm-01",
+        "name": "chevron-up-BU179vMV.js",
+        "path": "/public_html/siakad-madrasah/assets/chevron-up-BU179vMV.js",
+        "type": "file",
+        "size": 296,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_circle-check-big-18VqzafW_js",
+        "accountId": "acc-rdm-01",
+        "name": "circle-check-big-18VqzafW.js",
+        "path": "/public_html/siakad-madrasah/assets/circle-check-big-18VqzafW.js",
+        "type": "file",
+        "size": 356,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_clock-Bdx690Sc_js",
+        "accountId": "acc-rdm-01",
+        "name": "clock-Bdx690Sc.js",
+        "path": "/public_html/siakad-madrasah/assets/clock-Bdx690Sc.js",
+        "type": "file",
+        "size": 347,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_cloud-upload-03AqRgWh_js",
+        "accountId": "acc-rdm-01",
+        "name": "cloud-upload-03AqRgWh.js",
+        "path": "/public_html/siakad-madrasah/assets/cloud-upload-03AqRgWh.js",
+        "type": "file",
+        "size": 419,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_copy-CMsB92Jh_js",
+        "accountId": "acc-rdm-01",
+        "name": "copy-CMsB92Jh.js",
+        "path": "/public_html/siakad-madrasah/assets/copy-CMsB92Jh.js",
+        "type": "file",
+        "size": 400,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_credit-card-B1YR_ZgM_js",
+        "accountId": "acc-rdm-01",
+        "name": "credit-card-B1YR_ZgM.js",
+        "path": "/public_html/siakad-madrasah/assets/credit-card-B1YR_ZgM.js",
+        "type": "file",
+        "size": 375,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_database-BWzWvqLs_js",
+        "accountId": "acc-rdm-01",
+        "name": "database-BWzWvqLs.js",
+        "path": "/public_html/siakad-madrasah/assets/database-BWzWvqLs.js",
+        "type": "file",
+        "size": 412,
+        "updatedAt": "2026-10-03T05:55:44.989Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_dialog-BuuCiLXk_js",
+        "accountId": "acc-rdm-01",
+        "name": "dialog-BuuCiLXk.js",
+        "path": "/public_html/siakad-madrasah/assets/dialog-BuuCiLXk.js",
+        "type": "file",
+        "size": 6257,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_dropdown-menu-DETV_kjy_js",
+        "accountId": "acc-rdm-01",
+        "name": "dropdown-menu-DETV_kjy.js",
+        "path": "/public_html/siakad-madrasah/assets/dropdown-menu-DETV_kjy.js",
+        "type": "file",
+        "size": 25588,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_external-link-HcQKm7Ve_js",
+        "accountId": "acc-rdm-01",
+        "name": "external-link-HcQKm7Ve.js",
+        "path": "/public_html/siakad-madrasah/assets/external-link-HcQKm7Ve.js",
+        "type": "file",
+        "size": 419,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_file-check-o-t7kRra_js",
+        "accountId": "acc-rdm-01",
+        "name": "file-check-o-t7kRra.js",
+        "path": "/public_html/siakad-madrasah/assets/file-check-o-t7kRra.js",
+        "type": "file",
+        "size": 434,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_file-spreadsheet-CKAYWxEN_js",
+        "accountId": "acc-rdm-01",
+        "name": "file-spreadsheet-CKAYWxEN.js",
+        "path": "/public_html/siakad-madrasah/assets/file-spreadsheet-CKAYWxEN.js",
+        "type": "file",
+        "size": 544,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_film-8IvpOLmI_js",
+        "accountId": "acc-rdm-01",
+        "name": "film-8IvpOLmI.js",
+        "path": "/public_html/siakad-madrasah/assets/film-8IvpOLmI.js",
+        "type": "file",
+        "size": 576,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_filter-D0Idl1qb_js",
+        "accountId": "acc-rdm-01",
+        "name": "filter-D0Idl1qb.js",
+        "path": "/public_html/siakad-madrasah/assets/filter-D0Idl1qb.js",
+        "type": "file",
+        "size": 330,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_folder-open-DTarVtj2_js",
+        "accountId": "acc-rdm-01",
+        "name": "folder-open-DTarVtj2.js",
+        "path": "/public_html/siakad-madrasah/assets/folder-open-DTarVtj2.js",
+        "type": "file",
+        "size": 460,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_formatGelar-DvtJTrhG_js",
+        "accountId": "acc-rdm-01",
+        "name": "formatGelar-DvtJTrhG.js",
+        "path": "/public_html/siakad-madrasah/assets/formatGelar-DvtJTrhG.js",
+        "type": "file",
+        "size": 13109,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_gsheetParserHelper-CPUIIrtt_js",
+        "accountId": "acc-rdm-01",
+        "name": "gsheetParserHelper-CPUIIrtt.js",
+        "path": "/public_html/siakad-madrasah/assets/gsheetParserHelper-CPUIIrtt.js",
+        "type": "file",
+        "size": 19511,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_heart-handshake-BRW4W9Cx_js",
+        "accountId": "acc-rdm-01",
+        "name": "heart-handshake-BRW4W9Cx.js",
+        "path": "/public_html/siakad-madrasah/assets/heart-handshake-BRW4W9Cx.js",
+        "type": "file",
+        "size": 631,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_history-BSXET1XT_js",
+        "accountId": "acc-rdm-01",
+        "name": "history-BSXET1XT.js",
+        "path": "/public_html/siakad-madrasah/assets/history-BSXET1XT.js",
+        "type": "file",
+        "size": 406,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_html2canvas_esm-B0tyYwQk_js",
+        "accountId": "acc-rdm-01",
+        "name": "html2canvas.esm-B0tyYwQk.js",
+        "path": "/public_html/siakad-madrasah/assets/html2canvas.esm-B0tyYwQk.js",
+        "type": "file",
+        "size": 202363,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_id-card-aM1WqJMF_js",
+        "accountId": "acc-rdm-01",
+        "name": "id-card-aM1WqJMF.js",
+        "path": "/public_html/siakad-madrasah/assets/id-card-aM1WqJMF.js",
+        "type": "file",
+        "size": 491,
+        "updatedAt": "2026-10-03T05:55:44.990Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_index-BXwTQNSI_js",
+        "accountId": "acc-rdm-01",
+        "name": "index-BXwTQNSI.js",
+        "path": "/public_html/siakad-madrasah/assets/index-BXwTQNSI.js",
+        "type": "file",
+        "size": 13419,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_index-Bcz0fBvV_css",
+        "accountId": "acc-rdm-01",
+        "name": "index-Bcz0fBvV.css",
+        "path": "/public_html/siakad-madrasah/assets/index-Bcz0fBvV.css",
+        "type": "file",
+        "size": 240330,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_index-CCahgCu8_js",
+        "accountId": "acc-rdm-01",
+        "name": "index-CCahgCu8.js",
+        "path": "/public_html/siakad-madrasah/assets/index-CCahgCu8.js",
+        "type": "file",
+        "size": 1276308,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_index_es-C6a9lj_u_js",
+        "accountId": "acc-rdm-01",
+        "name": "index.es-C6a9lj_u.js",
+        "path": "/public_html/siakad-madrasah/assets/index.es-C6a9lj_u.js",
+        "type": "file",
+        "size": 159714,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_instagram-6i7OnOSK_js",
+        "accountId": "acc-rdm-01",
+        "name": "instagram-6i7OnOSK.js",
+        "path": "/public_html/siakad-madrasah/assets/instagram-6i7OnOSK.js",
+        "type": "file",
+        "size": 762,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_label-Wv3diNOJ_js",
+        "accountId": "acc-rdm-01",
+        "name": "label-Wv3diNOJ.js",
+        "path": "/public_html/siakad-madrasah/assets/label-Wv3diNOJ.js",
+        "type": "file",
+        "size": 598,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_landmark-BE1dd7xX_js",
+        "accountId": "acc-rdm-01",
+        "name": "landmark-BE1dd7xX.js",
+        "path": "/public_html/siakad-madrasah/assets/landmark-BE1dd7xX.js",
+        "type": "file",
+        "size": 576,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_languages-DbjbhtUu_js",
+        "accountId": "acc-rdm-01",
+        "name": "languages-DbjbhtUu.js",
+        "path": "/public_html/siakad-madrasah/assets/languages-DbjbhtUu.js",
+        "type": "file",
+        "size": 485,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_layers-CJe4BTBW_js",
+        "accountId": "acc-rdm-01",
+        "name": "layers-CJe4BTBW.js",
+        "path": "/public_html/siakad-madrasah/assets/layers-CJe4BTBW.js",
+        "type": "file",
+        "size": 533,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_list-C7A7si_r_js",
+        "accountId": "acc-rdm-01",
+        "name": "list-C7A7si_r.js",
+        "path": "/public_html/siakad-madrasah/assets/list-C7A7si_r.js",
+        "type": "file",
+        "size": 471,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_list-checks-DjmbGLOg_js",
+        "accountId": "acc-rdm-01",
+        "name": "list-checks-DjmbGLOg.js",
+        "path": "/public_html/siakad-madrasah/assets/list-checks-DjmbGLOg.js",
+        "type": "file",
+        "size": 870,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_lock-open-D_1f0XIN_js",
+        "accountId": "acc-rdm-01",
+        "name": "lock-open-D_1f0XIN.js",
+        "path": "/public_html/siakad-madrasah/assets/lock-open-D_1f0XIN.js",
+        "type": "file",
+        "size": 378,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_map-pin-Dua68_VL_js",
+        "accountId": "acc-rdm-01",
+        "name": "map-pin-Dua68_VL.js",
+        "path": "/public_html/siakad-madrasah/assets/map-pin-Dua68_VL.js",
+        "type": "file",
+        "size": 422,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_mapel-B8uJd4qE_js",
+        "accountId": "acc-rdm-01",
+        "name": "mapel-B8uJd4qE.js",
+        "path": "/public_html/siakad-madrasah/assets/mapel-B8uJd4qE.js",
+        "type": "file",
+        "size": 2382,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_maximize-2-DSuloz5h_js",
+        "accountId": "acc-rdm-01",
+        "name": "maximize-2-DSuloz5h.js",
+        "path": "/public_html/siakad-madrasah/assets/maximize-2-DSuloz5h.js",
+        "type": "file",
+        "size": 467,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_medal-CjjuwGx3_js",
+        "accountId": "acc-rdm-01",
+        "name": "medal-CjjuwGx3.js",
+        "path": "/public_html/siakad-madrasah/assets/medal-CjjuwGx3.js",
+        "type": "file",
+        "size": 604,
+        "updatedAt": "2026-10-03T05:55:44.991Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_message-circle-Bq3W8CL6_js",
+        "accountId": "acc-rdm-01",
+        "name": "message-circle-Bq3W8CL6.js",
+        "path": "/public_html/siakad-madrasah/assets/message-circle-Bq3W8CL6.js",
+        "type": "file",
+        "size": 596,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_monitor-play-D8HIsjKR_js",
+        "accountId": "acc-rdm-01",
+        "name": "monitor-play-D8HIsjKR.js",
+        "path": "/public_html/siakad-madrasah/assets/monitor-play-D8HIsjKR.js",
+        "type": "file",
+        "size": 524,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_move-right-PNIoY3YP_js",
+        "accountId": "acc-rdm-01",
+        "name": "move-right-PNIoY3YP.js",
+        "path": "/public_html/siakad-madrasah/assets/move-right-PNIoY3YP.js",
+        "type": "file",
+        "size": 614,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_palette-CuejlT-c_js",
+        "accountId": "acc-rdm-01",
+        "name": "palette-CuejlT-c.js",
+        "path": "/public_html/siakad-madrasah/assets/palette-CuejlT-c.js",
+        "type": "file",
+        "size": 779,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_panels-top-left-BPqtZreb_js",
+        "accountId": "acc-rdm-01",
+        "name": "panels-top-left-BPqtZreb.js",
+        "path": "/public_html/siakad-madrasah/assets/panels-top-left-BPqtZreb.js",
+        "type": "file",
+        "size": 395,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_pause-BtXkEdEP_js",
+        "accountId": "acc-rdm-01",
+        "name": "pause-BtXkEdEP.js",
+        "path": "/public_html/siakad-madrasah/assets/pause-BtXkEdEP.js",
+        "type": "file",
+        "size": 380,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_pencil-Mh5LP_kg_js",
+        "accountId": "acc-rdm-01",
+        "name": "pencil-Mh5LP_kg.js",
+        "path": "/public_html/siakad-madrasah/assets/pencil-Mh5LP_kg.js",
+        "type": "file",
+        "size": 445,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_play-DZ-CBwqT_js",
+        "accountId": "acc-rdm-01",
+        "name": "play-DZ-CBwqT.js",
+        "path": "/public_html/siakad-madrasah/assets/play-DZ-CBwqT.js",
+        "type": "file",
+        "size": 303,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_plus-BFTaXOOV_js",
+        "accountId": "acc-rdm-01",
+        "name": "plus-BFTaXOOV.js",
+        "path": "/public_html/siakad-madrasah/assets/plus-BFTaXOOV.js",
+        "type": "file",
+        "size": 322,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_power-DzRirIBN_js",
+        "accountId": "acc-rdm-01",
+        "name": "power-DzRirIBN.js",
+        "path": "/public_html/siakad-madrasah/assets/power-DzRirIBN.js",
+        "type": "file",
+        "size": 342,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_printer-DxGXxTqW_js",
+        "accountId": "acc-rdm-01",
+        "name": "printer-DxGXxTqW.js",
+        "path": "/public_html/siakad-madrasah/assets/printer-DxGXxTqW.js",
+        "type": "file",
+        "size": 488,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_progress-Ga5IiUHF_js",
+        "accountId": "acc-rdm-01",
+        "name": "progress-Ga5IiUHF.js",
+        "path": "/public_html/siakad-madrasah/assets/progress-Ga5IiUHF.js",
+        "type": "file",
+        "size": 2886,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_purify_es-DedTAGkB_js",
+        "accountId": "acc-rdm-01",
+        "name": "purify.es-DedTAGkB.js",
+        "path": "/public_html/siakad-madrasah/assets/purify.es-DedTAGkB.js",
+        "type": "file",
+        "size": 29049,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_qr-code-BGOvgf69_js",
+        "accountId": "acc-rdm-01",
+        "name": "qr-code-BGOvgf69.js",
+        "path": "/public_html/siakad-madrasah/assets/qr-code-BGOvgf69.js",
+        "type": "file",
+        "size": 818,
+        "updatedAt": "2026-10-03T05:55:44.992Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_react-Bzfw2fl0_js",
+        "accountId": "acc-rdm-01",
+        "name": "react-Bzfw2fl0.js",
+        "path": "/public_html/siakad-madrasah/assets/react-Bzfw2fl0.js",
+        "type": "file",
+        "size": 125149,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_rocket-DBhCkdTK_js",
+        "accountId": "acc-rdm-01",
+        "name": "rocket-DBhCkdTK.js",
+        "path": "/public_html/siakad-madrasah/assets/rocket-DBhCkdTK.js",
+        "type": "file",
+        "size": 1135,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_rombelPersistence-BA9t5JFw_js",
+        "accountId": "acc-rdm-01",
+        "name": "rombelPersistence-BA9t5JFw.js",
+        "path": "/public_html/siakad-madrasah/assets/rombelPersistence-BA9t5JFw.js",
+        "type": "file",
+        "size": 5803,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_rotate-ccw-DvdK-0R6_js",
+        "accountId": "acc-rdm-01",
+        "name": "rotate-ccw-DvdK-0R6.js",
+        "path": "/public_html/siakad-madrasah/assets/rotate-ccw-DvdK-0R6.js",
+        "type": "file",
+        "size": 368,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_rppKarakterGenerator-DW1bSH5M_js",
+        "accountId": "acc-rdm-01",
+        "name": "rppKarakterGenerator-DW1bSH5M.js",
+        "path": "/public_html/siakad-madrasah/assets/rppKarakterGenerator-DW1bSH5M.js",
+        "type": "file",
+        "size": 7510,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_save-phZikyYe_js",
+        "accountId": "acc-rdm-01",
+        "name": "save-phZikyYe.js",
+        "path": "/public_html/siakad-madrasah/assets/save-phZikyYe.js",
+        "type": "file",
+        "size": 496,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_search-C3eTRADL_js",
+        "accountId": "acc-rdm-01",
+        "name": "search-C3eTRADL.js",
+        "path": "/public_html/siakad-madrasah/assets/search-C3eTRADL.js",
+        "type": "file",
+        "size": 336,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_select-D7ahweI-_js",
+        "accountId": "acc-rdm-01",
+        "name": "select-D7ahweI-.js",
+        "path": "/public_html/siakad-madrasah/assets/select-D7ahweI-.js",
+        "type": "file",
+        "size": 22088,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_server-DDpl1My__js",
+        "accountId": "acc-rdm-01",
+        "name": "server-DDpl1My_.js",
+        "path": "/public_html/siakad-madrasah/assets/server-DDpl1My_.js",
+        "type": "file",
+        "size": 507,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_share-2-C1tM9Lgs_js",
+        "accountId": "acc-rdm-01",
+        "name": "share-2-C1tM9Lgs.js",
+        "path": "/public_html/siakad-madrasah/assets/share-2-C1tM9Lgs.js",
+        "type": "file",
+        "size": 520,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_shield-alert-DaB-gSp3_js",
+        "accountId": "acc-rdm-01",
+        "name": "shield-alert-DaB-gSp3.js",
+        "path": "/public_html/siakad-madrasah/assets/shield-alert-DaB-gSp3.js",
+        "type": "file",
+        "size": 521,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_skeleton-Df32So3f_js",
+        "accountId": "acc-rdm-01",
+        "name": "skeleton-Df32So3f.js",
+        "path": "/public_html/siakad-madrasah/assets/skeleton-Df32So3f.js",
+        "type": "file",
+        "size": 172,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_sliders-vertical-CaGrm7Et_js",
+        "accountId": "acc-rdm-01",
+        "name": "sliders-vertical-CaGrm7Et.js",
+        "path": "/public_html/siakad-madrasah/assets/sliders-vertical-CaGrm7Et.js",
+        "type": "file",
+        "size": 751,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_square-pen-dp08weJo_js",
+        "accountId": "acc-rdm-01",
+        "name": "square-pen-dp08weJo.js",
+        "path": "/public_html/siakad-madrasah/assets/square-pen-dp08weJo.js",
+        "type": "file",
+        "size": 488,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_studentRombelHistory-DGU1TYTu_js",
+        "accountId": "acc-rdm-01",
+        "name": "studentRombelHistory-DGU1TYTu.js",
+        "path": "/public_html/siakad-madrasah/assets/studentRombelHistory-DGU1TYTu.js",
+        "type": "file",
+        "size": 2057,
+        "updatedAt": "2026-10-03T05:55:44.993Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_switch-CdYYJlNS_js",
+        "accountId": "acc-rdm-01",
+        "name": "switch-CdYYJlNS.js",
+        "path": "/public_html/siakad-madrasah/assets/switch-CdYYJlNS.js",
+        "type": "file",
+        "size": 4160,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_table-BwWmOBsc_js",
+        "accountId": "acc-rdm-01",
+        "name": "table-BwWmOBsc.js",
+        "path": "/public_html/siakad-madrasah/assets/table-BwWmOBsc.js",
+        "type": "file",
+        "size": 1486,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_tabs-D6SATxo6_js",
+        "accountId": "acc-rdm-01",
+        "name": "tabs-D6SATxo6.js",
+        "path": "/public_html/siakad-madrasah/assets/tabs-D6SATxo6.js",
+        "type": "file",
+        "size": 3425,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_textarea-mBet1w8O_js",
+        "accountId": "acc-rdm-01",
+        "name": "textarea-mBet1w8O.js",
+        "path": "/public_html/siakad-madrasah/assets/textarea-mBet1w8O.js",
+        "type": "file",
+        "size": 482,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_trash-2-CnFTzLi7_js",
+        "accountId": "acc-rdm-01",
+        "name": "trash-2-CnFTzLi7.js",
+        "path": "/public_html/siakad-madrasah/assets/trash-2-CnFTzLi7.js",
+        "type": "file",
+        "size": 526,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_trending-up-B8PmCzAW_js",
+        "accountId": "acc-rdm-01",
+        "name": "trending-up-B8PmCzAW.js",
+        "path": "/public_html/siakad-madrasah/assets/trending-up-B8PmCzAW.js",
+        "type": "file",
+        "size": 373,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_upload-B3etxvkX_js",
+        "accountId": "acc-rdm-01",
+        "name": "upload-B3etxvkX.js",
+        "path": "/public_html/siakad-madrasah/assets/upload-B3etxvkX.js",
+        "type": "file",
+        "size": 426,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_user-plus-ijadHmyi_js",
+        "accountId": "acc-rdm-01",
+        "name": "user-plus-ijadHmyi.js",
+        "path": "/public_html/siakad-madrasah/assets/user-plus-ijadHmyi.js",
+        "type": "file",
+        "size": 478,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_user-round-check-C0hqgqCE_js",
+        "accountId": "acc-rdm-01",
+        "name": "user-round-check-C0hqgqCE.js",
+        "path": "/public_html/siakad-madrasah/assets/user-round-check-C0hqgqCE.js",
+        "type": "file",
+        "size": 779,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_user-x-CMoWW9uo_js",
+        "accountId": "acc-rdm-01",
+        "name": "user-x-CMoWW9uo.js",
+        "path": "/public_html/siakad-madrasah/assets/user-x-CMoWW9uo.js",
+        "type": "file",
+        "size": 474,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_wand-sparkles-dIjb7APW_js",
+        "accountId": "acc-rdm-01",
+        "name": "wand-sparkles-dIjb7APW.js",
+        "path": "/public_html/siakad-madrasah/assets/wand-sparkles-dIjb7APW.js",
+        "type": "file",
+        "size": 681,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_assets_xlsx-DSqvgYLF_js",
+        "accountId": "acc-rdm-01",
+        "name": "xlsx-DSqvgYLF.js",
+        "path": "/public_html/siakad-madrasah/assets/xlsx-DSqvgYLF.js",
+        "type": "file",
+        "size": 424686,
+        "updatedAt": "2026-10-03T05:55:44.994Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_avatar-jaenal_jpg",
+        "accountId": "acc-rdm-01",
+        "name": "avatar-jaenal.jpg",
+        "path": "/public_html/siakad-madrasah/avatar-jaenal.jpg",
+        "type": "file",
+        "size": 98508,
+        "updatedAt": "2026-10-03T05:55:44.995Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_config_js",
+        "accountId": "acc-rdm-01",
+        "name": "config.js",
+        "path": "/public_html/siakad-madrasah/config.js",
+        "type": "file",
+        "size": 923,
+        "updatedAt": "2026-10-03T05:55:44.995Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_data_messages_json",
+        "accountId": "acc-rdm-01",
+        "name": "messages.json",
+        "path": "/public_html/siakad-madrasah/data/messages.json",
+        "type": "file",
+        "size": 2,
+        "updatedAt": "2026-10-03T05:55:44.995Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_data_persisted_site_data_json",
+        "accountId": "acc-rdm-01",
+        "name": "persisted_site_data.json",
+        "path": "/public_html/siakad-madrasah/data/persisted_site_data.json",
+        "type": "file",
+        "size": 17158,
+        "updatedAt": "2026-10-03T05:55:44.995Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_database-mysql_sql",
+        "accountId": "acc-rdm-01",
+        "name": "database-mysql.sql",
+        "path": "/public_html/siakad-madrasah/database-mysql.sql",
+        "type": "file",
+        "size": 9426,
+        "updatedAt": "2026-10-03T05:55:44.995Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_database-schema_sql",
+        "accountId": "acc-rdm-01",
+        "name": "database-schema.sql",
+        "path": "/public_html/siakad-madrasah/database-schema.sql",
+        "type": "file",
+        "size": 1456,
+        "updatedAt": "2026-10-03T05:55:44.995Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_database_sql",
+        "accountId": "acc-rdm-01",
+        "name": "database.sql",
+        "path": "/public_html/siakad-madrasah/database.sql",
+        "type": "file",
+        "size": 15446,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_db_config_local_php",
+        "accountId": "acc-rdm-01",
+        "name": "db_config.local.php",
+        "path": "/public_html/siakad-madrasah/db_config.local.php",
+        "type": "file",
+        "size": 234,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_db_config_php",
+        "accountId": "acc-rdm-01",
+        "name": "db_config.php",
+        "path": "/public_html/siakad-madrasah/db_config.php",
+        "type": "file",
+        "size": 1054,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_favicon_ico",
+        "accountId": "acc-rdm-01",
+        "name": "favicon.ico",
+        "path": "/public_html/siakad-madrasah/favicon.ico",
+        "type": "file",
+        "size": 160406,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_index_html",
+        "accountId": "acc-rdm-01",
+        "name": "index.html",
+        "path": "/public_html/siakad-madrasah/index.html",
+        "type": "file",
+        "size": 5854,
+        "content": "<!doctype html>\n<html lang=\"id\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=5.0\" />\n    <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />\n    <meta http-equiv=\"Pragma\" content=\"no-cache\" />\n    <meta http-equiv=\"Expires\" content=\"0\" />\n    <meta name=\"description\" content=\"Sistem Informasi Akademik Modern Membangun Generasi Qur&#39;ani\" />\n    <meta name=\"keywords\" content=\"SIAKAD MIMA 2 Sanggreman, Siakad Madrasah, Sistem Informasi Akademik, E-Rapor, Portal Madrasah\" />\n    <meta name=\"author\" content=\"SIAKAD MIMA 2 Sanggreman\" />\n    <meta name=\"robots\" content=\"index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1\" />\n    <meta name=\"theme-color\" content=\"#064e3b\" />\n    <link rel=\"canonical\" href=\"https://siakad-madrasahku.jaenalmaskun.biz.id/\" />\n\n    <!-- Schema.org itemprops for WhatsApp / Telegram -->\n    <meta itemprop=\"name\" content=\"Si@Kad Madrasah\" />\n    <meta itemprop=\"description\" content=\"Sistem Informasi Akademik Modern Membangun Generasi Qur&#39;ani\" />\n    <meta itemprop=\"image\" content=\"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\" />\n    \n    <!-- Open Graph harus tersedia langsung di HTML awal agar crawler WhatsApp/Facebook bisa membaca tanpa menjalankan JavaScript -->\n    <meta property=\"og:type\" content=\"website\" />\n    <meta property=\"og:locale\" content=\"id_ID\" />\n    <meta property=\"og:site_name\" content=\"SIAKAD MIMA 2 Sanggreman\" />\n    <meta property=\"og:title\" content=\"Si@Kad Madrasah\" />\n    <meta property=\"og:description\" content=\"Sistem Informasi Akademik Modern Membangun Generasi Qur&#39;ani\" />\n    <meta property=\"og:url\" content=\"https://siakad-madrasahku.jaenalmaskun.biz.id/\" />\n    <meta property=\"og:image\" content=\"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\" />\n    <meta property=\"og:image:url\" content=\"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\" />\n    <meta property=\"og:image:secure_url\" content=\"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\" />\n    <meta property=\"og:image:width\" content=\"1200\" />\n    <meta property=\"og:image:height\" content=\"630\" />\n    <meta property=\"og:image:type\" content=\"image/jpeg\" />\n    <meta property=\"og:image:alt\" content=\"SIAKAD MIMA 2 Sanggreman\" />\n\n    <!-- Twitter -->\n    <meta name=\"twitter:card\" content=\"summary_large_image\" />\n    <meta name=\"twitter:title\" content=\"Si@Kad Madrasah\" />\n    <meta name=\"twitter:description\" content=\"Sistem Informasi Akademik Modern Membangun Generasi Qur&#39;ani\" />\n    <meta name=\"twitter:image\" content=\"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\" />\n    <meta name=\"twitter:image:alt\" content=\"SIAKAD MIMA 2 Sanggreman\" />\n    <meta name=\"twitter:url\" content=\"https://siakad-madrasahku.jaenalmaskun.biz.id/\" />\n    <link rel=\"image_src\" href=\"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\" />\n\n    <!-- JSON-LD Structured Data for Google Search Engine -->\n    <script type=\"application/ld+json\">\n      {\n  \"@context\": \"https://schema.org\",\n  \"@graph\": [\n    {\n      \"@type\": \"EducationalOrganization\",\n      \"@id\": \"https://siakad-madrasahku.jaenalmaskun.biz.id#organization\",\n      \"name\": \"SIAKAD MIMA 2 Sanggreman\",\n      \"description\": \"Sistem Informasi Akademik Modern Membangun Generasi Qur'ani\",\n      \"url\": \"https://siakad-madrasahku.jaenalmaskun.biz.id\",\n      \"logo\": \"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\",\n      \"image\": \"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\",\n      \"address\": {\n        \"@type\": \"PostalAddress\",\n        \"streetAddress\": \"Jl. Pendidikan No. 123\"\n      },\n      \"email\": \"info@si@kad.sch.id\",\n      \"telephone\": \"081226738883\"\n    },\n    {\n      \"@type\": \"WebSite\",\n      \"@id\": \"https://siakad-madrasahku.jaenalmaskun.biz.id#website\",\n      \"url\": \"https://siakad-madrasahku.jaenalmaskun.biz.id\",\n      \"name\": \"SIAKAD MIMA 2 Sanggreman\",\n      \"description\": \"Sistem Informasi Akademik Modern Membangun Generasi Qur'ani\",\n      \"publisher\": {\n        \"@id\": \"https://siakad-madrasahku.jaenalmaskun.biz.id#organization\"\n      },\n      \"inLanguage\": \"id-ID\"\n    },\n    {\n      \"@type\": \"WebPage\",\n      \"@id\": \"https://siakad-madrasahku.jaenalmaskun.biz.id#webpage\",\n      \"url\": \"https://siakad-madrasahku.jaenalmaskun.biz.id/\",\n      \"name\": \"Si@Kad Madrasah\",\n      \"description\": \"Sistem Informasi Akademik Modern Membangun Generasi Qur'ani\",\n      \"isPartOf\": {\n        \"@id\": \"https://siakad-madrasahku.jaenalmaskun.biz.id#website\"\n      },\n      \"primaryImageOfPage\": {\n        \"@type\": \"ImageObject\",\n        \"url\": \"https://siakad-madrasahku.jaenalmaskun.biz.id/og-image-share-v2.jpeg?v=1785772276707\"\n      },\n      \"inLanguage\": \"id-ID\"\n    }\n  ]\n}\n    </script>\n\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin />\n    <link href=\"https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@400;700;900&family=Playfair+Display:wght@700;900&family=Unbounded:wght@400;700;900&display=swap\" rel=\"stylesheet\" />\n    <link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>\">\n    <title>SIAKAD MIMA 2 Sanggreman</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-CCahgCu8.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-Bcz0fBvV.css\">\n  </head>\n\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n",
+        "updatedAt": "2026-10-03T05:56:49.875Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_index_php",
+        "accountId": "acc-rdm-01",
+        "name": "index.php",
+        "path": "/public_html/siakad-madrasah/index.php",
+        "type": "file",
+        "size": 12871,
+        "content": "<?php\n/**\n * Dynamic Open Graph & SPA Entry Point for Si@Kad Madrasah\n * Otomatis mendeteksi domain server & menyajikan meta tag Open Graph (WhatsApp, Facebook, Twitter, Telegram)\n * secara real-time dari database MySQL hosting (Plesk/cPanel) maupun fallback bawaan.\n */\n\n// PHP 7 Compatibility Polyfills untuk mencegah error 500 di hosting cPanel versi PHP lama\n@error_reporting(0);\n@ini_set('display_errors', '0');\n\nif (!function_exists('str_contains')) {\n    function str_contains($haystack, $needle) {\n        return $needle !== '' && mb_strpos($haystack, $needle) !== false;\n    }\n}\nif (!function_exists('str_starts_with')) {\n    function str_starts_with($haystack, $needle) {\n        return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;\n    }\n}\nif (!function_exists('str_ends_with')) {\n    function str_ends_with($haystack, $needle) {\n        return $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle;\n    }\n}\n\n// Pastikan Browser Selalu Mengambil Versi Terbaru HTML & Asset\nheader(\"Cache-Control: no-store, no-cache, must-revalidate, max-age=0\");\nheader(\"Pragma: no-cache\");\nheader(\"Expires: 0\");\n\n// Deteksi Protokol & Domain Host\n$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';\n$host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';\n$siteUrl = rtrim($protocol . '://' . $host, '/');\n$requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';\n$requestPath = strtok($requestUri, '?');\n$pageUrl = $siteUrl . '/' . ltrim($requestPath, '/');\n\n// Default Values\n$schoolName = \"Si@Kad\";\n$ogTitle = \"Si@Kad Madrasah Berbasis Digital\";\n$ogDescription = \"Sistem Informasi Akademik Modern Membangun Generasi Qur'ani\";\n$ogImageUrl = $siteUrl . \"/og-image-share-v2.jpeg\";\n$ogImageType = \"image/jpeg\";\n$canonicalUrl = $pageUrl;\n\n// Baca Pengaturan dari MySQL jika db_config.local.php / db_config.php sudah terpasang\nif (file_exists(__DIR__ . '/db_config.local.php')) {\n    include_once __DIR__ . '/db_config.local.php';\n}\nif (file_exists(__DIR__ . '/db_config.php')) {\n    include_once __DIR__ . '/db_config.php';\n}\nif (!defined('DB_HOST') && file_exists(__DIR__ . '/uploads/.db_config_backup.php')) {\n    include_once __DIR__ . '/uploads/.db_config_backup.php';\n}\n$db_host = defined('DB_HOST') ? DB_HOST : 'localhost';\n$db_name = defined('DB_NAME') ? DB_NAME : 'jaenal_siakadmadrasah';\n$db_user = defined('DB_USER') ? DB_USER : 'jaenal_siakadmadrah';\n$db_pass = defined('DB_PASS') ? DB_PASS : 'masbagus15';\n\ntry {\n        $pdo = new PDO(\"mysql:host=$db_host;dbname=$db_name;charset=utf8mb4\", $db_user, $db_pass, [\n            PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,\n            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,\n        ]);\n\n        $stmt = $pdo->prepare(\"SELECT id, value FROM site_settings WHERE id IN ('general', 'seo', 'identitas_madrasah')\");\n        if ($stmt && $stmt->execute()) {\n            $rows = $stmt->fetchAll();\n            $settings = [];\n            foreach ($rows as $r) {\n                $settings[$r['id']] = json_decode($r['value'], true);\n            }\n\n            $general = isset($settings['general']) ? $settings['general'] : [];\n            $seo = isset($settings['seo']) ? $settings['seo'] : [];\n            $identitas = isset($settings['identitas_madrasah']) ? $settings['identitas_madrasah'] : [];\n\n            if (!empty($general['school_name'])) {\n                $schoolName = $general['school_name'];\n            }\n\n            $metaTitle = !empty($seo['title']) ? $seo['title'] : $schoolName;\n            $ogTitle = !empty($seo['og_title']) ? $seo['og_title'] : $metaTitle;\n\n            $metaDesc = !empty($seo['description']) ? $seo['description'] : (!empty($general['tagline']) ? $general['tagline'] : $ogDescription);\n            $ogDescription = !empty($seo['og_description']) ? $seo['og_description'] : $metaDesc;\n\n            $ogDescription = trim(preg_replace('/Si@kad Madrasah Berbasis Digital diperuntukkan membantu satuan pendidikan\\.?/i', '', $ogDescription));\n            if (empty($ogDescription)) {\n                $ogDescription = \"Sistem Informasi Akademik Modern Membangun Generasi Qur'ani\";\n            }\n\n            if (!empty($seo['website_url'])) {\n                $configuredUrl = rtrim($seo['website_url'], '/');\n                $confHost = parse_url($configuredUrl, PHP_URL_HOST);\n                if (!empty($confHost) && strcasecmp($confHost, $host) === 0) {\n                    $canonicalUrl = $configuredUrl . '/' . ltrim($requestPath, '/');\n                } else {\n                    $canonicalUrl = $siteUrl . '/' . ltrim($requestPath, '/');\n                }\n            } else {\n                $canonicalUrl = $siteUrl . '/' . ltrim($requestPath, '/');\n            }\n\n            $rawImage = '';\n            $candidates = [\n                !empty($seo['image_url']) ? $seo['image_url'] : '',\n                !empty($seo['og_image_url']) ? $seo['og_image_url'] : ''\n            ];\n            foreach ($candidates as $cand) {\n                $candLower = strtolower($cand);\n                if (!empty($cand) && \n                    !str_contains($candLower, 'catbox.moe') && \n                    !str_contains($candLower, 'tmpfiles.org') &&\n                    !str_contains($candLower, 'litter.catbox') &&\n                    !str_starts_with($candLower, 'data:')) {\n                    $rawImage = $cand;\n                    break;\n                }\n            }\n\n            if (!empty($rawImage)) {\n                if (str_starts_with($rawImage, 'http://') || str_starts_with($rawImage, 'https://')) {\n                    $ogImageUrl = $rawImage;\n                } else {\n                    $ogImageUrl = $siteUrl . '/' . ltrim($rawImage, '/');\n                }\n            } else {\n                $ogImageUrl = $siteUrl . \"/og-image-share-v2.jpeg\";\n            }\n\n            if (!empty($seo['og_image_updated_at']) && !empty($ogImageUrl)) {\n                $versionParam = $seo['og_image_updated_at'];\n                $timestamp = strtotime($versionParam);\n                if ($timestamp !== false && $timestamp > 0) {\n                    $versionParam = (string)$timestamp;\n                } else {\n                    $versionParam = preg_replace('/[^a-zA-Z0-9_-]/', '', $versionParam);\n                }\n                if (!empty($versionParam)) {\n                    $ogImageUrl = preg_replace('/([?&])v=[^&]*/', '', $ogImageUrl);\n                    $separator = str_contains($ogImageUrl, '?') ? '&' : '?';\n                    $ogImageUrl .= $separator . 'v=' . $versionParam;\n                }\n            }\n        }\n    } catch (Throwable $e) {\n        // Fallback ke default jika database belum dikonfigurasi atau belum dibuat\n    }\n\n// Tentukan MIME Type Gambar Open Graph secara Presisi\n$lowerImg = strtolower($ogImageUrl);\nif (str_contains($lowerImg, '.jpeg') || str_contains($lowerImg, '.jpg')) {\n    $ogImageType = 'image/jpeg';\n} elseif (str_contains($lowerImg, '.png')) {\n    $ogImageType = 'image/png';\n} elseif (str_contains($lowerImg, '.webp')) {\n    $ogImageType = 'image/webp';\n} else {\n    $ogImageType = !empty($seo['og_image_type']) ? $seo['og_image_type'] : 'image/jpeg';\n}\n\n// Muat index.html (periksa dist/index.html terlebih dahulu untuk mendukung deployment git root di Plesk)\n$htmlFile = __DIR__ . '/index.html';\nif (file_exists(__DIR__ . '/dist/index.html')) {\n    $htmlFile = __DIR__ . '/dist/index.html';\n}\n\nif (!file_exists($htmlFile)) {\n    echo \"Aplikasi belum di-build. index.html tidak ditemukan.\";\n    exit();\n}\n\n$html = file_get_contents($htmlFile);\n\n// Jika index.html memuat /src/main.tsx (mode source code / git clone), otomatis substitusi dengan asset terkompilasi di assets/\nif (str_contains($html, '/src/main.tsx')) {\n    $foundJs = '';\n    $foundCss = '';\n    $assetsDir = __DIR__ . '/assets';\n    if (is_dir($assetsDir)) {\n        $files = scandir($assetsDir);\n        foreach ($files as $f) {\n            if (preg_match('/^index-[a-zA-Z0-9_-]+\\.js$/i', $f)) {\n                $foundJs = '/assets/' . $f;\n            } elseif (preg_match('/^index-[a-zA-Z0-9_-]+\\.css$/i', $f)) {\n                $foundCss = '/assets/' . $f;\n            }\n        }\n    }\n    if (!empty($foundJs)) {\n        $html = str_replace('<script type=\"module\" src=\"/src/main.tsx\"></script>', '<script type=\"module\" crossorigin src=\"' . $foundJs . '\"></script>', $html);\n    }\n    if (!empty($foundCss) && !str_contains($html, $foundCss)) {\n        $html = str_replace('</head>', '  <link rel=\"stylesheet\" crossorigin href=\"' . $foundCss . '\">' . \"\\n</head>\", $html);\n    }\n}\n\n// Helper replacement fungsi agar pencocokan meta tag 100% fleksibel\n$replaceMeta = function(&$targetHtml, $attr, $key, $val) {\n    $keyEsc = preg_quote($key, '/');\n    $pattern = '/<meta\\s+[^>]*?' . $attr . '=[\"\\']' . $keyEsc . '[\"\\'][^>]*?\\/?>/i';\n    $replacement = '<meta ' . $attr . '=\"' . htmlspecialchars($key, ENT_QUOTES, 'UTF-8') . '\" content=\"' . htmlspecialchars($val, ENT_QUOTES, 'UTF-8') . '\" />';\n    if (preg_match($pattern, $targetHtml)) {\n        $targetHtml = preg_replace($pattern, $replacement, $targetHtml);\n    } else {\n        $targetHtml = str_replace('</head>', \"  \" . $replacement . \"\\n</head>\", $targetHtml);\n    }\n};\n\n$replaceLink = function(&$targetHtml, $rel, $href) {\n    $relEsc = preg_quote($rel, '/');\n    $pattern = '/<link\\s+[^>]*?rel=[\"\\']' . $relEsc . '[\"\\'][^>]*?\\/?>/i';\n    $replacement = '<link rel=\"' . htmlspecialchars($rel, ENT_QUOTES, 'UTF-8') . '\" href=\"' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '\" />';\n    if (preg_match($pattern, $targetHtml)) {\n        $targetHtml = preg_replace($pattern, $replacement, $targetHtml);\n    } else {\n        $targetHtml = str_replace('</head>', \"  \" . $replacement . \"\\n</head>\", $targetHtml);\n    }\n};\n\n// Ganti Tag Placeholder jika ada\n$html = str_replace('__SITE_URL__', $siteUrl, $html);\n$html = str_replace('__CANONICAL_URL__', htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__META_TITLE__', htmlspecialchars($ogTitle, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__META_DESCRIPTION__', htmlspecialchars($ogDescription, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__OG_TITLE__', htmlspecialchars($ogTitle, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__OG_DESCRIPTION__', htmlspecialchars($ogDescription, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__TWITTER_TITLE__', htmlspecialchars($ogTitle, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__TWITTER_DESCRIPTION__', htmlspecialchars($ogDescription, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__OG_IMAGE_URL__', htmlspecialchars($ogImageUrl, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__OG_IMAGE_TYPE__', htmlspecialchars($ogImageType, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__SITE_NAME__', htmlspecialchars($schoolName, ENT_QUOTES, 'UTF-8'), $html);\n$html = str_replace('__IMAGE_ALT__', htmlspecialchars($schoolName, ENT_QUOTES, 'UTF-8'), $html);\n\n// Override Tag Meta Static di index.html secara presisi dan fleksibel\nif (preg_match('/<title>[^<]*<\\/title>/i', $html)) {\n    $html = preg_replace('/<title>[^<]*<\\/title>/i', '<title>' . htmlspecialchars($ogTitle, ENT_QUOTES, 'UTF-8') . '</title>', $html);\n}\n\n$replaceMeta($html, 'name', 'description', $ogDescription);\n$replaceMeta($html, 'property', 'og:type', 'website');\n$replaceMeta($html, 'property', 'og:locale', 'id_ID');\n$replaceMeta($html, 'property', 'og:site_name', $schoolName);\n$replaceMeta($html, 'property', 'og:title', $ogTitle);\n$replaceMeta($html, 'property', 'og:description', $ogDescription);\n$replaceMeta($html, 'property', 'og:url', $canonicalUrl);\n$replaceMeta($html, 'property', 'og:image', $ogImageUrl);\n$replaceMeta($html, 'property', 'og:image:url', $ogImageUrl);\n$replaceMeta($html, 'property', 'og:image:secure_url', $ogImageUrl);\n$replaceMeta($html, 'property', 'og:image:width', '1200');\n$replaceMeta($html, 'property', 'og:image:height', '630');\n$replaceMeta($html, 'property', 'og:image:type', $ogImageType);\n$replaceMeta($html, 'property', 'og:image:alt', $schoolName);\n\n$replaceMeta($html, 'name', 'twitter:card', 'summary_large_image');\n$replaceMeta($html, 'name', 'twitter:title', $ogTitle);\n$replaceMeta($html, 'name', 'twitter:description', $ogDescription);\n$replaceMeta($html, 'name', 'twitter:image', $ogImageUrl);\n$replaceMeta($html, 'name', 'twitter:image:alt', $schoolName);\n$replaceMeta($html, 'name', 'twitter:url', $canonicalUrl);\n\n$replaceLink($html, 'canonical', $canonicalUrl);\n$replaceLink($html, 'image_src', $ogImageUrl);\n\nheader('Content-Type: text/html; charset=utf-8');\nheader('Cache-Control: no-cache, no-store, must-revalidate');\nheader('Pragma: no-cache');\nheader('Expires: 0');\necho $html;\n",
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_og-cover_jpg",
+        "accountId": "acc-rdm-01",
+        "name": "og-cover.jpg",
+        "path": "/public_html/siakad-madrasah/og-cover.jpg",
+        "type": "file",
+        "size": 278416,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_og-image-share-v2_jpeg",
+        "accountId": "acc-rdm-01",
+        "name": "og-image-share-v2.jpeg",
+        "path": "/public_html/siakad-madrasah/og-image-share-v2.jpeg",
+        "type": "file",
+        "size": 91217,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_og-image_jpg",
+        "accountId": "acc-rdm-01",
+        "name": "og-image.jpg",
+        "path": "/public_html/siakad-madrasah/og-image.jpg",
+        "type": "file",
+        "size": 98508,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_og-image_svg",
+        "accountId": "acc-rdm-01",
+        "name": "og-image.svg",
+        "path": "/public_html/siakad-madrasah/og-image.svg",
+        "type": "file",
+        "size": 889,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_og-preview_jpg",
+        "accountId": "acc-rdm-01",
+        "name": "og-preview.jpg",
+        "path": "/public_html/siakad-madrasah/og-preview.jpg",
+        "type": "file",
+        "size": 98508,
+        "updatedAt": "2026-10-03T05:55:45.003Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_placeholder_svg",
+        "accountId": "acc-rdm-01",
+        "name": "placeholder.svg",
+        "path": "/public_html/siakad-madrasah/placeholder.svg",
+        "type": "file",
+        "size": 3253,
+        "updatedAt": "2026-10-03T05:55:45.004Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_robots_txt",
+        "accountId": "acc-rdm-01",
+        "name": "robots.txt",
+        "path": "/public_html/siakad-madrasah/robots.txt",
+        "type": "file",
+        "size": 160,
+        "updatedAt": "2026-10-03T05:55:45.004Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_site_settings_json",
+        "accountId": "acc-rdm-01",
+        "name": "site_settings.json",
+        "path": "/public_html/siakad-madrasah/site_settings.json",
+        "type": "file",
+        "size": 1023,
+        "updatedAt": "2026-10-03T05:55:45.004Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_thumbnail_jpg",
+        "accountId": "acc-rdm-01",
+        "name": "thumbnail.jpg",
+        "path": "/public_html/siakad-madrasah/thumbnail.jpg",
+        "type": "file",
+        "size": 98508,
+        "updatedAt": "2026-10-03T05:55:45.004Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_unzip_php",
+        "accountId": "acc-rdm-01",
+        "name": "unzip.php",
+        "path": "/public_html/siakad-madrasah/unzip.php",
+        "type": "file",
+        "size": 4408,
+        "updatedAt": "2026-10-03T05:55:45.004Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_uploads__db_config_backup_php",
+        "accountId": "acc-rdm-01",
+        "name": ".db_config_backup.php",
+        "path": "/public_html/siakad-madrasah/uploads/.db_config_backup.php",
+        "type": "file",
+        "size": 310,
+        "updatedAt": "2026-10-03T05:55:45.004Z"
+      },
+      {
+        "id": "vf-phys-siakad-madrasah_uploads_index_html",
+        "accountId": "acc-rdm-01",
+        "name": "index.html",
+        "path": "/public_html/siakad-madrasah/uploads/index.html",
+        "type": "file",
+        "size": 116,
+        "content": "<!DOCTYPE html><html><head><title>403 Forbidden</title></head><body><h1>Directory listing denied</h1></body></html>\n",
+        "updatedAt": "2026-10-03T05:56:49.876Z"
+      }
+    ]
+  }
+}

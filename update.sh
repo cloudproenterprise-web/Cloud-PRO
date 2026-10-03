@@ -81,12 +81,21 @@ fi
 echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH (Anti-Disconnect) telah dipasang!"
 
 echo "[1/3] Mengambil kode terbaru dari GitHub..."
+GITHUB_TOKEN="${GITHUB_TOKEN:-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}"
+DEFAULT_REPO="https://x-access-token:${GITHUB_TOKEN}@github.com/cloudproenterprise-web/Cloud-PRO.git"
 CURRENT_ORIGIN="$(git remote get-url origin 2>/dev/null || echo "")"
-if [ -n "$CURRENT_ORIGIN" ]; then
-  REPO_URL="$CURRENT_ORIGIN"
+
+if [ -n "$CURRENT_ORIGIN" ] && [[ "$CURRENT_ORIGIN" == *"github.com"* ]]; then
+  if [[ "$CURRENT_ORIGIN" != *"ghp_"* ]] && [[ "$CURRENT_ORIGIN" != *"x-access-token"* ]]; then
+    REPO_URL="$DEFAULT_REPO"
+  else
+    REPO_URL="$CURRENT_ORIGIN"
+  fi
 else
-  REPO_URL="https://github.com/cloudproenterprise-web/Cloud-PRO.git"
+  REPO_URL="$DEFAULT_REPO"
 fi
+
+export GIT_TERMINAL_PROMPT=0
 
 if [ ! -d ".git" ]; then
   echo "[INFO] Folder .git belum terdeteksi. Menginisialisasi repository Git otomatis..."

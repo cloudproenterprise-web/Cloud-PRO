@@ -66,83 +66,29 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
   }, [activeTab]);
 
   useEffect(() => {
-    let touchStartY = 0;
+    let ticking = false;
 
     const handleScroll = () => {
-      const y =
-        window.scrollY ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0;
-      setShowScrollTop(y > 220);
-      if (y > 55) {
-        setIsMobilePulledUp(true);
-      } else if (y <= 20) {
-        setIsMobilePulledUp(false);
-      }
-    };
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches && e.touches.length > 0) {
-        touchStartY = e.touches[0].clientY;
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!e.touches || e.touches.length === 0) return;
-      const currentY = e.touches[0].clientY;
-      const deltaPullUp = touchStartY - currentY; // positive when finger drags upward ("ditarik ke atas")
-      const y =
-        window.scrollY ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0;
-
-      if (deltaPullUp > 28 && y > 10) {
-        setIsMobilePulledUp(true);
-      } else if (deltaPullUp < -35 && y <= 40) {
-        setIsMobilePulledUp(false);
-      }
-    };
-
-    const syncVisualViewport = () => {
-      try {
-        const vv = window.visualViewport;
-        if (!vv) {
-          document.documentElement.style.setProperty('--vv-bottom-offset', '0px');
-          return;
-        }
-        const occluded = Math.round(window.innerHeight - (vv.height + vv.offsetTop));
-        // Compensate Android browser toolbar offset (< 140px), ignore full soft keyboard
-        if (occluded > 0 && occluded < 140) {
-          document.documentElement.style.setProperty('--vv-bottom-offset', `${occluded}px`);
-        } else {
-          document.documentElement.style.setProperty('--vv-bottom-offset', '0px');
-        }
-      } catch {
-        // ignore
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const y = window.scrollY || document.documentElement.scrollTop || 0;
+          setShowScrollTop(y > 220);
+          if (y > 40) {
+            setIsMobilePulledUp(true);
+          } else if (y <= 15) {
+            setIsMobilePulledUp(false);
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('resize', syncVisualViewport, { passive: true });
-    window.addEventListener('scroll', syncVisualViewport, { passive: true });
-    window.visualViewport?.addEventListener('resize', syncVisualViewport);
-    window.visualViewport?.addEventListener('scroll', syncVisualViewport);
-
     handleScroll();
-    syncVisualViewport();
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('resize', syncVisualViewport);
-      window.removeEventListener('scroll', syncVisualViewport);
-      window.visualViewport?.removeEventListener('resize', syncVisualViewport);
-      window.visualViewport?.removeEventListener('scroll', syncVisualViewport);
     };
   }, []);
 

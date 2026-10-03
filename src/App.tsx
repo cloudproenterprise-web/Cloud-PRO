@@ -256,14 +256,12 @@ const AppContent: React.FC = () => {
     }
   }, [currentUser?.id, currentUser?.role, activeTab]);
 
-  // Ensure viewport is scrolled to top after login, tab switch, or user/role switch so mobile keyboard offset never hides TopBar
+  // Ensure viewport is scrolled to top after login, tab switch, or user/role switch
   useEffect(() => {
     try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    } catch {
       window.scrollTo(0, 0);
+    } catch {
+      // ignore
     }
   }, [activeTab, currentUser?.id, currentUser?.role, isAuthenticated]);
 

@@ -741,11 +741,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpen && (
         <div
           onClick={onCloseMobile}
-          onTouchEnd={e => {
-            e.preventDefault();
-            onCloseMobile();
-          }}
-          className="fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-xs lg:hidden touch-none"
+          className="fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-xs lg:hidden cursor-pointer"
         />
       )}
 

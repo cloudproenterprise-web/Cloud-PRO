@@ -293,18 +293,6 @@ function renderWebTerminalHtml(host, initialCwd) {
       </div>
     </header>
 
-    <!-- Prominent Gateway to Main Control Panel -->
-    <div style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #38bdf8; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 50;">
-      <div style="color: #fff; font-size: 12px; font-weight: 600; line-height: 1.3;">
-        <span style="font-size: 15px; margin-right: 4px;">\u{1F310}</span>
-        <strong>Menuju Dashboard cPanel Cloud PRO?</strong>
-        <div style="color: #bae6fd; font-size: 10px; font-weight: normal;">Buka File Manager, Domain, CF Tunnel, &amp; Database</div>
-      </div>
-      <a href="/?panel=1" onclick="window.location.href='/?v=' + Date.now() + '&panel=1'; return false;" style="background: #facc15; color: #0f172a; padding: 9px 16px; border-radius: 9px; font-weight: 800; font-size: 12px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.35); display: inline-flex; align-items: center; gap: 5px; shrink-0: 0;">
-        \u26A1 Buka Dashboard &rarr;
-      </a>
-    </div>
-
     <!-- Quick Action Pills for Mobile -->
     <div class="quick-bar">
       <button class="quick-btn" onclick="runCommand('bash update.sh')">\u{1F680} 1-Click Update</button>
