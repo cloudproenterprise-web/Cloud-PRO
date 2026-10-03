@@ -290,7 +290,7 @@ function renderWebTerminalHtml(host, initialCwd) {
       <div class="header-right">
         <button class="btn-header" onclick="clearTerminal()" title="Bersihkan Layar">\u{1F9F9} Clear</button>
         <button class="btn-header" onclick="lockTerminal()" title="Kunci Terminal">\u{1F512} Kunci</button>
-        <a class="btn-header" href="/cpanel" style="text-decoration:none;">\u26A1 Panel</a>
+        <a class="btn-header" href="/" style="text-decoration:none;">\u26A1 Dashboard Panel</a>
       </div>
     </header>
 

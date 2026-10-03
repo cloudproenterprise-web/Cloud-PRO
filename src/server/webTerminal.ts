@@ -280,7 +280,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
       <div class="header-right">
         <button class="btn-header" onclick="clearTerminal()" title="Bersihkan Layar">🧹 Clear</button>
         <button class="btn-header" onclick="lockTerminal()" title="Kunci Terminal">🔒 Kunci</button>
-        <a class="btn-header" href="/cpanel" style="text-decoration:none;">⚡ Panel</a>
+        <a class="btn-header" href="/" style="text-decoration:none;">⚡ Dashboard Panel</a>
       </div>
     </header>
 
