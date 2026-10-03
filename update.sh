@@ -73,7 +73,7 @@ CURRENT_ORIGIN="$(git remote get-url origin 2>/dev/null || echo "")"
 if [ -n "$CURRENT_ORIGIN" ]; then
   REPO_URL="$CURRENT_ORIGIN"
 else
-  REPO_URL="https://github.com/siakadmadrasah-lang/CloudPRO-Server.git"
+  REPO_URL="https://github.com/cloudproenterprise-web/Cloud-PRO.git"
 fi
 
 if [ ! -d ".git" ]; then
