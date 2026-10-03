@@ -638,7 +638,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     {
       id: 'cron-01',
       accountId: 'acc-rdm-01',
-      command: 'php /home/madrasah/public_html/artisan schedule:run >> /dev/null 2>&1',
+      command: 'php /home/cloudpro/public_html/artisan schedule:run >> /dev/null 2>&1',
       schedule: '0 2 * * *',
       description: 'Daily Automated RDM Database Sync & Backup',
       isActive: true,
@@ -1081,7 +1081,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
   optimizedMedia: [
     {
       id: 'med-01',
-      accountId: 'acc-madrasah-01',
+      accountId: 'acc-rdm-01',
       fileName: 'upacara_hari_guru_nasional_2026.webp',
       originalFileName: 'IMG_20260925_073014_RAW_CAMERA.jpg',
       mimeType: 'image/webp',
@@ -1098,7 +1098,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     },
     {
       id: 'med-02',
-      accountId: 'acc-madrasah-01',
+      accountId: 'acc-rdm-01',
       fileName: 'wisuda_tahfidz_al_quran_angkatan_viii.webp',
       originalFileName: 'DSC_0982_HIGHRES_FULL.png',
       mimeType: 'image/webp',
@@ -1115,7 +1115,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     },
     {
       id: 'med-03',
-      accountId: 'acc-madrasah-01',
+      accountId: 'acc-rdm-01',
       fileName: 'fasilitas_laboratorium_komputer_cbt.webp',
       originalFileName: 'PXL_20260920_112000.jpg',
       mimeType: 'image/webp',
@@ -1504,13 +1504,19 @@ class StorageService {
           databases: (hasAccounts && Array.isArray(parsed.databases) && parsed.databases.length > 0) ? parsed.databases : INITIAL_STATE.databases,
           emailMailboxes: (hasAccounts && Array.isArray(parsed.emailMailboxes) && parsed.emailMailboxes.length > 0) ? parsed.emailMailboxes : INITIAL_STATE.emailMailboxes,
           dnsRecords: (hasAccounts && Array.isArray(parsed.dnsRecords) && parsed.dnsRecords.length > 0) ? parsed.dnsRecords : INITIAL_STATE.dnsRecords,
-          cronJobs: (hasAccounts && Array.isArray(parsed.cronJobs) && parsed.cronJobs.length > 0) ? parsed.cronJobs : INITIAL_STATE.cronJobs,
+          cronJobs: ((hasAccounts && Array.isArray(parsed.cronJobs) && parsed.cronJobs.length > 0) ? parsed.cronJobs : INITIAL_STATE.cronJobs).map((c: any) => ({
+            ...c,
+            command: (c.command || '').replace('/home/madrasah', '/home/cloudpro'),
+          })),
           vpsInstances: (parsed.vpsInstances && parsed.vpsInstances.length > 0) ? parsed.vpsInstances : INITIAL_STATE.vpsInstances,
           vpsSnapshots: (parsed.vpsSnapshots && parsed.vpsSnapshots.length > 0) ? parsed.vpsSnapshots : INITIAL_STATE.vpsSnapshots,
           vpsFirewallRules: (parsed.vpsFirewallRules && parsed.vpsFirewallRules.length > 0) ? parsed.vpsFirewallRules : INITIAL_STATE.vpsFirewallRules,
           nameserverConfigs: (parsed.nameserverConfigs && parsed.nameserverConfigs.length > 0) ? parsed.nameserverConfigs : INITIAL_STATE.nameserverConfigs,
           r2Configs: (parsed.r2Configs && parsed.r2Configs.length > 0) ? parsed.r2Configs : INITIAL_STATE.r2Configs,
-          optimizedMedia: (parsed.optimizedMedia && parsed.optimizedMedia.length > 0) ? parsed.optimizedMedia : INITIAL_STATE.optimizedMedia,
+          optimizedMedia: ((parsed.optimizedMedia && parsed.optimizedMedia.length > 0) ? parsed.optimizedMedia : INITIAL_STATE.optimizedMedia).map((m: any) => ({
+            ...m,
+            accountId: m.accountId === 'acc-madrasah-01' ? 'acc-rdm-01' : m.accountId,
+          })),
           domains: loadedDomains,
           databaseTables: parsed.databaseTables || INITIAL_STATE.databaseTables,
           deletedIds: Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [],
