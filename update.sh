@@ -68,10 +68,14 @@ heal_shell_rc() {
   sed -i '/alias update=/d' "$RC_FILE" 2>/dev/null || true
   sed -i '/alias cek-update=/d' "$RC_FILE" 2>/dev/null || true
   sed -i '/alias versi=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias git-log=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias git-status=/d' "$RC_FILE" 2>/dev/null || true
   if [[ "$RC_FILE" == *".bashrc" ]]; then
     echo "alias update='bash \"$SCRIPT_DIR/update.sh\"'" >> "$RC_FILE"
     echo "alias cek-update='bash \"$SCRIPT_DIR/update.sh\" --check'" >> "$RC_FILE"
     echo "alias versi='git -C \"$SCRIPT_DIR\" log -1 --format=\"[KOMMIT AKTIF] %h%n[JUDUL]        %s%n[TANGGAL]      %cd (%cr)%n[AUTHOR]       %an\"'" >> "$RC_FILE"
+    echo "alias git-log='git -C \"$SCRIPT_DIR\" log -1 --oneline'" >> "$RC_FILE"
+    echo "alias git-status='git -C \"$SCRIPT_DIR\" status'" >> "$RC_FILE"
   fi
 }
 
@@ -171,7 +175,7 @@ fi
 echo "--------------------------------------------------------"
 
 git reset --hard FETCH_HEAD
-git clean -fd -e .cloudpro-data 2>/dev/null || true
+git clean -fd -e .cloudpro-data -e public_html 2>/dev/null || true
 git gc --prune=now -q 2>/dev/null || true
 
 # Pulihkan kembali state dari Persistent Vault ke .cloudpro-data setelah git reset
