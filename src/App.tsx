@@ -923,11 +923,13 @@ const AppContent: React.FC = () => {
       case 'backups':
       case 'backup':
       case 'cpanel-backup':
-        return renderAccountSuiteWrapper(
-          'Backup Website (.ZIP)',
+        return renderSystemModuleWrapper(
+          'BACKUP SUITE',
+          'Modul Backup Website & Database (.ZIP)',
+          'Buat cadangan website terkompresi .ZIP, database MySQL terisolasi, dan unduh arsip server secara mandiri',
           <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
             <BackupModule
-              account={selectedAccount!}
+              account={selectedAccount || accounts[0]}
               preselectedDomain={backupPreselectedDomain}
               onNavigateTab={(tab, domain) => {
                 if (domain) setBackupPreselectedDomain(domain);
@@ -938,11 +940,13 @@ const AppContent: React.FC = () => {
         );
       case 'restore':
       case 'cpanel-restore':
-        return renderAccountSuiteWrapper(
-          'Restore Website (.ZIP)',
+        return renderSystemModuleWrapper(
+          'RECOVERY SUITE',
+          'Modul Restore Website & Database (.ZIP)',
+          'Pulihkan website dari arsip server, berkas .ZIP komputer lokal, atau tarik otomatis dari URL remote dengan proteksi safety snapshot',
           <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
             <RestoreModule
-              account={selectedAccount!}
+              account={selectedAccount || accounts[0]}
               preselectedDomain={backupPreselectedDomain}
               onNavigateTab={(tab, domain) => {
                 if (domain) setBackupPreselectedDomain(domain);
@@ -953,10 +957,12 @@ const AppContent: React.FC = () => {
         );
       case 'disk-usage':
       case 'cpanel-disk':
-        return renderAccountSuiteWrapper(
-          'Analisa Penggunaan Disk',
+        return renderSystemModuleWrapper(
+          'STORAGE ANALYZER',
+          'Modul Disk Usage & Analisa Kuota',
+          'Pantau pemakaian penyimpanan riil NVMe per akun klien, document root website, folder subdomain, dan komponen file aktif',
           <DiskUsageModule
-            account={selectedAccount!}
+            account={selectedAccount || accounts[0]}
             onOpenFileManager={(targetPath) => {
               setFileManagerPath(targetPath);
               setActiveTab('file-manager');
@@ -970,10 +976,12 @@ const AppContent: React.FC = () => {
       case 'disk-cleaner':
       case 'cpanel-cleaner':
       case 'cleaner':
-        return renderAccountSuiteWrapper(
-          'Pembersih Disk & File Sampah',
+        return renderSystemModuleWrapper(
+          'STORAGE CLEANER',
+          'Modul Disk Cleaner & Pembersih Sampah',
+          'Pembersihan aman 100% (Zero Error) untuk chunk JS/CSS usang, berkas ZIP sementara, dan crash log tanpa menyentuh uploads & database',
           <DiskCleanerModule
-            account={selectedAccount!}
+            account={selectedAccount || accounts[0]}
             onOpenFileManager={(targetPath) => {
               setFileManagerPath(targetPath);
               setActiveTab('file-manager');

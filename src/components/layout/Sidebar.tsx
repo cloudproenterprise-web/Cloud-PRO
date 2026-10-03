@@ -185,18 +185,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: FolderOpen,
           },
           {
-            id: 'disk-usage',
-            aliases: ['cpanel-disk'],
-            label: 'Disk Usage',
-            icon: HardDrive,
-          },
-          {
-            id: 'disk-cleaner',
-            aliases: ['cleaner', 'cpanel-cleaner', 'cpanel-disk-cleaner'],
-            label: 'Disk Cleaner',
-            icon: Trash2,
-          },
-          {
             id: 'website-cloner',
             aliases: ['cloner'],
             label: 'Kloning Website',
@@ -233,9 +221,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Clock,
           },
           {
+            id: 'media-storage',
+            aliases: ['cpanel-media', 'media'],
+            label: 'Cloudflare R2 & Media',
+            icon: Cloud,
+          },
+        ],
+      },
+      {
+        key: 'admin_storage_backup',
+        title: 'Penyimpanan & Cadangan',
+        items: [
+          {
+            id: 'disk-usage',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage & Analisa',
+            icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner', 'cpanel-disk-cleaner'],
+            label: 'Disk Cleaner (Pembersih)',
+            icon: Trash2,
+          },
+          {
             id: 'backups',
             aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
-            label: 'Backup (.ZIP)',
+            label: 'Backup Website (.ZIP)',
             icon: Archive,
             badge: {
               text: '.ZIP',
@@ -244,14 +256,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {
             id: 'restore',
             aliases: ['cpanel-restore', 'restore-manager'],
-            label: 'Restore Website',
+            label: 'Restore & Pulihkan Data',
             icon: RotateCcw,
-          },
-          {
-            id: 'media-storage',
-            aliases: ['cpanel-media', 'media'],
-            label: 'Cloudflare R2 & Media',
-            icon: Cloud,
           },
         ],
       },
@@ -389,18 +395,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: FolderOpen,
           },
           {
-            id: 'disk-usage',
-            aliases: ['cpanel-disk'],
-            label: 'Disk Usage',
-            icon: HardDrive,
-          },
-          {
-            id: 'disk-cleaner',
-            aliases: ['cleaner', 'cpanel-cleaner'],
-            label: 'Disk Cleaner',
-            icon: Trash2,
-          },
-          {
             id: 'website-cloner',
             aliases: ['cloner'],
             label: 'Kloning Website',
@@ -413,22 +407,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Mail,
           },
           {
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron'],
+            label: 'Cron Jobs',
+            icon: Clock,
+          },
+        ],
+      },
+      {
+        key: 'reseller_storage_backup',
+        title: 'Penyimpanan & Cadangan',
+        items: [
+          {
+            id: 'disk-usage',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage & Analisa',
+            icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner'],
+            label: 'Disk Cleaner (Pembersih)',
+            icon: Trash2,
+          },
+          {
             id: 'backups',
             aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
-            label: 'Backup (.ZIP)',
+            label: 'Backup Website (.ZIP)',
             icon: Archive,
           },
           {
             id: 'restore',
             aliases: ['cpanel-restore'],
-            label: 'Restore Website',
+            label: 'Restore & Pulihkan Data',
             icon: RotateCcw,
-          },
-          {
-            id: 'cron-jobs',
-            aliases: ['cpanel-cron'],
-            label: 'Cron Jobs',
-            icon: Clock,
           },
         ],
       },
@@ -495,18 +507,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: FolderOpen,
           },
           {
-            id: 'disk-usage',
-            aliases: ['cpanel-disk'],
-            label: 'Disk Usage',
-            icon: HardDrive,
-          },
-          {
-            id: 'disk-cleaner',
-            aliases: ['cleaner', 'cpanel-cleaner'],
-            label: 'Disk Cleaner',
-            icon: Trash2,
-          },
-          {
             id: 'website-cloner',
             aliases: ['cloner'],
             label: 'Kloning Website',
@@ -545,6 +545,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
+        key: 'customer_storage_backup',
+        title: 'Penyimpanan & Cadangan',
+        items: [
+          {
+            id: 'disk-usage',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage & Analisa',
+            icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner'],
+            label: 'Disk Cleaner (Pembersih)',
+            icon: Trash2,
+          },
+          {
+            id: 'backups',
+            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
+            label: 'Backup Website (.ZIP)',
+            icon: Archive,
+          },
+          {
+            id: 'restore',
+            aliases: ['cpanel-restore'],
+            label: 'Restore & Pulihkan Data',
+            icon: RotateCcw,
+          },
+        ],
+      },
+      {
         key: 'customer_db',
         title: 'Database & Email',
         items: [
@@ -571,18 +601,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             aliases: ['cpanel-cron'],
             label: 'Cron Jobs',
             icon: Clock,
-          },
-          {
-            id: 'backups',
-            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
-            label: 'Backup (.ZIP)',
-            icon: Archive,
-          },
-          {
-            id: 'restore',
-            aliases: ['cpanel-restore'],
-            label: 'Restore Website',
-            icon: RotateCcw,
           },
         ],
       },

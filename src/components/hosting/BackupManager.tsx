@@ -774,20 +774,17 @@ export const BackupManager: React.FC<BackupManagerProps> = ({
                 {currentDomainObj?.filesCount || 0} File ({currentDomainObj?.formattedSize || '0 B'})
               </strong>
             </div>
-            <button
-              type="button"
-              onClick={handleCleanDiskJunk}
-              disabled={isCleaningDisk}
-              className="flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-900/50 cursor-pointer transition-colors"
-              title="Bersihkan file sampah sisa instalasi lama, chunk duplikat, dan snapshot sementara tanpa mengganggu website aktif"
-            >
-              {isCleaningDisk ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-600" />
-              ) : (
-                <Trash2 className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-              )}
-              <span>Bersihkan Sampah Disk</span>
-            </button>
+            {onNavigateTab && (
+              <button
+                type="button"
+                onClick={() => onNavigateTab('disk-cleaner')}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 cursor-pointer transition-colors"
+                title="Buka Modul Disk Cleaner untuk pembersihan sampah disk terpisah"
+              >
+                <Trash2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Modul Disk Cleaner</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => { loadDomains(); loadBackups(); }}
