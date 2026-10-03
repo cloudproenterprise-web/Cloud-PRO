@@ -2738,14 +2738,11 @@ class StorageService {
           createdAt: acc.createdAt || new Date().toISOString(),
         };
         this.state.domains.push(autoPrimary);
-        this.saveState();
         return [autoPrimary, ...existing];
       }
-      if (stateChanged) this.saveState();
       return existing;
     }
 
-    if (stateChanged) this.saveState();
     return this.state.domains;
   }
 
@@ -3324,7 +3321,6 @@ class StorageService {
   public getNameserverConfigs(): PrivateNameserverConfig[] {
     if (!this.state.nameserverConfigs || this.state.nameserverConfigs.length === 0) {
       this.state.nameserverConfigs = [...(INITIAL_STATE.nameserverConfigs || [])];
-      this.saveState();
     }
     return this.state.nameserverConfigs;
   }
@@ -3412,7 +3408,6 @@ class StorageService {
       if (accountId !== 'acc-rdm-01' && acc && specific.publicCdnDomain.includes('denbaguse.my.id')) {
         specific.publicCdnDomain = `https://media.${cleanDomain}`;
         specific.bucketName = `r2-${cleanSlug}-media`;
-        this.saveState();
       }
       return specific;
     }
@@ -3434,7 +3429,6 @@ class StorageService {
         lastSyncedAt: new Date().toISOString(),
       };
       this.state.r2Configs.push(autoBoundConfig);
-      this.saveState();
       return autoBoundConfig;
     }
 

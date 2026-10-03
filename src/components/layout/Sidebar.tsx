@@ -669,12 +669,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (typeof window === 'undefined') return;
     if (isOpen && window.innerWidth < 1024) {
       const originalOverflow = document.body.style.overflow;
-      const originalTouchAction = document.body.style.touchAction;
       document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
       return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.touchAction = originalTouchAction;
+        document.body.style.overflow = originalOverflow || '';
       };
     }
   }, [isOpen]);
@@ -715,14 +712,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const panelDomain = currentResellerProfile?.panelDomain || 'panel.cloudpro.net';
 
   const handleNav = (tabId: string) => {
+    onSelectTab(tabId);
     onCloseMobile();
-    if (typeof window !== 'undefined' && window.requestAnimationFrame) {
-      window.requestAnimationFrame(() => {
-        onSelectTab(tabId);
-      });
-    } else {
-      onSelectTab(tabId);
-    }
   };
 
   const normalizedQuery = searchQuery.trim().toLowerCase();

@@ -1175,6 +1175,8 @@ const AppContent: React.FC = () => {
         </main>
       </div>
 
+      <WhatsAppFloatingButton defaultPhoneNumber="6281226738883" />
+
       {/* Global Modals & Drawers */}
       {selectedAccount && (
         <WebsitePreviewModal

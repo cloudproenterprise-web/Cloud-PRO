@@ -9381,7 +9381,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   const hasDist = fs.existsSync(distIndex);
 
   // In development mode (AI Studio & local dev), mount live Vite middleware; on deployed servers with dist/, serve static bundle
-  const shouldServeDist = process.env.NODE_ENV === 'production' && hasDist;
+  const shouldServeDist = (process.env.NODE_ENV === 'production' || !process.env.VITE_DEV) && hasDist;
   if (shouldServeDist) {
     console.log(`[CloudPRO] Serving production static bundle from ${distDir}`);
     app.use(express.static(distDir, {
