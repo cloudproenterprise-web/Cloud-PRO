@@ -601,8 +601,9 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
         try {
           data = JSON.parse(rawText);
         } catch (jsonErr) {
+          const isCheckCmd = cmd.includes('--check') || cmd.includes('-c') || cmd.includes('versi') || cmd.includes('status');
           // If server reloaded during update/restart and connection returned HTML
-          if (cmd.includes('update') || cmd.includes('restart') || cmd.includes('pm2') || rawText.includes('<!DOCTYPE') || rawText.includes('<html')) {
+          if (!isCheckCmd && (cmd.includes('update') || cmd.includes('restart') || cmd.includes('pm2') || rawText.includes('<!DOCTYPE') || rawText.includes('<html'))) {
             appendHistoryBlock(
               cmd,
               '⚡ [INFO] Perintah update / restart sedang dieksekusi di background server...\\n' +
@@ -636,7 +637,8 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
         }
       } catch (err) {
         tempBlock.remove();
-        if (cmd.includes('update') || cmd.includes('restart')) {
+        const isCheckCmd = cmd.includes('--check') || cmd.includes('-c') || cmd.includes('versi') || cmd.includes('status');
+        if (!isCheckCmd && (cmd.includes('update') || cmd.includes('restart'))) {
           appendHistoryBlock(
             cmd,
             '⚡ [INFO] Server CloudPRO sedang me-restart service di background.\\n' +
