@@ -9380,23 +9380,29 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   const distIndex = path.join(distDir, 'index.html');
   const hasDist = fs.existsSync(distIndex);
 
-  // In development mode (AI Studio & local dev), ALWAYS mount live Vite middleware so src/ changes are live immediately
-  const isProduction = process.env.NODE_ENV === 'production';
-  if (isProduction && hasDist) {
+  // In development mode (AI Studio & local dev), mount live Vite middleware; on deployed servers with dist/, serve static bundle
+  const shouldServeDist = (process.env.NODE_ENV === 'production' || !process.env.VITE_DEV) && hasDist;
+  if (shouldServeDist) {
     console.log(`[CloudPRO] Serving production static bundle from ${distDir}`);
     app.use(express.static(distDir, {
       setHeaders: (res, filePath) => {
         if (filePath.endsWith('.html')) {
-          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
           res.setHeader('Pragma', 'no-cache');
           res.setHeader('Expires', '0');
+          res.setHeader('Surrogate-Control', 'no-store');
+          res.setHeader('CDN-Cache-Control', 'no-store');
+          res.setHeader('Cloudflare-CDN-Cache-Control', 'no-store');
         }
       },
     }));
     app.get('*', (_req, res) => {
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+      res.setHeader('CDN-Cache-Control', 'no-store');
+      res.setHeader('Cloudflare-CDN-Cache-Control', 'no-store');
       res.sendFile(distIndex);
     });
   } else {

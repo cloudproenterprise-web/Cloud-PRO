@@ -289,7 +289,7 @@ function renderWebTerminalHtml(host, initialCwd) {
       <div class="header-right">
         <button class="btn-header" onclick="clearTerminal()" title="Bersihkan Layar">\u{1F9F9} Clear</button>
         <button class="btn-header" onclick="lockTerminal()" title="Kunci Terminal">\u{1F512} Kunci</button>
-        <a class="btn-header" href="/?panel=1" style="text-decoration:none; background:#f59e0b; color:#0f172a; font-weight:800;">\u26A1 Panel</a>
+        <a class="btn-header" href="/?panel=1" onclick="window.location.href='/?v=' + Date.now() + '&panel=1'; return false;" style="text-decoration:none; background:#f59e0b; color:#0f172a; font-weight:800;">\u26A1 Panel</a>
       </div>
     </header>
 
@@ -300,7 +300,7 @@ function renderWebTerminalHtml(host, initialCwd) {
         <strong>Menuju Dashboard cPanel Cloud PRO?</strong>
         <div style="color: #bae6fd; font-size: 10px; font-weight: normal;">Buka File Manager, Domain, CF Tunnel, &amp; Database</div>
       </div>
-      <a href="/?panel=1" style="background: #facc15; color: #0f172a; padding: 9px 16px; border-radius: 9px; font-weight: 800; font-size: 12px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.35); display: inline-flex; align-items: center; gap: 5px; shrink-0: 0;">
+      <a href="/?panel=1" onclick="window.location.href='/?v=' + Date.now() + '&panel=1'; return false;" style="background: #facc15; color: #0f172a; padding: 9px 16px; border-radius: 9px; font-weight: 800; font-size: 12px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.35); display: inline-flex; align-items: center; gap: 5px; shrink-0: 0;">
         \u26A1 Buka Dashboard &rarr;
       </a>
     </div>
@@ -8520,22 +8520,28 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
   const distDir = path.resolve(process.cwd(), "dist");
   const distIndex = path.join(distDir, "index.html");
   const hasDist = fs.existsSync(distIndex);
-  const isProduction = process.env.NODE_ENV === "production";
-  if (isProduction && hasDist) {
+  const shouldServeDist = (process.env.NODE_ENV === "production" || !process.env.VITE_DEV) && hasDist;
+  if (shouldServeDist) {
     console.log(`[CloudPRO] Serving production static bundle from ${distDir}`);
     app.use(express.static(distDir, {
       setHeaders: (res, filePath) => {
         if (filePath.endsWith(".html")) {
-          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
           res.setHeader("Pragma", "no-cache");
           res.setHeader("Expires", "0");
+          res.setHeader("Surrogate-Control", "no-store");
+          res.setHeader("CDN-Cache-Control", "no-store");
+          res.setHeader("Cloudflare-CDN-Cache-Control", "no-store");
         }
       }
     }));
     app.get("*", (_req, res) => {
-      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0");
       res.setHeader("Pragma", "no-cache");
       res.setHeader("Expires", "0");
+      res.setHeader("Surrogate-Control", "no-store");
+      res.setHeader("CDN-Cache-Control", "no-store");
+      res.setHeader("Cloudflare-CDN-Cache-Control", "no-store");
       res.sendFile(distIndex);
     });
   } else {
