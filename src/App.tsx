@@ -150,6 +150,7 @@ const AppContent: React.FC = () => {
 
   const [activeTab, setActiveTabState] = useState<string>(() => getRootDashboardTab());
   const [navHistory, setNavHistory] = useState<string[]>([]);
+  const navHistoryRef = React.useRef<string[]>([]);
 
   const isRootDashboard = [
     'dashboard',
@@ -162,13 +163,10 @@ const AppContent: React.FC = () => {
   const setActiveTab = (nextRawTab: string) => {
     const nextTab = nextRawTab === 'dashboard' ? getRootDashboardTab() : nextRawTab;
     if (nextTab === activeTab) return;
-    setNavHistory(prev => [...prev.slice(-24), activeTab]);
+    const nextHistory = [...navHistoryRef.current.slice(-24), activeTab];
+    navHistoryRef.current = nextHistory;
+    setNavHistory(nextHistory);
     setActiveTabState(nextTab);
-    try {
-      window.history.pushState({ cloudProTab: nextTab }, '', window.location.pathname);
-    } catch {
-      // Ignore history errors in restricted sandbox
-    }
   };
 
   const handleGoBack = () => {
@@ -188,9 +186,12 @@ const AppContent: React.FC = () => {
       setIsNotifsOpen(false);
       return;
     }
-    if (navHistory.length > 0) {
-      const prevTab = navHistory[navHistory.length - 1];
-      setNavHistory(prev => prev.slice(0, -1));
+    const currentHist = navHistoryRef.current;
+    if (currentHist.length > 0) {
+      const prevTab = currentHist[currentHist.length - 1];
+      const nextHist = currentHist.slice(0, -1);
+      navHistoryRef.current = nextHist;
+      setNavHistory(nextHist);
       setActiveTabState(prevTab);
       return;
     }
@@ -219,7 +220,7 @@ const AppContent: React.FC = () => {
     }
   }, [currentUser?.id, currentUser?.role]);
 
-  // Keep tab and activeAccount strictly in sync with user/role changes
+  // Keep activeAccount strictly in sync when user/accounts change
   useEffect(() => {
     if (!currentUser) return;
     const userAccs = accounts.filter(acc => {
@@ -241,7 +242,11 @@ const AppContent: React.FC = () => {
     if (!activeAccount || !userAccs.some(a => a.id === activeAccount.id)) {
       setActiveAccount(userAccs[0] || null);
     }
+  }, [currentUser?.id, currentUser?.role, accounts.length]);
 
+  // Validate tab permissions according to current user role
+  useEffect(() => {
+    if (!currentUser) return;
     const adminOnlyTabs = ['servers', 'ip-manager', 'resellers', 'tailscale-mesh', 'architecture', 'gateway-tunnel'];
     if (currentUser.role === 'admin' && (activeTab === 'reseller-dashboard' || activeTab === 'customer-dashboard')) {
       setActiveTabState('dashboard');
@@ -254,7 +259,7 @@ const AppContent: React.FC = () => {
         setActiveTabState('customer-dashboard');
       }
     }
-  }, [currentUser?.id, currentUser?.role, activeTab]);
+  }, [currentUser?.role, activeTab]);
 
   // Ensure viewport is scrolled to top after login, tab switch, or user/role switch
   useEffect(() => {

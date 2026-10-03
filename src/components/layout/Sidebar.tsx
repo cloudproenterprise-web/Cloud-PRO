@@ -715,8 +715,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const panelDomain = currentResellerProfile?.panelDomain || 'panel.cloudpro.net';
 
   const handleNav = (tabId: string) => {
-    onSelectTab(tabId);
     onCloseMobile();
+    if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+      window.requestAnimationFrame(() => {
+        onSelectTab(tabId);
+      });
+    } else {
+      onSelectTab(tabId);
+    }
   };
 
   const normalizedQuery = searchQuery.trim().toLowerCase();

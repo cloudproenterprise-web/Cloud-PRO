@@ -383,16 +383,11 @@ export const FloatingGlassDock: React.FC<FloatingGlassDockProps> = ({
          ===================================================================================== */}
       <div
         aria-label="Cloud PRO Enterprise Mobile Quick Dock"
-        className={`mobile-sticky-dock fixed left-2.5 right-2.5 lg:hidden z-40 flex justify-center pointer-events-none no-print transform-gpu transition-all duration-300 ${
-          isMobilePulledUp || isWaOpen
-            ? 'opacity-100 translate-y-0 scale-100'
-            : 'opacity-0 translate-y-24 scale-95'
-        }`}
+        className="fixed bottom-2.5 left-2.5 right-2.5 lg:hidden z-40 flex justify-center pointer-events-auto no-print"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div
-          className={`exec-dark-ring flex items-center justify-between gap-1 sm:gap-1.5 w-full max-w-lg rounded-2xl px-2 py-1.5 text-white backdrop-blur-xl ${
-            isMobilePulledUp || isWaOpen ? 'pointer-events-auto' : 'pointer-events-none'
-          }`}
+          className="exec-dark-ring flex items-center justify-between gap-1 sm:gap-1.5 w-full max-w-lg rounded-2xl px-2 py-1.5 text-white backdrop-blur-xl shadow-2xl"
         >
           {/* Quick Action Pills */}
           <div className="flex flex-1 items-center justify-around gap-0.5 sm:gap-1">
