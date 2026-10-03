@@ -289,19 +289,19 @@ function renderWebTerminalHtml(host, initialCwd) {
       <div class="header-right">
         <button class="btn-header" onclick="clearTerminal()" title="Bersihkan Layar">\u{1F9F9} Clear</button>
         <button class="btn-header" onclick="lockTerminal()" title="Kunci Terminal">\u{1F512} Kunci</button>
-        <a class="btn-header" href="/" style="text-decoration:none;">\u26A1 Dashboard Panel</a>
+        <a class="btn-header" href="/?panel=1" style="text-decoration:none; background:#f59e0b; color:#0f172a; font-weight:800;">\u26A1 Panel</a>
       </div>
     </header>
 
     <!-- Prominent Gateway to Main Control Panel -->
-    <div style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #38bdf8; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 50;">
+    <div style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #38bdf8; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 50;">
       <div style="color: #fff; font-size: 12px; font-weight: 600; line-height: 1.3;">
         <span style="font-size: 15px; margin-right: 4px;">\u{1F310}</span>
-        <strong>Masuk ke Control Panel Hosting:</strong>
-        <div style="color: #bae6fd; font-size: 10px; font-weight: normal;">cPanel, Domain, File Manager, CF Tunnel</div>
+        <strong>Menuju Dashboard cPanel Cloud PRO?</strong>
+        <div style="color: #bae6fd; font-size: 10px; font-weight: normal;">Buka File Manager, Domain, CF Tunnel, &amp; Database</div>
       </div>
-      <a href="/" style="background: #facc15; color: #0f172a; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.25); display: inline-flex; align-items: center; gap: 5px; shrink-0: 0;">
-        \u26A1 Buka Panel &rarr;
+      <a href="/?panel=1" style="background: #facc15; color: #0f172a; padding: 9px 16px; border-radius: 9px; font-weight: 800; font-size: 12px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.35); display: inline-flex; align-items: center; gap: 5px; shrink-0: 0;">
+        \u26A1 Buka Dashboard &rarr;
       </a>
     </div>
 
@@ -407,6 +407,13 @@ function renderWebTerminalHtml(host, initialCwd) {
     const pinModal = document.getElementById('pinModal');
     const pinInput = document.getElementById('pinInput');
 
+    function safeFocus(el) {
+      if (!el) return;
+      if (!('ontouchstart' in window) && !window.matchMedia('(pointer: coarse)').matches) {
+        try { el.focus(); } catch {}
+      }
+    }
+
     function updatePrompt(cwd) {
       currentCwd = cwd;
       const shortCwd = cwd.length > 28 ? '...' + cwd.slice(-25) : cwd;
@@ -416,10 +423,10 @@ function renderWebTerminalHtml(host, initialCwd) {
     function checkAuth() {
       if (!terminalPin) {
         pinModal.style.display = 'flex';
-        pinInput.focus();
+        safeFocus(pinInput);
       } else {
         pinModal.style.display = 'none';
-        cmdInput.focus();
+        safeFocus(cmdInput);
       }
     }
 
@@ -433,7 +440,7 @@ function renderWebTerminalHtml(host, initialCwd) {
       terminalPin = pin;
       localStorage.setItem('cloudpro_terminal_pin', pin);
       pinModal.style.display = 'none';
-      cmdInput.focus();
+      safeFocus(cmdInput);
       runCommand('pwd');
     }
 
@@ -442,15 +449,13 @@ function renderWebTerminalHtml(host, initialCwd) {
       terminalPin = '';
       pinInput.value = '';
       pinModal.style.display = 'flex';
-      pinInput.focus();
+      safeFocus(pinInput);
     }
 
     function insertChar(ch) {
       if (!cmdInput) return;
       cmdInput.value += ch;
-      if (!('ontouchstart' in window)) {
-        cmdInput.focus();
-      }
+      safeFocus(cmdInput);
     }
 
     function handleCtrlC() {
@@ -462,9 +467,7 @@ function renderWebTerminalHtml(host, initialCwd) {
 
     function clearTerminal() {
       if (outputHistory) outputHistory.innerHTML = '';
-      if (!('ontouchstart' in window) && cmdInput) {
-        cmdInput.focus();
-      }
+      safeFocus(cmdInput);
     }
 
     function navHistory(dir) {
@@ -629,7 +632,7 @@ function renderWebTerminalHtml(host, initialCwd) {
       } finally {
         isRunning = false;
         document.getElementById('btnSend').disabled = false;
-        cmdInput.focus();
+        safeFocus(cmdInput);
       }
     }
 
