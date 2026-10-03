@@ -91,11 +91,11 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
     return '99e7da79-8346-424d-b9ab-d4d5f14fb889';
   };
 
-  const rootDomain = account.primaryDomain.replace(/^rdm\./i, '') || 'denbaguse.my.id';
+  const rootDomain = account?.primaryDomain ? account.primaryDomain.replace(/^rdm\./i, '') : 'denbaguse.my.id';
   const activeTunnelUuid = decodeTunnelIdFromToken(tunnelTokenInput);
   const activeCnameTarget = `${activeTunnelUuid}.cfargotunnel.com`;
   const allAccounts = db.getHostingAccounts();
-  const accountDomains = db.getDomains(account.id);
+  const accountDomains = account?.id ? db.getDomains(account.id) : [];
 
   const copyValue = (text: string, label: string) => {
     navigator.clipboard?.writeText(text);

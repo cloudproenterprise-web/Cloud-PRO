@@ -862,14 +862,16 @@ const AppContent: React.FC = () => {
         }
         return renderAccountSuiteWrapper(
           'Cloudflare Tunnel & IPv6 IndiHome Gateway',
-          <GatewayTunnelManager
-            account={selectedAccount!}
-            onNavigateTab={setActiveTab}
-            onOpenPreview={(domain, docRoot) => {
-              if (docRoot) setFileManagerPath(docRoot);
-              setIsWebsitePreviewOpen(true);
-            }}
-          />
+          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
+            <GatewayTunnelManager
+              account={selectedAccount!}
+              onNavigateTab={setActiveTab}
+              onOpenPreview={(domain, docRoot) => {
+                if (docRoot) setFileManagerPath(docRoot);
+                setIsWebsitePreviewOpen(true);
+              }}
+            />
+          </ModuleErrorBoundary>
         );
       case 'dns-zones':
       case 'cpanel-dns':
