@@ -45,7 +45,6 @@ import { ConfirmationModal } from './components/common/ConfirmationModal';
 import { Footer } from './components/layout/Footer';
 import { FloatingGlassDock } from './components/layout/FloatingGlassDock';
 import { WhatsAppFloatingButton } from './components/common/WhatsAppFloatingButton';
-import { SystemSensorDetector } from './components/common/SystemSensorDetector';
 import { WebsitePreviewModal } from './components/hosting/WebsitePreviewModal';
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X, Globe, PlusCircle, Zap, ExternalLink, ArrowLeft, ChevronDown } from 'lucide-react';
 import { db } from './services/storage';
@@ -1115,9 +1114,6 @@ const AppContent: React.FC = () => {
         activeDomain={selectedAccount?.primaryDomain}
         defaultPhoneNumber="6281226738883"
       />
-
-      {/* Live System Sensor Detector & Diagnostic Inspector */}
-      <SystemSensorDetector />
 
       {/* Global Modals & Drawers */}
       {selectedAccount && (

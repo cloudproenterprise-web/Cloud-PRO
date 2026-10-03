@@ -157,12 +157,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </button>
                 <button
                   type="button"
-                  onClick={() => window.dispatchEvent(new CustomEvent('cloudpro:open-sensor'))}
-                  className="exec-tile-ring flex items-center justify-center gap-1.5 rounded-xl px-2 py-2 sm:px-3.5 sm:py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100/80 transition-all cursor-pointer active:scale-95 border-emerald-300"
-                  title="Buka Sensor Detector & Diagnosa Eror Sistem"
+                  onClick={() => onNavigate('terminal')}
+                  className="exec-tile-ring flex items-center justify-center gap-1.5 rounded-xl px-2 py-2 sm:px-3.5 sm:py-2.5 text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all cursor-pointer active:scale-95"
+                  title="Web Terminal SSH & Konsol Bash"
                 >
-                  <Activity className="h-3.5 w-3.5 text-emerald-600 shrink-0 animate-pulse" />
-                  <span className="truncate">Sensor Detector</span>
+                  <Terminal className="h-3.5 w-3.5 text-sky-600 shrink-0" />
+                  <span className="truncate">Web Terminal</span>
                 </button>
               </div>
             </div>
