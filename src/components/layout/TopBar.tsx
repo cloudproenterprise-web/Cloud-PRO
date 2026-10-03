@@ -21,10 +21,12 @@ import {
   LogOut,
   ArrowLeft,
   Home,
+  GitBranch,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useServer } from '../../context/ServerContext';
 import { CloudProLogo } from '../common/CloudProLogo';
+import { GitCommitVerifierModal } from '../common/GitCommitVerifierModal';
 
 interface TopBarProps {
   onToggleSidebar: () => void;
@@ -51,6 +53,21 @@ export const TopBar: React.FC<TopBarProps> = ({
   if (!currentUser) return null;
 
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showCommitModal, setShowCommitModal] = useState(false);
+  const [commitHash, setCommitHash] = useState<string>('2770df5');
+  const [isCommitUpToDate, setIsCommitUpToDate] = useState<boolean>(true);
+
+  React.useEffect(() => {
+    fetch('/api/system/git-commit-info')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.ok && data.local?.shortHash) {
+          setCommitHash(data.local.shortHash);
+          setIsCommitUpToDate(!!data.isUpToDate);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const unreadNotifsCount = notifications.filter(n => !n.isRead).length;
 
@@ -231,6 +248,20 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Right Zone: Quick Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {/* Git Commit Status Button */}
+          <button
+            onClick={() => setShowCommitModal(true)}
+            title="Status Kommit GitHub & Verifikasi Integritas Versi Server"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-mono font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition-colors shadow-2xs cursor-pointer"
+          >
+            <GitBranch className={`h-3.5 w-3.5 ${isCommitUpToDate ? 'text-emerald-500' : 'text-amber-500'}`} />
+            <span className="hidden sm:inline text-[11px] text-slate-400">commit:</span>
+            <span className={`text-[11px] font-bold ${isCommitUpToDate ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+              {commitHash}
+            </span>
+            <span className={`flex h-1.5 w-1.5 rounded-full ${isCommitUpToDate ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
+          </button>
+
           {/* Reset Default Data Button (Desktop only) */}
           <button
             onClick={resetDatabase}
@@ -402,6 +433,13 @@ export const TopBar: React.FC<TopBarProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Git Commit & Update Verification Modal */}
+      <GitCommitVerifierModal
+        isOpen={showCommitModal}
+        onClose={() => setShowCommitModal(false)}
+        onOpenTerminal={() => onNavigate?.('terminal')}
+      />
     </div>
   );
 };

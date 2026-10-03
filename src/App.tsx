@@ -147,7 +147,15 @@ const AppContent: React.FC = () => {
     return 'customer-dashboard';
   };
 
-  const [activeTab, setActiveTabState] = useState<string>(() => getRootDashboardTab());
+  const [activeTab, setActiveTabState] = useState<string>(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const urlTab = sp.get('tab');
+      if (urlTab === 'cloner' || urlTab === 'website-cloner') return 'website-cloner';
+      if (urlTab) return urlTab;
+    } catch {}
+    return getRootDashboardTab();
+  });
   const [navHistory, setNavHistory] = useState<string[]>([]);
   const navHistoryRef = React.useRef<string[]>([]);
 

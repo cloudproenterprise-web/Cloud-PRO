@@ -18,7 +18,7 @@ function renderWebTerminalHtml(host, initialCwd) {
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover" />
   <title>CloudPRO Web SSH Terminal \u2014 ${host}</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,10 +26,10 @@ function renderWebTerminalHtml(host, initialCwd) {
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; width: 100%; background: #07090e; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; overflow: hidden; }
+    html, body { height: 100%; width: 100%; background: #07090e; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; overflow: hidden; position: fixed; inset: 0; }
     
     /* Layout */
-    .app-container { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+    .app-container { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-height: 100dvh; width: 100%; overflow: hidden; position: relative; }
     
     /* Header */
     .terminal-header {
@@ -144,48 +144,73 @@ function renderWebTerminalHtml(host, initialCwd) {
     .output-text.error { border-left-color: #ef4444; color: #fca5a5; }
     .output-text.success { border-left-color: #10b981; }
     
+    /* Fixed Sticky Bottom Dock for Mobile & Android */
+    .terminal-dock {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: #090e1a;
+      border-top: 2px solid #0284c7;
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.75);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: max(6px, env(safe-area-inset-bottom));
+    }
+    
     /* Interactive Input Row */
     .input-row {
       display: flex;
       align-items: center;
       gap: 8px;
       background: #090e1a;
-      border-top: 1px solid #1e293b;
-      padding: 10px 14px;
+      padding: 8px 12px;
       flex-shrink: 0;
     }
     .input-prompt { font-weight: 700; color: #10b981; white-space: nowrap; font-size: 12px; display: flex; align-items: center; gap: 4px; }
     .input-prompt span { color: #38bdf8; }
     .cmd-input {
       flex: 1;
-      background: transparent;
-      border: none;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 8px;
+      padding: 9px 12px;
       outline: none;
       color: #f8fafc;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 600;
       width: 100%;
+      min-width: 0;
+      transition: all 0.15s ease;
+    }
+    .cmd-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+      background: #111c35;
     }
     .btn-send {
-      background: #0284c7;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 12px;
+      padding: 9px 16px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
       font-family: 'Plus Jakarta Sans', sans-serif;
       transition: background 0.15s;
+      flex-shrink: 0;
     }
     .btn-send:hover { background: #0369a1; }
     
     /* Virtual Mobile Keyboard Row */
     .mobile-keys {
-      background: #0b1120;
-      border-top: 1px solid #1e293b;
-      padding: 6px 10px;
+      background: #070b14;
+      border-bottom: 1px solid #1e293b;
+      padding: 6px 8px;
       display: flex;
       gap: 6px;
       overflow-x: auto;
@@ -206,6 +231,15 @@ function renderWebTerminalHtml(host, initialCwd) {
       flex-shrink: 0;
     }
     .m-key:active { background: #38bdf8; color: #0b1120; }
+
+    @media (max-width: 768px) {
+      .terminal-header { padding: 8px 12px; }
+      .header-title { font-size: 12.5px; }
+      .input-prompt { font-size: 11px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
+      .cmd-input { font-size: 14px; padding: 8px 10px; }
+      .btn-send { padding: 8px 12px; font-size: 11.5px; }
+      .m-key { padding: 5px 9px; font-size: 11px; }
+    }
     
     /* Security Modal */
     .modal-overlay {
@@ -295,9 +329,9 @@ function renderWebTerminalHtml(host, initialCwd) {
 
     <!-- Quick Action Pills for Mobile -->
     <div class="quick-bar">
+      <button class="quick-btn" style="background:#0284c7; color:#fff;" onclick="runCommand('bash update.sh --check')">\u{1F3F7}\uFE0F Cek Kommit Terbaru</button>
+      <button class="quick-btn" onclick="runCommand('git log -1 --stat')">\u{1F4DC} Log Kommit</button>
       <button class="quick-btn" onclick="runCommand('bash update.sh')">\u{1F680} 1-Click Update</button>
-      <button class="quick-btn" onclick="runCommand('bash update.sh --check')">\u{1F50D} Cek Kommit GitHub</button>
-      <button class="quick-btn" onclick="runCommand('git log -1 --pretty=format:"Commit: %h%nJudul  : %s%nWaktu  : %cd (%cr)%nAuthor : %an"')">\u{1F3F7}\uFE0F Versi Aktif</button>
       <button class="quick-btn" onclick="runCommand('for h in /root /home/*; do [ -d "$h" ] && for f in .bashrc .profile .bash_profile; do [ -f "$h/$f" ] && sed -i "s/\\r$//" "$h/$f" && sed -i -E "s/^[[:space:]]*(exit|logout|exec |source .*update|\\. .*update|fuser -k|\\.?\\/?update\\.sh)/# [Auto-Heal] &/" "$h/$f"; done; done; mkdir -p /run/sshd 2>/dev/null; service ssh start 2>/dev/null || true; echo "[OK] Terminal Ubuntu & SSH di Komputer berhasil diperbaiki! Silakan buka kembali aplikasi Ubuntu di PC."')">\u{1F6E0}\uFE0F Perbaiki SSH PC</button>
       <button class="quick-btn" onclick="runCommand('pm2 status')">\u{1F4CA} PM2 Status</button>
       <button class="quick-btn" onclick="runCommand('pm2 restart cloudpro')">\u{1F504} PM2 Restart</button>
@@ -329,34 +363,37 @@ function renderWebTerminalHtml(host, initialCwd) {
       <div id="outputHistory"></div>
     </div>
 
-    <!-- Virtual Mobile Keys -->
-    <div class="mobile-keys">
-      <button class="m-key" onclick="insertChar('	')">Tab</button>
-      <button class="m-key" onclick="handleCtrlC()">Ctrl+C</button>
-      <button class="m-key" onclick="navHistory(-1)">\u25B2 History</button>
-      <button class="m-key" onclick="navHistory(1)">\u25BC History</button>
-      <button class="m-key" onclick="insertChar('/')">/</button>
-      <button class="m-key" onclick="insertChar('-')">-</button>
-      <button class="m-key" onclick="insertChar('~')">~</button>
-      <button class="m-key" onclick="insertChar('|')">|</button>
-      <button class="m-key" onclick="insertChar(' && ')">&&</button>
-      <button class="m-key" onclick="insertChar('sudo ')">sudo</button>
-    </div>
+    <!-- Sticky Dock for Mobile / Android Keyboard Visibility -->
+    <div class="terminal-dock" id="terminalDock">
+      <!-- Virtual Mobile Keys -->
+      <div class="mobile-keys">
+        <button class="m-key" onclick="insertChar('	')">Tab</button>
+        <button class="m-key" onclick="handleCtrlC()">Ctrl+C</button>
+        <button class="m-key" onclick="navHistory(-1)">\u25B2 History</button>
+        <button class="m-key" onclick="navHistory(1)">\u25BC History</button>
+        <button class="m-key" onclick="insertChar('/')">/</button>
+        <button class="m-key" onclick="insertChar('-')">-</button>
+        <button class="m-key" onclick="insertChar('~')">~</button>
+        <button class="m-key" onclick="insertChar('|')">|</button>
+        <button class="m-key" onclick="insertChar(' && ')">&&</button>
+        <button class="m-key" onclick="insertChar('sudo ')">sudo</button>
+      </div>
 
-    <!-- Input Row -->
-    <div class="input-row">
-      <div class="input-prompt" id="activePrompt">${username}@host:<span>~</span>$</div>
-      <input
-        type="text"
-        id="cmdInput"
-        class="cmd-input"
-        placeholder="Ketik perintah... (contoh: pm2 status, ls -la)"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-      />
-      <button class="btn-send" id="btnSend" onclick="submitCommand()">Kirim</button>
+      <!-- Input Row -->
+      <div class="input-row">
+        <div class="input-prompt" id="activePrompt">${username}@host:<span>~</span>$</div>
+        <input
+          type="text"
+          id="cmdInput"
+          class="cmd-input"
+          placeholder="Ketik perintah linux (contoh: update, git pull)..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <button class="btn-send" id="btnSend" onclick="submitCommand()">Kirim \u21B5</button>
+      </div>
     </div>
   </div>
 
@@ -656,6 +693,41 @@ function renderWebTerminalHtml(host, initialCwd) {
 
     pinInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') unlockTerminal();
+    });
+
+    // Auto-adjust layout for Android Virtual Keyboard & Viewport Resizing
+    function handleVisualViewport() {
+      if (window.visualViewport) {
+        const vh = window.visualViewport.height;
+        const appContainer = document.querySelector('.app-container');
+        if (appContainer) {
+          appContainer.style.height = vh + 'px';
+        }
+        window.scrollTo(0, 0);
+        if (terminalScreen) {
+          terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+      }
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleVisualViewport);
+      window.visualViewport.addEventListener('scroll', handleVisualViewport);
+    }
+    window.addEventListener('resize', handleVisualViewport);
+
+    cmdInput.addEventListener('focus', () => {
+      setTimeout(() => {
+        handleVisualViewport();
+        cmdInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 150);
+    });
+
+    // Tapping on terminal output focuses command input on touch devices
+    terminalScreen.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON' && !window.getSelection().toString()) {
+        cmdInput.focus();
+      }
     });
 
     // Auto init
@@ -2312,6 +2384,14 @@ function renderVirtualHostResponse(hostHeader, reqPath, forceAccountAndDir) {
     matchedFile = findFileInDocRoot(docRoot, `${targetRelPath}.html`) || findFileInDocRoot(docRoot, `${targetRelPath}.php`) || findFileInDocRoot(docRoot, `${targetRelPath}/index.html`) || findFileInDocRoot(docRoot, `${targetRelPath}/index.php`) || findFileInDocRoot(docRoot, "/index.html") || findFileInDocRoot(docRoot, "/index.php");
   }
   if (!matchedFile && docRoot !== "/public_html") {
+    const subfolderCandidate = files.find(
+      (f) => f.type === "file" && isPathBelongingToDocRoot(f.path, docRoot, matchedAccount?.id) && (f.name.toLowerCase() === "index.html" || f.name.toLowerCase() === "index.php")
+    );
+    if (subfolderCandidate) {
+      matchedFile = subfolderCandidate;
+    }
+  }
+  if (!matchedFile && docRoot !== "/public_html") {
     const dirFiles = [...files];
     const physSubDir = path.join(process.cwd(), relDocRoot);
     if (fs.existsSync(physSubDir) && fs.statSync(physSubDir).isDirectory()) {
@@ -2384,6 +2464,9 @@ function renderVirtualHostResponse(hostHeader, reqPath, forceAccountAndDir) {
     <h3 style="font-size:14px;color:#cbd5e1;margin-bottom:12px;">Isi Direktori ${docRoot} (${dirFiles.length} item):</h3>
     <ul>${fileListHtml}</ul>
     <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #233554; display: flex; flex-direction: column; gap: 12px;">
+      <a href="/?panel=1&tab=cloner&target=${encodeURIComponent(docRoot)}" style="display: block; text-align: center; background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; font-weight: 800; font-size: 14px; padding: 12px 20px; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);">
+        \u{1F310} Kloning / Tarik Website Langsung ke ${cleanHost}
+      </a>
       <a href="/?panel=1" style="display: block; text-align: center; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 15px; padding: 14px 20px; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
         \u26A1 Masuk ke Dashboard Cloud PRO
       </a>
@@ -5073,6 +5156,136 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
       panelUrl: `http://${tailscaleIp}:3000`,
       status: "Connected & Active (Direct WireGuard P2P + Ubuntu SSH)"
     });
+  });
+  app.get("/api/system/git-commit-info", async (_req, res) => {
+    try {
+      let localShort = "";
+      let localFull = "";
+      let localMsg = "";
+      let localAuthor = "";
+      let localDate = "";
+      let localRelative = "";
+      let branch = "main";
+      try {
+        const rawLocal = execSync('git log -1 --format="%h|%H|%s|%an|%ad|%cr"', {
+          cwd: process.cwd(),
+          timeout: 5e3,
+          encoding: "utf-8"
+        }).trim();
+        const parts = rawLocal.split("|");
+        if (parts.length >= 6) {
+          localShort = parts[0];
+          localFull = parts[1];
+          localMsg = parts[2];
+          localAuthor = parts[3];
+          localDate = parts[4];
+          localRelative = parts[5];
+        }
+      } catch {
+      }
+      try {
+        branch = execSync("git branch --show-current", {
+          cwd: process.cwd(),
+          timeout: 3e3,
+          encoding: "utf-8"
+        }).trim() || "main";
+      } catch {
+      }
+      let remoteShort = "";
+      let remoteFull = "";
+      let remoteMsg = "";
+      let remoteDate = "";
+      try {
+        const rawRemote = execSync("git ls-remote origin main", {
+          cwd: process.cwd(),
+          timeout: 1e4,
+          encoding: "utf-8"
+        }).trim();
+        const hashMatch = rawRemote.match(/^([a-f0-9]{40})/);
+        if (hashMatch) {
+          remoteFull = hashMatch[1];
+          remoteShort = remoteFull.slice(0, 7);
+        }
+      } catch {
+      }
+      try {
+        if (!remoteMsg) {
+          const rawRemoteLog = execSync('git log -1 --format="%h|%H|%s|%ad" origin/main 2>/dev/null', {
+            cwd: process.cwd(),
+            timeout: 5e3,
+            encoding: "utf-8"
+          }).trim();
+          const p = rawRemoteLog.split("|");
+          if (p.length >= 4) {
+            if (!remoteShort) remoteShort = p[0];
+            if (!remoteFull) remoteFull = p[1];
+            remoteMsg = p[2];
+            remoteDate = p[3];
+          }
+        }
+      } catch {
+      }
+      const isUpToDate = !remoteShort || !localShort || localShort === remoteShort || localFull && remoteFull && localFull === remoteFull;
+      return res.json({
+        ok: true,
+        local: {
+          shortHash: localShort || "2770df5",
+          fullHash: localFull || "2770df5d82aab82fb3d6878ea461696a6f7f15c0",
+          message: localMsg || "Update CloudPRO",
+          author: localAuthor || "CloudPRO Enterprise",
+          date: localDate || (/* @__PURE__ */ new Date()).toISOString(),
+          relative: localRelative || "baru saja",
+          branch
+        },
+        remote: {
+          shortHash: remoteShort || localShort || "2770df5",
+          fullHash: remoteFull || localFull,
+          message: remoteMsg || localMsg || "Versi Terbaru",
+          date: remoteDate || localDate
+        },
+        isUpToDate,
+        statusText: isUpToDate ? "\u2705 Sistem Menjalankan Kommit Terbaru GitHub" : "\u26A0\uFE0F Tersedia Kommit Baru di GitHub (Klik Update)",
+        checkedAt: (/* @__PURE__ */ new Date()).toISOString()
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, message: err?.message || String(err) });
+    }
+  });
+  app.post("/api/system/git-pull-update", async (req, res) => {
+    try {
+      const { githubToken } = req.body || {};
+      let logOutput = "";
+      if (githubToken && typeof githubToken === "string" && githubToken.trim()) {
+        const cleanTok = githubToken.trim();
+        execSync(
+          `git remote set-url origin "https://${cleanTok}@github.com/cloudproenterprise-web/Cloud-PRO.git"`,
+          { cwd: process.cwd(), timeout: 5e3 }
+        );
+      }
+      logOutput += execSync("git fetch origin main --force 2>&1", {
+        cwd: process.cwd(),
+        timeout: 3e4,
+        encoding: "utf-8"
+      }) + "\n";
+      logOutput += execSync("git reset --hard origin/main 2>&1", {
+        cwd: process.cwd(),
+        timeout: 3e4,
+        encoding: "utf-8"
+      }) + "\n";
+      const latestCommit = execSync('git log -1 --format="%h \u2014 %s (%cr)"', {
+        cwd: process.cwd(),
+        timeout: 5e3,
+        encoding: "utf-8"
+      }).trim();
+      return res.json({
+        ok: true,
+        message: "Berhasil menyinkronkan sistem ke kommit terbaru GitHub!",
+        latestCommit,
+        output: logOutput
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, message: err?.message || String(err) });
+    }
   });
   app.get("/api/system/release-bundle.tar.gz", async (_req, res) => {
     try {

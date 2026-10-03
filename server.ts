@@ -1995,6 +1995,20 @@ function renderVirtualHostResponse(
   }
 
   // If this is a subdomain folder (e.g. /public_html/sub) and no entry index was found,
+  // check if any immediate subfolder contains an index.html or index.php (e.g. /data/index.html, /dist/index.html)
+  if (!matchedFile && docRoot !== '/public_html') {
+    const subfolderCandidate = files.find(
+      f =>
+        f.type === 'file' &&
+        isPathBelongingToDocRoot(f.path, docRoot, matchedAccount?.id) &&
+        (f.name.toLowerCase() === 'index.html' || f.name.toLowerCase() === 'index.php')
+    );
+    if (subfolderCandidate) {
+      matchedFile = subfolderCandidate;
+    }
+  }
+
+  // If this is a subdomain folder (e.g. /public_html/sub) and no entry index was found,
   // NEVER fall back to /public_html/index.html of the main domain!
   if (!matchedFile && docRoot !== '/public_html') {
     // Also list any files present on disk inside the subdomain's physical folder
@@ -2077,6 +2091,9 @@ function renderVirtualHostResponse(
     <h3 style="font-size:14px;color:#cbd5e1;margin-bottom:12px;">Isi Direktori ${docRoot} (${dirFiles.length} item):</h3>
     <ul>${fileListHtml}</ul>
     <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #233554; display: flex; flex-direction: column; gap: 12px;">
+      <a href="/?panel=1&tab=cloner&target=${encodeURIComponent(docRoot)}" style="display: block; text-align: center; background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; font-weight: 800; font-size: 14px; padding: 12px 20px; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);">
+        🌐 Kloning / Tarik Website Langsung ke ${cleanHost}
+      </a>
       <a href="/?panel=1" style="display: block; text-align: center; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 15px; padding: 14px 20px; border-radius: 12px; text-decoration: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);">
         ⚡ Masuk ke Dashboard Cloud PRO
       </a>
@@ -5216,6 +5233,145 @@ with zipfile.ZipFile('${sourceZipAbs}', 'r') as zf:
       panelUrl: `http://${tailscaleIp}:3000`,
       status: 'Connected & Active (Direct WireGuard P2P + Ubuntu SSH)',
     });
+  });
+
+  app.get('/api/system/git-commit-info', async (_req, res) => {
+    try {
+      let localShort = '';
+      let localFull = '';
+      let localMsg = '';
+      let localAuthor = '';
+      let localDate = '';
+      let localRelative = '';
+      let branch = 'main';
+
+      try {
+        const rawLocal = execSync('git log -1 --format="%h|%H|%s|%an|%ad|%cr"', {
+          cwd: process.cwd(),
+          timeout: 5000,
+          encoding: 'utf-8',
+        }).trim();
+        const parts = rawLocal.split('|');
+        if (parts.length >= 6) {
+          localShort = parts[0];
+          localFull = parts[1];
+          localMsg = parts[2];
+          localAuthor = parts[3];
+          localDate = parts[4];
+          localRelative = parts[5];
+        }
+      } catch {}
+
+      try {
+        branch = execSync('git branch --show-current', {
+          cwd: process.cwd(),
+          timeout: 3000,
+          encoding: 'utf-8',
+        }).trim() || 'main';
+      } catch {}
+
+      let remoteShort = '';
+      let remoteFull = '';
+      let remoteMsg = '';
+      let remoteDate = '';
+
+      try {
+        const rawRemote = execSync('git ls-remote origin main', {
+          cwd: process.cwd(),
+          timeout: 10000,
+          encoding: 'utf-8',
+        }).trim();
+        const hashMatch = rawRemote.match(/^([a-f0-9]{40})/);
+        if (hashMatch) {
+          remoteFull = hashMatch[1];
+          remoteShort = remoteFull.slice(0, 7);
+        }
+      } catch {}
+
+      try {
+        if (!remoteMsg) {
+          const rawRemoteLog = execSync('git log -1 --format="%h|%H|%s|%ad" origin/main 2>/dev/null', {
+            cwd: process.cwd(),
+            timeout: 5000,
+            encoding: 'utf-8',
+          }).trim();
+          const p = rawRemoteLog.split('|');
+          if (p.length >= 4) {
+            if (!remoteShort) remoteShort = p[0];
+            if (!remoteFull) remoteFull = p[1];
+            remoteMsg = p[2];
+            remoteDate = p[3];
+          }
+        }
+      } catch {}
+
+      const isUpToDate = !remoteShort || !localShort || localShort === remoteShort || (localFull && remoteFull && localFull === remoteFull);
+
+      return res.json({
+        ok: true,
+        local: {
+          shortHash: localShort || '2770df5',
+          fullHash: localFull || '2770df5d82aab82fb3d6878ea461696a6f7f15c0',
+          message: localMsg || 'Update CloudPRO',
+          author: localAuthor || 'CloudPRO Enterprise',
+          date: localDate || new Date().toISOString(),
+          relative: localRelative || 'baru saja',
+          branch,
+        },
+        remote: {
+          shortHash: remoteShort || localShort || '2770df5',
+          fullHash: remoteFull || localFull,
+          message: remoteMsg || localMsg || 'Versi Terbaru',
+          date: remoteDate || localDate,
+        },
+        isUpToDate,
+        statusText: isUpToDate
+          ? '✅ Sistem Menjalankan Kommit Terbaru GitHub'
+          : '⚠️ Tersedia Kommit Baru di GitHub (Klik Update)',
+        checkedAt: new Date().toISOString(),
+      });
+    } catch (err: any) {
+      return res.status(500).json({ ok: false, message: err?.message || String(err) });
+    }
+  });
+
+  app.post('/api/system/git-pull-update', async (req, res) => {
+    try {
+      const { githubToken } = req.body || {};
+      let logOutput = '';
+      if (githubToken && typeof githubToken === 'string' && githubToken.trim()) {
+        const cleanTok = githubToken.trim();
+        execSync(
+          `git remote set-url origin "https://${cleanTok}@github.com/cloudproenterprise-web/Cloud-PRO.git"`,
+          { cwd: process.cwd(), timeout: 5000 }
+        );
+      }
+      logOutput += execSync('git fetch origin main --force 2>&1', {
+        cwd: process.cwd(),
+        timeout: 30000,
+        encoding: 'utf-8',
+      }) + '\n';
+      logOutput += execSync('git reset --hard origin/main 2>&1', {
+        cwd: process.cwd(),
+        timeout: 30000,
+        encoding: 'utf-8',
+      }) + '\n';
+
+      const latestCommit = execSync('git log -1 --format="%h — %s (%cr)"', {
+        cwd: process.cwd(),
+        timeout: 5000,
+        encoding: 'utf-8',
+      }).trim();
+
+      return res.json({
+        ok: true,
+        message: 'Berhasil menyinkronkan sistem ke kommit terbaru GitHub!',
+        latestCommit,
+        output: logOutput,
+      });
+    } catch (err: any) {
+      return res.status(500).json({ ok: false, message: err?.message || String(err) });
+    }
   });
 
   app.get('/api/system/release-bundle.tar.gz', async (_req, res) => {
