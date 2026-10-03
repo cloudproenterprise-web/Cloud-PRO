@@ -8235,6 +8235,20 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     }
     const execCwd = fs.existsSync(reqCwd) ? reqCwd : activeTerminalCwd;
     let actualCommand = command;
+    const trimmed = actualCommand.trim();
+    if (trimmed.startsWith(">>>") || trimmed.startsWith("[STDERR]") || trimmed.startsWith("[SUKSES]") || trimmed.startsWith("[INFO]")) {
+      return res.json({
+        ok: true,
+        stdout: `
+\x1B[32m\u2714 [STATUS] Baris ini adalah pesan log server, bukan perintah bash.\x1B[0m
+\x1B[36m\u{1F4A1} Server CloudPRO Anda saat ini aktif normal di port 3000.\x1B[0m
+\x1B[33m\u{1F449} Untuk membuka panel cPanel Cloud PRO, klik tombol kuning "\u26A1 Buka Dashboard" di atas layar Anda.\x1B[0m
+`,
+        stderr: "",
+        exitCode: 0,
+        cwd: activeTerminalCwd
+      });
+    }
     if (actualCommand === "./update.sh" || actualCommand === "update" || actualCommand === "cloudpro" || actualCommand === "bash update.sh") {
       const appRoot = fs.existsSync(path.join(execCwd, "update.sh")) ? execCwd : process.cwd();
       actualCommand = `cd "${appRoot}" && ( [ -d .git ] || (git init && git remote add origin https://github.com/cloudproenterprise-web/Cloud-PRO.git) ) && git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true && bash update.sh`;
