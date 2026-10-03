@@ -70,10 +70,10 @@ echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH telah diperbaiki!"
 
 echo "[1/3] Mengambil kode terbaru dari GitHub..."
 CURRENT_ORIGIN="$(git remote get-url origin 2>/dev/null || echo "")"
-if [[ "$CURRENT_ORIGIN" == *"Cloud-PRO"* ]]; then
+if [ -n "$CURRENT_ORIGIN" ]; then
   REPO_URL="$CURRENT_ORIGIN"
 else
-  REPO_URL="https://github.com/cloudproenterprise-web/Cloud-PRO.git"
+  REPO_URL="https://github.com/siakadmadrasah-lang/CloudPRO-Server.git"
 fi
 
 if [ ! -d ".git" ]; then
