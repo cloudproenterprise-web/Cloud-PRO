@@ -2,7 +2,6 @@
 import express from "express";
 import http from "http";
 import https from "https";
-import net from "net";
 import { createServer as createViteServer } from "vite";
 import { spawn, execSync, exec } from "child_process";
 import fs from "fs";
@@ -1484,9 +1483,9 @@ async function detectServerIps() {
   try {
     const nets = os2.networkInterfaces();
     for (const name of Object.keys(nets)) {
-      for (const net2 of nets[name] || []) {
-        if (net2.family === "IPv6" && !net2.internal && !net2.address.startsWith("fe80:")) {
-          localIpv6List.push(net2.address);
+      for (const net of nets[name] || []) {
+        if (net.family === "IPv6" && !net.internal && !net.address.startsWith("fe80:")) {
+          localIpv6List.push(net.address);
         }
       }
     }
@@ -8643,33 +8642,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
       console.warn("[CloudPRO TLS Init Warning]", tlsErr);
     }
   }
-  const server = net.createServer({ pauseOnConnect: true }, (socket) => {
-    let routed = false;
-    const onData = (buf) => {
-      if (routed) return;
-      routed = true;
-      socket.pause();
-      socket.unshift(buf);
-      if (buf[0] === 22 && httpsServer) {
-        httpsServer.emit("connection", socket);
-      } else {
-        httpServer.emit("connection", socket);
-      }
-      process.nextTick(() => {
-        if (!socket.destroyed) {
-          socket.resume();
-        }
-      });
-    };
-    socket.once("data", onData);
-    socket.once("error", () => {
-      routed = true;
-    });
-    socket.once("close", () => {
-      routed = true;
-    });
-    socket.resume();
-  });
+  const server = httpServer;
   const freePortIfOccupied = (targetPort) => {
     try {
       const myPid = process.pid;

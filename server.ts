@@ -9527,41 +9527,8 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     }
   }
 
-  // Dual-protocol TCP Multiplexer on port 3000:
-  // Detects incoming byte: if 0x16 (TLS ClientHello), routes to HTTPS; otherwise routes to HTTP!
-  const server = net.createServer({ pauseOnConnect: true }, (socket) => {
-    let routed = false;
-
-    const onData = (buf: Buffer) => {
-      if (routed) return;
-      routed = true;
-      socket.pause();
-      socket.unshift(buf);
-
-      // Byte 0x16 = 22 (TLS record layer Handshake)
-      if (buf[0] === 0x16 && httpsServer) {
-        httpsServer.emit('connection', socket);
-      } else {
-        httpServer.emit('connection', socket);
-      }
-
-      process.nextTick(() => {
-        if (!socket.destroyed) {
-          socket.resume();
-        }
-      });
-    };
-
-    socket.once('data', onData);
-    socket.once('error', () => {
-      routed = true;
-    });
-    socket.once('close', () => {
-      routed = true;
-    });
-
-    socket.resume();
-  });
+  // Direct native HTTP Server on port 3000 (Maximum throughput, zero socket stalls)
+  const server = httpServer;
 
   const freePortIfOccupied = (targetPort: number) => {
     try {
