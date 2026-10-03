@@ -7748,7 +7748,7 @@ ftp.quit()
           type: 'subdomain',
           documentRoot: '/public_html/siakad-madrasah',
           accountId: primaryAcc?.id || 'acc-rdm-01',
-          username: primaryAcc?.username || 'cloudpro',
+          username: primaryAcc?.username || 'madrasah',
           phpVersion: '8.2',
           filesCount: stats.count,
           totalSizeBytes: stats.totalSize,

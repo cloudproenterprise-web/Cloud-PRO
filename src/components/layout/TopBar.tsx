@@ -260,6 +260,24 @@ export const TopBar: React.FC<TopBarProps> = ({
             )}
           </button>
 
+          {/* Iconic WhatsApp Helpdesk Center Trigger */}
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-whatsapp-center'))}
+            title="Pusat Bantuan WhatsApp Cloud PRO (0812-2673-8883)"
+            className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-50/80 hover:bg-emerald-100/90 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/60 px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all shadow-2xs cursor-pointer active:scale-95"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <svg className="h-3.5 w-3.5 fill-current text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.04 7.5C8.83 7.5 8.49 7.58 8.2 7.89C7.91 8.2 7.08 8.97 7.08 10.54C7.08 12.11 8.23 13.63 8.39 13.84C8.55 14.05 10.63 17.26 13.82 18.64C14.58 18.97 15.18 19.17 15.64 19.31C16.4 19.56 17.1 19.52 17.65 19.44C18.26 19.35 19.52 18.68 19.78 17.94C20.04 17.2 20.04 16.57 19.96 16.44C19.88 16.31 19.68 16.23 19.36 16.07C19.05 15.92 17.5 15.15 17.21 15.05C16.92 14.94 16.71 14.89 16.5 15.2C16.29 15.52 15.7 16.23 15.52 16.44C15.34 16.65 15.16 16.67 14.85 16.52C14.54 16.36 13.54 16.03 12.35 14.97C11.42 14.15 10.8 13.13 10.62 12.82C10.44 12.51 10.6 12.34 10.76 12.19C10.9 12.05 11.07 11.83 11.23 11.65C11.39 11.46 11.44 11.33 11.55 11.13C11.65 10.92 11.6 10.73 11.52 10.58C11.44 10.42 10.82 8.9 10.56 8.29C10.31 7.69 10.06 7.77 9.87 7.76C9.7 7.75 9.5 7.5 9.04 7.5Z" />
+            </svg>
+            <span className="hidden sm:inline font-bold">Pusat WA</span>
+            <span className="sm:hidden font-bold">WA</span>
+          </button>
+
           {/* Notifications Trigger */}
           <button
             onClick={onOpenNotifications}
