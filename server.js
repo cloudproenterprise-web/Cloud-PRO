@@ -1471,7 +1471,15 @@ function saveDdnsConfig() {
     ddnsConfig
   );
 }
+var cachedDetectedIps = null;
 async function detectServerIps() {
+  if (cachedDetectedIps && Date.now() - cachedDetectedIps.ts < 6e4) {
+    return {
+      ipv6: cachedDetectedIps.ipv6,
+      ipv4: cachedDetectedIps.ipv4,
+      localIpv6List: cachedDetectedIps.localIpv6List
+    };
+  }
   const localIpv6List = [];
   try {
     const nets = os2.networkInterfaces();
@@ -1487,7 +1495,9 @@ async function detectServerIps() {
   let publicIpv6 = localIpv6List[0] || null;
   let publicIpv4 = null;
   try {
-    const res6 = await fetch("https://api64.ipify.org?format=json");
+    const res6 = await fetch("https://api64.ipify.org?format=json", {
+      signal: AbortSignal.timeout(1200)
+    });
     if (res6.ok) {
       const data = await res6.json();
       if (data.ip && data.ip.includes(":")) {
@@ -1499,14 +1509,18 @@ async function detectServerIps() {
   } catch {
   }
   try {
-    const res4 = await fetch("https://api.ipify.org?format=json");
+    const res4 = await fetch("https://api.ipify.org?format=json", {
+      signal: AbortSignal.timeout(1200)
+    });
     if (res4.ok) {
       const data = await res4.json();
       if (data.ip) publicIpv4 = data.ip;
     }
   } catch {
   }
-  return { ipv6: publicIpv6, ipv4: publicIpv4, localIpv6List };
+  const result = { ipv6: publicIpv6, ipv4: publicIpv4, localIpv6List };
+  cachedDetectedIps = { ...result, ts: Date.now() };
+  return result;
 }
 async function syncCloudflareWildcardDdns(manualTrigger = false) {
   if (!ddnsConfig.cfApiToken.trim()) {
@@ -1721,6 +1735,12 @@ async function startCloudflaredTunnel(rawToken, mode = "token") {
     } catch {
     }
     tunnelProcess = null;
+  }
+  try {
+    if (process.platform === "linux" || process.platform === "darwin") {
+      execSync('pkill -9 -f "cloudflared.*tunnel" 2>/dev/null || true', { stdio: "ignore" });
+    }
+  } catch {
   }
   tunnelLogs = [];
   quickTunnelUrl = null;

@@ -53,12 +53,21 @@ export const DnsZoneEditor: React.FC<DnsZoneEditorProps> = ({ account, onOpenGat
 
   const checkLiveCloudflareDns = async () => {
     setIsCheckingLiveDns(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
     try {
       const [nsRes, aRootRes, aRdmRes] = await Promise.all([
-        fetch(`https://dns.google/resolve?name=${encodeURIComponent(rootDomain)}&type=NS`).then(r => r.json()),
-        fetch(`https://dns.google/resolve?name=${encodeURIComponent(rootDomain)}&type=A`).then(r => r.json()),
-        fetch(`https://dns.google/resolve?name=${encodeURIComponent(`rdm.${rootDomain}`)}&type=A`).then(r => r.json()),
+        fetch(`https://dns.google/resolve?name=${encodeURIComponent(rootDomain)}&type=NS`, { signal: controller.signal })
+          .then(r => r.json())
+          .catch(() => null),
+        fetch(`https://dns.google/resolve?name=${encodeURIComponent(rootDomain)}&type=A`, { signal: controller.signal })
+          .then(r => r.json())
+          .catch(() => null),
+        fetch(`https://dns.google/resolve?name=${encodeURIComponent(`rdm.${rootDomain}`)}&type=A`, { signal: controller.signal })
+          .then(r => r.json())
+          .catch(() => null),
       ]);
+      clearTimeout(timeoutId);
       const nsAnswers = Array.isArray(nsRes?.Answer)
         ? nsRes.Answer.map((a: { data: string }) => a.data.replace(/\.$/, ''))
         : [];
@@ -72,6 +81,7 @@ export const DnsZoneEditor: React.FC<DnsZoneEditorProps> = ({ account, onOpenGat
       setLiveRootARecords(aRootAnswers);
       setLiveRdmARecords(aRdmAnswers);
     } catch {
+      clearTimeout(timeoutId);
       // Ignore network errors
     } finally {
       setIsCheckingLiveDns(false);

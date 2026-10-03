@@ -975,8 +975,18 @@ function saveDdnsConfig() {
   );
 }
 
-// Detect public IPv6 & IPv4 from Linux OS interfaces + external trace
+// Detect public IPv6 & IPv4 from Linux OS interfaces + external trace (cached for 60s to prevent hanging)
+let cachedDetectedIps: { ipv6: string | null; ipv4: string | null; localIpv6List: string[]; ts: number } | null = null;
+
 async function detectServerIps(): Promise<{ ipv6: string | null; ipv4: string | null; localIpv6List: string[] }> {
+  if (cachedDetectedIps && Date.now() - cachedDetectedIps.ts < 60_000) {
+    return {
+      ipv6: cachedDetectedIps.ipv6,
+      ipv4: cachedDetectedIps.ipv4,
+      localIpv6List: cachedDetectedIps.localIpv6List,
+    };
+  }
+
   const localIpv6List: string[] = [];
   try {
     const nets = os.networkInterfaces();
@@ -995,7 +1005,9 @@ async function detectServerIps(): Promise<{ ipv6: string | null; ipv4: string | 
   let publicIpv4: string | null = null;
 
   try {
-    const res6 = await fetch('https://api64.ipify.org?format=json');
+    const res6 = await fetch('https://api64.ipify.org?format=json', {
+      signal: AbortSignal.timeout(1200),
+    });
     if (res6.ok) {
       const data = (await res6.json()) as { ip?: string };
       if (data.ip && data.ip.includes(':')) {
@@ -1009,7 +1021,9 @@ async function detectServerIps(): Promise<{ ipv6: string | null; ipv4: string | 
   }
 
   try {
-    const res4 = await fetch('https://api.ipify.org?format=json');
+    const res4 = await fetch('https://api.ipify.org?format=json', {
+      signal: AbortSignal.timeout(1200),
+    });
     if (res4.ok) {
       const data = (await res4.json()) as { ip?: string };
       if (data.ip) publicIpv4 = data.ip;
@@ -1018,7 +1032,9 @@ async function detectServerIps(): Promise<{ ipv6: string | null; ipv4: string | 
     // Ignore
   }
 
-  return { ipv6: publicIpv6, ipv4: publicIpv4, localIpv6List };
+  const result = { ipv6: publicIpv6, ipv4: publicIpv4, localIpv6List };
+  cachedDetectedIps = { ...result, ts: Date.now() };
+  return result;
 }
 
 // Sync `@` and `*` (Wildcard) records to Cloudflare via API so user never has to open Cloudflare again
@@ -1252,6 +1268,13 @@ async function startCloudflaredTunnel(rawToken?: string, mode: 'token' | 'quick'
     }
     tunnelProcess = null;
   }
+
+  // Preemptively kill any orphaned cloudflared processes so multiple instances never clash on Cloudflare Edge
+  try {
+    if (process.platform === 'linux' || process.platform === 'darwin') {
+      execSync('pkill -9 -f "cloudflared.*tunnel" 2>/dev/null || true', { stdio: 'ignore' });
+    }
+  } catch {}
 
   tunnelLogs = [];
   quickTunnelUrl = null;

@@ -147,6 +147,9 @@ else
   echo "[OK] Server CloudPRO aktif via background Node (PID: $!)"
 fi
 
+# Bersihkan proses cloudflared ganda di background agar tidak bentrok session di Cloudflare Edge
+pkill -9 -f "cloudflared.*tunnel" 2>/dev/null || true
+
 # Restart cloudflared secara non-blocking
 if [ "$(id -u)" -eq 0 ]; then
   systemctl restart cloudflared 2>/dev/null < /dev/null || true

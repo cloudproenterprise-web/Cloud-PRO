@@ -103,25 +103,25 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  // Multi-endpoint API caller: tries relative /api/... first, then falls back to live Cloud Run Linux backend
+  // Safe local API caller with strict timeout so browser tab never hangs
   const callLinuxBackend = async (endpoint: string, init?: RequestInit): Promise<any | null> => {
-    const baseCandidates = [
-      '',
-      'https://ais-pre-67hg3odhvyydl6rwuwoj6c-68099129631.asia-southeast1.run.app',
-      'https://ais-dev-67hg3odhvyydl6rwuwoj6c-68099129631.asia-southeast1.run.app',
-    ];
-    for (const base of baseCandidates) {
-      try {
-        const res = await fetch(`${base}${endpoint}`, init);
-        const ct = res.headers.get('content-type') || '';
-        if (res.ok && ct.includes('application/json')) {
-          return await res.json();
-        }
-      } catch {
-        // Try next candidate
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    try {
+      const res = await fetch(endpoint, {
+        ...init,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      const ct = res.headers.get('content-type') || '';
+      if (res.ok && ct.includes('application/json')) {
+        return await res.json();
       }
+      return null;
+    } catch {
+      clearTimeout(timeoutId);
+      return null;
     }
-    return null;
   };
 
   const fetchStatus = async () => {
@@ -166,7 +166,11 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
 
   useEffect(() => {
     fetchStatus();
-    const timer = setInterval(fetchStatus, 3500);
+    const timer = setInterval(() => {
+      if (typeof document !== 'undefined' && !document.hidden) {
+        fetchStatus();
+      }
+    }, 8000);
     return () => clearInterval(timer);
   }, []);
 
