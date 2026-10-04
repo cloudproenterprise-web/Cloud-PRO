@@ -319,14 +319,30 @@ else
   echo "[OK] Server CloudPRO aktif via background Node (PID: $!)"
 fi
 
+# -------------------------------------------------------------------------
+# [ANTI-SLEEP & ALWAYS-ON 24/7 ENFORCEMENT]
+# Mencegah OS Linux/WSL/Server masuk mode Sleep, Suspend, atau Hibernate saat malam hari
+# -------------------------------------------------------------------------
+if command -v systemctl &>/dev/null; then
+  if [ "$(id -u)" -eq 0 ]; then
+    systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target 2>/dev/null || true
+    systemctl enable cloudflared 2>/dev/null || true
+  else
+    sudo -n systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target 2>/dev/null || true
+    sudo -n systemctl enable cloudflared 2>/dev/null || true
+  fi
+fi
+
 # Bersihkan proses cloudflared ganda di background agar tidak bentrok session di Cloudflare Edge
 pkill -9 -f "cloudflared.*tunnel" 2>/dev/null || true
 
-# Restart cloudflared secara non-blocking
-if [ "$(id -u)" -eq 0 ]; then
-  systemctl restart cloudflared 2>/dev/null < /dev/null || true
-else
-  sudo -n systemctl restart cloudflared 2>/dev/null < /dev/null || true
+# Pastikan service cloudflared di-restart dengan bersih
+if command -v systemctl &>/dev/null; then
+  if [ "$(id -u)" -eq 0 ]; then
+    systemctl restart cloudflared 2>/dev/null < /dev/null || true
+  else
+    sudo -n systemctl restart cloudflared 2>/dev/null < /dev/null || true
+  fi
 fi
 
 echo "[3/3] Verifikasi Status Server & Pembersihan Sampah Disk..."
@@ -334,6 +350,50 @@ sleep 2
 CLEAN_RES=$(curl -s --max-time 5 -X POST http://127.0.0.1:3000/api/system/clean-disk || true)
 if [ -n "$CLEAN_RES" ]; then
   echo " [DISK CLEANER] Sampah sisa instalasi lama berhasil dibersihkan otomatis!"
+fi
+
+# -------------------------------------------------------------------------
+# [24/7 WATCHDOG AUTO-HEALER] PEMANTAU PERMANEN ANTI-ERROR 1033 & CRASH
+# Berjalan otomatis setiap 1 menit:
+# 1. Cek port 3000 (Node.js/PM2). Jika mati -> auto-revive.
+# 2. Cek daemon cloudflared tunnel. Jika terputus atau macet -> auto-restart.
+# 3. Kirim keepalive ping ringan ke Cloudflare Edge agar koneksi ISP tidak idle.
+# -------------------------------------------------------------------------
+WATCHDOG_SCRIPT="/usr/local/bin/cloudpro-watchdog.sh"
+cat << 'WATCHDOG_EOF' > /tmp/cloudpro-watchdog.sh
+#!/usr/bin/env bash
+# CloudPRO 24/7 Watchdog Daemon & Tunnel Keepalive
+
+# 1. Anti-Idle ping ke Cloudflare Edge agar koneksi ISP tidak idle / timeout
+curl -sI --max-time 3 https://1.1.1.1 >/dev/null 2>&1 || true
+
+# 2. Cek Service CloudPRO (Port 3000)
+if ! curl -sI --max-time 3 http://127.0.0.1:3000/ >/dev/null 2>&1; then
+  if command -v pm2 &>/dev/null; then
+    pm2 restart cloudpro --update-env >/dev/null 2>&1 || pm2 restart all >/dev/null 2>&1 || true
+  fi
+fi
+
+# 3. Cek Cloudflare Tunnel Daemon (Pencegah Error 1033)
+if ! pgrep -f "cloudflared" >/dev/null 2>&1; then
+  if command -v systemctl &>/dev/null; then
+    systemctl restart cloudflared >/dev/null 2>&1 || sudo -n systemctl restart cloudflared >/dev/null 2>&1 || true
+  fi
+fi
+WATCHDOG_EOF
+
+if [ "$(id -u)" -eq 0 ]; then
+  mv -f /tmp/cloudpro-watchdog.sh "$WATCHDOG_SCRIPT" 2>/dev/null || true
+  chmod +x "$WATCHDOG_SCRIPT" 2>/dev/null || true
+  if ! crontab -l 2>/dev/null | grep -q "cloudpro-watchdog.sh"; then
+    (crontab -l 2>/dev/null; echo "* * * * * $WATCHDOG_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
+  fi
+else
+  sudo -n mv -f /tmp/cloudpro-watchdog.sh "$WATCHDOG_SCRIPT" 2>/dev/null || true
+  sudo -n chmod +x "$WATCHDOG_SCRIPT" 2>/dev/null || true
+  if ! crontab -l 2>/dev/null | grep -q "cloudpro-watchdog.sh"; then
+    (crontab -l 2>/dev/null; echo "* * * * * $WATCHDOG_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
+  fi
 fi
 
 # -------------------------------------------------------------------------
