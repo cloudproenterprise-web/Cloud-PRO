@@ -476,8 +476,10 @@ export interface PrivateNameserverConfig {
   domain: string;
   ns1Host: string;
   ns1Ip: string;
+  ns1Ipv6?: string;
   ns2Host: string;
   ns2Ip: string;
+  ns2Ipv6?: string;
   dnssecEnabled: boolean;
   dnssecKeyTag?: number;
   dnssecAlgorithm?: number;

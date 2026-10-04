@@ -9,7 +9,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover" />
   <title>CloudPRO Web SSH Terminal — ${host}</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,10 +17,21 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; width: 100%; background: #07090e; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; overflow: hidden; }
+    html, body { height: 100%; width: 100%; background: #07090e; color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; overflow: hidden; position: fixed; inset: 0; }
     
     /* Layout */
-    .app-container { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      max-height: 100vh;
+      max-height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      position: fixed;
+      inset: 0;
+    }
     
     /* Header */
     .terminal-header {
@@ -89,7 +100,10 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     
     /* Terminal Output Screen */
     .terminal-screen {
-      flex: 1;
+      flex: 1 1 0px;
+      min-height: 0;
+      height: 0;
+      max-height: 100%;
       padding: 16px;
       overflow-y: auto;
       overflow-x: auto;
@@ -135,48 +149,70 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     .output-text.error { border-left-color: #ef4444; color: #fca5a5; }
     .output-text.success { border-left-color: #10b981; }
     
+    /* Pinned Bottom Dock - Always Visible and Functional */
+    .terminal-dock {
+      position: relative;
+      flex-shrink: 0;
+      z-index: 100;
+      background: #090e1a;
+      border-top: 2px solid #0284c7;
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      padding-bottom: max(6px, env(safe-area-inset-bottom));
+    }
+    
     /* Interactive Input Row */
     .input-row {
       display: flex;
       align-items: center;
       gap: 8px;
       background: #090e1a;
-      border-top: 1px solid #1e293b;
-      padding: 10px 14px;
+      padding: 8px 12px;
       flex-shrink: 0;
     }
     .input-prompt { font-weight: 700; color: #10b981; white-space: nowrap; font-size: 12px; display: flex; align-items: center; gap: 4px; }
     .input-prompt span { color: #38bdf8; }
     .cmd-input {
       flex: 1;
-      background: transparent;
-      border: none;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 8px;
+      padding: 9px 12px;
       outline: none;
       color: #f8fafc;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 600;
       width: 100%;
+      min-width: 0;
+      transition: all 0.15s ease;
+    }
+    .cmd-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+      background: #111c35;
     }
     .btn-send {
-      background: #0284c7;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 12px;
+      padding: 9px 16px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
       font-family: 'Plus Jakarta Sans', sans-serif;
       transition: background 0.15s;
+      flex-shrink: 0;
     }
     .btn-send:hover { background: #0369a1; }
     
     /* Virtual Mobile Keyboard Row */
     .mobile-keys {
-      background: #0b1120;
-      border-top: 1px solid #1e293b;
-      padding: 6px 10px;
+      background: #070b14;
+      border-bottom: 1px solid #1e293b;
+      padding: 6px 8px;
       display: flex;
       gap: 6px;
       overflow-x: auto;
@@ -197,6 +233,15 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
       flex-shrink: 0;
     }
     .m-key:active { background: #38bdf8; color: #0b1120; }
+
+    @media (max-width: 768px) {
+      .terminal-header { padding: 8px 12px; }
+      .header-title { font-size: 12.5px; }
+      .input-prompt { font-size: 11px; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
+      .cmd-input { font-size: 14px; padding: 8px 10px; }
+      .btn-send { padding: 8px 12px; font-size: 11.5px; }
+      .m-key { padding: 5px 9px; font-size: 11px; }
+    }
     
     /* Security Modal */
     .modal-overlay {
@@ -279,35 +324,21 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
       </div>
       <div class="header-right">
         <button class="btn-header" onclick="clearTerminal()" title="Bersihkan Layar">🧹 Clear</button>
-        <button class="btn-header" onclick="lockTerminal()" title="Kunci Terminal">🔒 Kunci</button>
-        <a class="btn-header" href="/?panel=1" style="text-decoration:none; background:#f59e0b; color:#0f172a; font-weight:800;">⚡ Panel</a>
       </div>
     </header>
 
-    <!-- Prominent Gateway to Main Control Panel -->
-    <div style="background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #38bdf8; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 50;">
-      <div style="color: #fff; font-size: 12px; font-weight: 600; line-height: 1.3;">
-        <span style="font-size: 15px; margin-right: 4px;">🌐</span>
-        <strong>Menuju Dashboard cPanel Cloud PRO?</strong>
-        <div style="color: #bae6fd; font-size: 10px; font-weight: normal;">Buka File Manager, Domain, CF Tunnel, &amp; Database</div>
-      </div>
-      <a href="/?panel=1" style="background: #facc15; color: #0f172a; padding: 9px 16px; border-radius: 9px; font-weight: 800; font-size: 12px; text-decoration: none; box-shadow: 0 2px 6px rgba(0,0,0,0.35); display: inline-flex; align-items: center; gap: 5px; shrink-0: 0;">
-        ⚡ Buka Dashboard &rarr;
-      </a>
-    </div>
-
     <!-- Quick Action Pills for Mobile -->
     <div class="quick-bar">
-      <button class="quick-btn" onclick="runCommand('bash update.sh')">🚀 1-Click Update</button>
-      <button class="quick-btn" onclick="runCommand('for h in /root /home/*; do [ -d \"$h\" ] && for f in .bashrc .profile .bash_profile; do [ -f \"$h/$f\" ] && sed -i \"s/\\r$//\" \"$h/$f\" && sed -i -E \"s/^[[:space:]]*(exit|logout|exec |source .*update|\\. .*update|fuser -k|\\.?\\/?update\\.sh)/# [Auto-Heal] &/\" \"$h/$f\"; done; done; mkdir -p /run/sshd 2>/dev/null; service ssh start 2>/dev/null || true; echo \"[OK] Terminal Ubuntu & SSH di Komputer berhasil diperbaiki! Silakan buka kembali aplikasi Ubuntu di PC.\"')">🛠️ Perbaiki SSH PC</button>
-      <button class="quick-btn" onclick="runCommand('pm2 status')">📊 PM2 Status</button>
+      <button class="quick-btn" style="background:#0284c7; color:#fff;" onclick="runCommand('bash update.sh --check')">🏷️ Cek Kommit Terbaru</button>
+      <button class="quick-btn" onclick="runCommand('git log -1 --stat')">📜 Log Kommit</button>
+      <button class="quick-btn" style="background:#16a34a; color:#fff; font-weight:700;" onclick="runCommand('bash update.sh')">🚀 1-Click Update</button>
       <button class="quick-btn" onclick="runCommand('pm2 restart cloudpro')">🔄 PM2 Restart</button>
+      <button class="quick-btn" onclick="runCommand('pm2 status')">📊 PM2 Status</button>
       <button class="quick-btn" onclick="runCommand('pm2 logs cloudpro --lines 25')">📜 PM2 Logs</button>
       <button class="quick-btn" onclick="runCommand('git status -s')">📁 Git Status</button>
-      <button class="quick-btn" onclick="runCommand('git pull origin main || (git fetch origin main && git reset --hard FETCH_HEAD)')">⬇️ Git Pull</button>
-      <button class="quick-btn" onclick="runCommand('free -h && echo \"---\" && df -h /')">💾 RAM & Disk</button>
+      <button class="quick-btn" onclick="runCommand('git pull origin main')">⬇️ Git Pull</button>
+      <button class="quick-btn" onclick="runCommand('free -h && echo --- && df -h /')">💾 RAM & Disk</button>
       <button class="quick-btn" onclick="runCommand('lsof -i :3000 || netstat -tlpn | grep 3000')">🔌 Cek Port 3000</button>
-      <button class="quick-btn" onclick="runCommand('ps aux | grep -E \"server.js|cloudpro\" | grep -v grep')">⚙️ Cek Proses Node</button>
       <button class="quick-btn" onclick="runCommand('pwd')">📂 Cek Direktori CWD</button>
     </div>
 
@@ -330,34 +361,37 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
       <div id="outputHistory"></div>
     </div>
 
-    <!-- Virtual Mobile Keys -->
-    <div class="mobile-keys">
-      <button class="m-key" onclick="insertChar('\t')">Tab</button>
-      <button class="m-key" onclick="handleCtrlC()">Ctrl+C</button>
-      <button class="m-key" onclick="navHistory(-1)">▲ History</button>
-      <button class="m-key" onclick="navHistory(1)">▼ History</button>
-      <button class="m-key" onclick="insertChar('/')">/</button>
-      <button class="m-key" onclick="insertChar('-')">-</button>
-      <button class="m-key" onclick="insertChar('~')">~</button>
-      <button class="m-key" onclick="insertChar('|')">|</button>
-      <button class="m-key" onclick="insertChar(' && ')">&&</button>
-      <button class="m-key" onclick="insertChar('sudo ')">sudo</button>
-    </div>
+    <!-- Sticky Dock for Mobile / Android Keyboard Visibility -->
+    <div class="terminal-dock" id="terminalDock">
+      <!-- Virtual Mobile Keys -->
+      <div class="mobile-keys">
+        <button class="m-key" onclick="insertChar('\t')">Tab</button>
+        <button class="m-key" onclick="handleCtrlC()">Ctrl+C</button>
+        <button class="m-key" onclick="navHistory(-1)">▲ History</button>
+        <button class="m-key" onclick="navHistory(1)">▼ History</button>
+        <button class="m-key" onclick="insertChar('/')">/</button>
+        <button class="m-key" onclick="insertChar('-')">-</button>
+        <button class="m-key" onclick="insertChar('~')">~</button>
+        <button class="m-key" onclick="insertChar('|')">|</button>
+        <button class="m-key" onclick="insertChar(' && ')">&&</button>
+        <button class="m-key" onclick="insertChar('sudo ')">sudo</button>
+      </div>
 
-    <!-- Input Row -->
-    <div class="input-row">
-      <div class="input-prompt" id="activePrompt">${username}@host:<span>~</span>$</div>
-      <input
-        type="text"
-        id="cmdInput"
-        class="cmd-input"
-        placeholder="Ketik perintah... (contoh: pm2 status, ls -la)"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-      />
-      <button class="btn-send" id="btnSend" onclick="submitCommand()">Kirim</button>
+      <!-- Input Row -->
+      <div class="input-row">
+        <div class="input-prompt" id="activePrompt">${username}@host:<span>~</span>$</div>
+        <input
+          type="text"
+          id="cmdInput"
+          class="cmd-input"
+          placeholder="Ketik perintah linux (contoh: update, git pull)..."
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <button class="btn-send" id="btnSend" onclick="submitCommand()">Kirim ↵</button>
+      </div>
     </div>
   </div>
 
@@ -389,7 +423,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     let history = [];
     let historyIndex = -1;
     let isRunning = false;
-    let terminalPin = localStorage.getItem('cloudpro_terminal_pin') || '';
+    let terminalPin = localStorage.getItem('cloudpro_terminal_pin') || 'cloudpro';
 
     const cmdInput = document.getElementById('cmdInput');
     const outputHistory = document.getElementById('outputHistory');
@@ -400,9 +434,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
 
     function safeFocus(el) {
       if (!el) return;
-      if (!('ontouchstart' in window) && !window.matchMedia('(pointer: coarse)').matches) {
-        try { el.focus(); } catch {}
-      }
+      try { el.focus(); } catch {}
     }
 
     function updatePrompt(cwd) {
@@ -412,13 +444,8 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     }
 
     function checkAuth() {
-      if (!terminalPin) {
-        pinModal.style.display = 'flex';
-        safeFocus(pinInput);
-      } else {
-        pinModal.style.display = 'none';
-        safeFocus(cmdInput);
-      }
+      if (pinModal) pinModal.style.display = 'none';
+      safeFocus(cmdInput);
     }
 
     function useDefaultPin() {
@@ -574,8 +601,9 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
         try {
           data = JSON.parse(rawText);
         } catch (jsonErr) {
+          const isCheckCmd = cmd.includes('--check') || cmd.includes('-c') || cmd.includes('versi') || cmd.includes('status');
           // If server reloaded during update/restart and connection returned HTML
-          if (cmd.includes('update') || cmd.includes('restart') || cmd.includes('pm2') || rawText.includes('<!DOCTYPE') || rawText.includes('<html')) {
+          if (!isCheckCmd && (cmd.includes('update') || cmd.includes('restart') || cmd.includes('pm2') || rawText.includes('<!DOCTYPE') || rawText.includes('<html'))) {
             appendHistoryBlock(
               cmd,
               '⚡ [INFO] Perintah update / restart sedang dieksekusi di background server...\\n' +
@@ -609,7 +637,8 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
         }
       } catch (err) {
         tempBlock.remove();
-        if (cmd.includes('update') || cmd.includes('restart')) {
+        const isCheckCmd = cmd.includes('--check') || cmd.includes('-c') || cmd.includes('versi') || cmd.includes('status');
+        if (!isCheckCmd && (cmd.includes('update') || cmd.includes('restart'))) {
           appendHistoryBlock(
             cmd,
             '⚡ [INFO] Server CloudPRO sedang me-restart service di background.\\n' +
@@ -657,6 +686,41 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
 
     pinInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') unlockTerminal();
+    });
+
+    // Auto-adjust layout for Android Virtual Keyboard & Viewport Resizing
+    function handleVisualViewport() {
+      if (window.visualViewport) {
+        const vh = window.visualViewport.height;
+        const appContainer = document.querySelector('.app-container');
+        if (appContainer) {
+          appContainer.style.height = vh + 'px';
+        }
+        window.scrollTo(0, 0);
+        if (terminalScreen) {
+          terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+      }
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleVisualViewport);
+      window.visualViewport.addEventListener('scroll', handleVisualViewport);
+    }
+    window.addEventListener('resize', handleVisualViewport);
+
+    cmdInput.addEventListener('focus', () => {
+      setTimeout(() => {
+        handleVisualViewport();
+        cmdInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 150);
+    });
+
+    // Tapping on terminal output focuses command input on touch devices
+    terminalScreen.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON' && !window.getSelection().toString()) {
+        cmdInput.focus();
+      }
     });
 
     // Auto init

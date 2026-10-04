@@ -56,6 +56,7 @@ export const HostingPlanList: React.FC = () => {
   const [cpuCores, setCpuCores] = useState(2);
   const [ramGb, setRamGb] = useState(2);
   const [domains, setDomains] = useState(3);
+  const [subdomains, setSubdomains] = useState(10);
   const [dbs, setDbs] = useState(5);
   const [emails, setEmails] = useState(10);
   const [priceMonthlyUsd, setPriceMonthlyUsd] = useState(5.0);
@@ -70,6 +71,7 @@ export const HostingPlanList: React.FC = () => {
     setCpuCores(2);
     setRamGb(2);
     setDomains(3);
+    setSubdomains(10);
     setDbs(5);
     setEmails(10);
     setPriceMonthlyUsd(5.0);
@@ -86,6 +88,7 @@ export const HostingPlanList: React.FC = () => {
     setCpuCores(Math.max(1, Math.round((plan.cpuLimitPct ?? 200) / 100)));
     setRamGb(Math.max(1, Math.round((plan.ramLimitMb ?? 2048) / 1024)));
     setDomains(plan.maxDomains ?? 3);
+    setSubdomains(plan.maxSubdomains ?? (plan.maxDomains ? plan.maxDomains * 5 : 10));
     setDbs(plan.maxDatabases ?? 5);
     setEmails(plan.maxEmails ?? plan.maxEmailAccounts ?? 10);
     setPriceMonthlyUsd(getPlanMonthlyUsd(plan));
@@ -131,7 +134,7 @@ export const HostingPlanList: React.FC = () => {
       cpuLimitPct: cpuCores * 100,
       ramLimitMb: ramGb * 1024,
       maxDomains: domains,
-      maxSubdomains: domains * 5,
+      maxSubdomains: subdomains,
       maxDatabases: dbs,
       maxEmails: emails,
       maxFtp: 5,
@@ -325,13 +328,23 @@ export const HostingPlanList: React.FC = () => {
                     <span className="font-bold">{plan.maxDatabases} DB</span>
                   </div>
 
+                  <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                    <span className="flex items-center gap-1.5 font-sans text-slate-500">
+                      <Globe className="h-3.5 w-3.5 text-sky-500" />
+                      <span>Domain &amp; Subdomain</span>
+                    </span>
+                    <span className="font-bold">
+                      {plan.maxDomains ?? 1} Dom / {plan.maxSubdomains ?? (plan.maxDomains ? plan.maxDomains * 5 : 5)} Sub
+                    </span>
+                  </div>
+
                   <div className="flex items-center justify-between py-1">
                     <span className="flex items-center gap-1.5 font-sans text-slate-500">
                       <Mail className="h-3.5 w-3.5 text-teal-500" />
-                      <span>Akun Email &amp; Domain</span>
+                      <span>Akun Email &amp; Database</span>
                     </span>
                     <span className="font-bold">
-                      {plan.maxEmails ?? plan.maxEmailAccounts ?? 10} Mail / {plan.maxDomains ?? 3} Domain
+                      {plan.maxEmails ?? plan.maxEmailAccounts ?? 10} Mail / {plan.maxDatabases} DB
                     </span>
                   </div>
                 </div>
@@ -469,13 +482,15 @@ export const HostingPlanList: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              {/* Baris Kuota 1: Storage, Bandwidth, CPU, RAM */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
                   <label className="block font-semibold text-slate-700 dark:text-slate-300">
                     Storage NVMe (GB):
                   </label>
                   <input
                     type="number"
+                    min="1"
                     value={diskGb}
                     onChange={e => setDiskGb(Number(e.target.value))}
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -487,6 +502,7 @@ export const HostingPlanList: React.FC = () => {
                   </label>
                   <input
                     type="number"
+                    min="10"
                     value={bwGb}
                     onChange={e => setBwGb(Number(e.target.value))}
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white"
@@ -494,12 +510,81 @@ export const HostingPlanList: React.FC = () => {
                 </div>
                 <div>
                   <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                    CPU (Core):
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="16"
+                    value={cpuCores}
+                    onChange={e => setCpuCores(Number(e.target.value))}
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                    RAM (GB):
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="64"
+                    value={ramGb}
+                    onChange={e => setRamGb(Number(e.target.value))}
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Baris Kuota 2: Domain, Subdomain, Database, Email */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">
                     Maks Domain:
                   </label>
                   <input
                     type="number"
+                    min="1"
                     value={domains}
                     onChange={e => setDomains(Number(e.target.value))}
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                    Maks Subdomain:
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Contoh: 10 atau 999"
+                    value={subdomains}
+                    onChange={e => setSubdomains(Number(e.target.value))}
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono font-bold text-sky-600 dark:border-slate-700 dark:bg-slate-800 dark:text-sky-400"
+                  />
+                  <p className="mt-0.5 text-[9px] text-slate-400">999 = Unlimited</p>
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                    Maks Database:
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={dbs}
+                    onChange={e => setDbs(Number(e.target.value))}
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                    Maks Akun Email:
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={emails}
+                    onChange={e => setEmails(Number(e.target.value))}
                     className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                   />
                 </div>

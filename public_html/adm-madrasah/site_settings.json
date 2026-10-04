@@ -1,0 +1,34 @@
+{
+  "registered_madrasahs_list": [
+    {
+      "id": "madrasah_default",
+      "nama_madrasah": "Si@Kad Madrasah",
+      "nsm": "111234567890",
+      "npsn": "60723456",
+      "nama_pimpinan": "H. Jaenal Maskun, S.Pd.I",
+      "nip_pimpinan": "198501012010011001",
+      "jenjang_pendidikan": "MI",
+      "alamat": "Jl. Pendidikan No. 123, Pusat Kota",
+      "telepon": "(021) 1234-5678",
+      "email": "misiakad@siakad.sch.id",
+      "status": "Negeri",
+      "is_active": true,
+      "created_at": "2026-09-10T01:57:22.293Z"
+    },
+    {
+      "id": "madrasah_2",
+      "nama_madrasah": "MTs Al-Ikhlas",
+      "nsm": "121234567891",
+      "npsn": "60723457",
+      "nama_pimpinan": "Drs. Ahmad Dahlan, M.Pd",
+      "nip_pimpinan": "197803152005021002",
+      "jenjang_pendidikan": "MTs",
+      "alamat": "Jl. Masjid Agung No. 45",
+      "telepon": "(021) 8765-4321",
+      "email": "mtsalikhlas@siakad.sch.id",
+      "status": "Swasta",
+      "is_active": true,
+      "created_at": "2026-09-10T01:57:22.295Z"
+    }
+  ]
+}

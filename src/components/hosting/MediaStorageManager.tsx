@@ -35,6 +35,8 @@ export const MediaStorageManager: React.FC<MediaStorageManagerProps> = ({ accoun
   const { showToast, confirmAction } = useServer();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  if (!account || !account.id) return null;
+
   // States
   const [config, setConfig] = useState<CloudflareR2Config>(() =>
     db.getR2ConfigForAccount(account.id)

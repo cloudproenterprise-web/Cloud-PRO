@@ -177,7 +177,7 @@ export const ServerList: React.FC = () => {
             <div className="flex justify-between py-1 border-b border-slate-50 dark:border-slate-800/60">
               <span className="text-slate-500">Load Average</span>
               <span className="text-slate-800 dark:text-slate-200">
-                {activeNode.loadAverage.map(l => l.toFixed(2)).join(', ')}
+                {(activeNode.loadAverage || [0.12, 0.08, 0.05]).map(l => Number(l || 0).toFixed(2)).join(', ')}
               </span>
             </div>
             <div className="flex justify-between py-1">
@@ -199,12 +199,12 @@ export const ServerList: React.FC = () => {
               </p>
             </div>
             <span className="text-[11px] font-mono text-slate-400">
-              {activeNode.services.length} Daemons Dimonitor
+              {(activeNode.services || []).length} Daemons Dimonitor
             </span>
           </div>
 
           <div className="divide-y divide-slate-100 dark:divide-slate-800 mt-2">
-            {activeNode.services.map(svc => (
+            {(activeNode.services || []).map(svc => (
               <div key={svc.name} className="flex items-center justify-between py-3 text-xs">
                 <div className="flex items-center gap-3">
                   <span

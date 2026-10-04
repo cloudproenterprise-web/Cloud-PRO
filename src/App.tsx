@@ -14,6 +14,10 @@ import { DnsZoneEditor } from './components/hosting/DnsZoneEditor';
 import { PhpConfigManager } from './components/hosting/PhpConfigManager';
 import { CronManager } from './components/hosting/CronManager';
 import { BackupManager } from './components/hosting/BackupManager';
+import { BackupModule } from './components/hosting/BackupModule';
+import { RestoreModule } from './components/hosting/RestoreModule';
+import { DiskUsageModule } from './components/hosting/DiskUsageModule';
+import { DiskCleanerModule } from './components/hosting/DiskCleanerModule';
 import { DiskUsageCleanerModule } from './components/hosting/DiskUsageCleanerModule';
 import { MediaStorageManager } from './components/hosting/MediaStorageManager';
 import { DomainSubdomainManager } from './components/hosting/DomainSubdomainManager';
@@ -39,9 +43,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ServerProvider, useServer } from './context/ServerContext';
 import { ConfirmationModal } from './components/common/ConfirmationModal';
 import { Footer } from './components/layout/Footer';
-import { FloatingGlassDock } from './components/layout/FloatingGlassDock';
 import { WhatsAppFloatingButton } from './components/common/WhatsAppFloatingButton';
-import { SystemSensorDetector } from './components/common/SystemSensorDetector';
 import { WebsitePreviewModal } from './components/hosting/WebsitePreviewModal';
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X, Globe, PlusCircle, Zap, ExternalLink, ArrowLeft, ChevronDown } from 'lucide-react';
 import { db } from './services/storage';
@@ -69,6 +71,10 @@ class ModuleErrorBoundary extends React.Component<ModuleErrorBoundaryProps, Modu
       hasError: true,
       errorMsg: error instanceof Error ? error.message : String(error),
     };
+  }
+
+  componentDidCatch(error: unknown, errorInfo: React.ErrorInfo) {
+    console.error('[CloudPRO Module Error in tab:', this.props.activeTab, ']', error, errorInfo);
   }
 
   componentDidUpdate(prevProps: ModuleErrorBoundaryProps) {
@@ -125,6 +131,56 @@ const AppContent: React.FC = () => {
     refreshAll,
   } = useServer();
 
+  // =========================================================================
+  // Official Cloud PRO Master Favicon Guard:
+  // Strict lockdown preventing any child iframe, cloned site script, or
+  // subdomain asset from hijacking or tampering with the browser tab icon.
+  // =========================================================================
+  useEffect(() => {
+    const OFFICIAL_FAVICON = '/favicon.svg?v=cloudpro-master-fixed';
+
+    const enforceCloudProFavicon = () => {
+      const allIcons = document.querySelectorAll<HTMLLinkElement>(
+        "link[rel*='icon'], link[rel='shortcut icon'], link[rel='apple-touch-icon']"
+      );
+      allIcons.forEach(link => {
+        if (link.getAttribute('href') !== OFFICIAL_FAVICON) {
+          link.href = OFFICIAL_FAVICON;
+          link.type = 'image/svg+xml';
+        }
+      });
+
+      let primaryIcon = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+      if (!primaryIcon) {
+        primaryIcon = document.createElement('link');
+        primaryIcon.rel = 'icon';
+        primaryIcon.type = 'image/svg+xml';
+        primaryIcon.href = OFFICIAL_FAVICON;
+        document.head.appendChild(primaryIcon);
+      }
+    };
+
+    enforceCloudProFavicon();
+
+    const observer = new MutationObserver(() => {
+      enforceCloudProFavicon();
+    });
+
+    observer.observe(document.head, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['href', 'rel'],
+    });
+
+    const interval = setInterval(enforceCloudProFavicon, 2000);
+
+    return () => {
+      observer.disconnect();
+      clearInterval(interval);
+    };
+  }, []);
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth >= 1024 : false
   );
@@ -141,8 +197,17 @@ const AppContent: React.FC = () => {
     return 'customer-dashboard';
   };
 
-  const [activeTab, setActiveTabState] = useState<string>(() => getRootDashboardTab());
+  const [activeTab, setActiveTabState] = useState<string>(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const urlTab = sp.get('tab');
+      if (urlTab === 'cloner' || urlTab === 'website-cloner') return 'website-cloner';
+      if (urlTab) return urlTab;
+    } catch {}
+    return getRootDashboardTab();
+  });
   const [navHistory, setNavHistory] = useState<string[]>([]);
+  const navHistoryRef = React.useRef<string[]>([]);
 
   const isRootDashboard = [
     'dashboard',
@@ -155,13 +220,10 @@ const AppContent: React.FC = () => {
   const setActiveTab = (nextRawTab: string) => {
     const nextTab = nextRawTab === 'dashboard' ? getRootDashboardTab() : nextRawTab;
     if (nextTab === activeTab) return;
-    setNavHistory(prev => [...prev.slice(-24), activeTab]);
+    const nextHistory = [...navHistoryRef.current.slice(-24), activeTab];
+    navHistoryRef.current = nextHistory;
+    setNavHistory(nextHistory);
     setActiveTabState(nextTab);
-    try {
-      window.history.pushState({ cloudProTab: nextTab }, '', window.location.pathname);
-    } catch {
-      // Ignore history errors in restricted sandbox
-    }
   };
 
   const handleGoBack = () => {
@@ -181,9 +243,12 @@ const AppContent: React.FC = () => {
       setIsNotifsOpen(false);
       return;
     }
-    if (navHistory.length > 0) {
-      const prevTab = navHistory[navHistory.length - 1];
-      setNavHistory(prev => prev.slice(0, -1));
+    const currentHist = navHistoryRef.current;
+    if (currentHist.length > 0) {
+      const prevTab = currentHist[currentHist.length - 1];
+      const nextHist = currentHist.slice(0, -1);
+      navHistoryRef.current = nextHist;
+      setNavHistory(nextHist);
       setActiveTabState(prevTab);
       return;
     }
@@ -212,7 +277,7 @@ const AppContent: React.FC = () => {
     }
   }, [currentUser?.id, currentUser?.role]);
 
-  // Keep tab and activeAccount strictly in sync with user/role changes
+  // Keep activeAccount strictly in sync when user/accounts change
   useEffect(() => {
     if (!currentUser) return;
     const userAccs = accounts.filter(acc => {
@@ -234,7 +299,11 @@ const AppContent: React.FC = () => {
     if (!activeAccount || !userAccs.some(a => a.id === activeAccount.id)) {
       setActiveAccount(userAccs[0] || null);
     }
+  }, [currentUser?.id, currentUser?.role, accounts.length]);
 
+  // Validate tab permissions according to current user role
+  useEffect(() => {
+    if (!currentUser) return;
     const adminOnlyTabs = ['servers', 'ip-manager', 'resellers', 'tailscale-mesh', 'architecture', 'gateway-tunnel'];
     if (currentUser.role === 'admin' && (activeTab === 'reseller-dashboard' || activeTab === 'customer-dashboard')) {
       setActiveTabState('dashboard');
@@ -247,16 +316,14 @@ const AppContent: React.FC = () => {
         setActiveTabState('customer-dashboard');
       }
     }
-  }, [currentUser?.id, currentUser?.role, activeTab]);
+  }, [currentUser?.role, activeTab]);
 
-  // Ensure viewport is scrolled to top after login, tab switch, or user/role switch so mobile keyboard offset never hides TopBar
+  // Ensure viewport is scrolled to top after login, tab switch, or user/role switch
   useEffect(() => {
     try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    } catch {
       window.scrollTo(0, 0);
+    } catch {
+      // ignore
     }
   }, [activeTab, currentUser?.id, currentUser?.role, isAuthenticated]);
 
@@ -363,6 +430,67 @@ const AppContent: React.FC = () => {
     };
   }, [isVaultReady]);
 
+  // Ensure Reseller has their own isolated master account ready as soon as they enter the reseller portal
+  useEffect(() => {
+    if (currentUser?.role === 'reseller') {
+      const resellerProfile = db.getResellerProfile(currentUser.id);
+      const resellerDomain = resellerProfile?.primaryDomain || 'mitrahosting.my.id';
+      const existing = accounts.find(
+        a =>
+          a.id === `acc-own-${currentUser.id}` ||
+          (a.resellerId === currentUser.id &&
+            (a.customerId === currentUser.id ||
+              a.primaryDomain.toLowerCase() === resellerDomain.toLowerCase()))
+      );
+      if (!existing) {
+        const expectedUsername =
+          (currentUser.username || 'reseller')
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '')
+            .slice(0, 12) || 'reseller';
+        const newAcc: HostingAccount = {
+          id: `acc-own-${currentUser.id}`,
+          primaryDomain: resellerDomain,
+          domain: resellerDomain,
+          username: expectedUsername,
+          customerId: currentUser.id,
+          customerName: resellerProfile?.brandName
+            ? `${currentUser.name} (${resellerProfile.brandName})`
+            : currentUser.name,
+          customerEmail: currentUser.email,
+          resellerId: currentUser.id,
+          serverId: 'srv-sg-01',
+          serverName: 'SG-Edge-01 (Singapore)',
+          planId: 'plan-pro',
+          planName: 'Cloud Pro SSD (WHM Reseller)',
+          diskUsedMb: 0,
+          diskLimitMb: resellerProfile?.allocatedDiskMb || 25600,
+          bandwidthUsedMb: 0,
+          bandwidthLimitMb: resellerProfile?.allocatedBandwidthMb || 512000,
+          phpVersion: '8.2',
+          phpExtensions: ['ioncube', 'mysqli', 'pdo', 'curl', 'gd', 'mbstring', 'zip', 'opcache'],
+          status: 'active',
+          sslStatus: 'active',
+          sslProvider: "Let's Encrypt",
+          sslExpiresAt: '2027-01-01T00:00:00Z',
+          forceHttps: true,
+          documentRoot: `/home/${expectedUsername}/public_html`,
+          ipAddress: resellerProfile?.assignedIp || '172.67.223.133',
+          databaseCount: 1,
+          emailCount: 2,
+          ftpCount: 1,
+          nameservers: [
+            resellerProfile?.nameserver1 || `ns1.${resellerDomain}`,
+            resellerProfile?.nameserver2 || `ns2.${resellerDomain}`,
+          ],
+          createdAt: new Date().toISOString(),
+        };
+        db.saveHostingAccount(newAcc);
+        refreshAll();
+      }
+    }
+  }, [currentUser?.id, currentUser?.role]);
+
   // If not logged in, show LoginPage
   if (!isAuthenticated || !currentUser) {
     return (
@@ -380,7 +508,9 @@ const AppContent: React.FC = () => {
       return (
         acc.resellerId === currentUser.id &&
         acc.id !== 'acc-rdm-01' &&
-        acc.primaryDomain !== 'denbaguse.my.id'
+        acc.primaryDomain !== 'denbaguse.my.id' &&
+        !acc.primaryDomain?.endsWith('.denbaguse.my.id') &&
+        acc.customerId !== 'usr-admin-01'
       );
     }
     return (
@@ -389,7 +519,9 @@ const AppContent: React.FC = () => {
         acc.customerEmail === currentUser.email ||
         acc.id === 'acc-school-02') &&
       acc.id !== 'acc-rdm-01' &&
-      acc.primaryDomain !== 'denbaguse.my.id'
+      acc.primaryDomain !== 'denbaguse.my.id' &&
+      !acc.primaryDomain?.endsWith('.denbaguse.my.id') &&
+      acc.customerId !== 'usr-admin-01'
     );
   });
 
@@ -398,6 +530,115 @@ const AppContent: React.FC = () => {
     activeAccount && accessibleAccounts.some(a => a.id === activeAccount.id)
       ? activeAccount
       : accessibleAccounts[0] || null;
+
+  // Dedicated safe fallback per role to strictly guarantee customers and resellers never see Admin data or crash
+  const safeCustomerFallback: HostingAccount = {
+    id: 'acc-school-02',
+    primaryDomain: 'websitepelanggan.my.id',
+    domain: 'websitepelanggan.my.id',
+    username: currentUser.username && currentUser.username !== 'admin' && currentUser.username !== 'cloudpro' ? currentUser.username : 'pelanggan',
+    customerId: currentUser.id,
+    customerName: currentUser.name && !currentUser.name.includes('Root') ? currentUser.name : 'Pelanggan Hosting cPanel',
+    customerEmail: currentUser.email || 'admin@websitepelanggan.my.id',
+    serverId: 'srv-id-01',
+    serverName: 'ID-Cyber-01 (Jakarta)',
+    planId: 'plan-starter',
+    planName: 'Cloud Starter NVMe',
+    diskUsedMb: 1,
+    diskLimitMb: 10240,
+    bandwidthUsedMb: 50,
+    bandwidthLimitMb: 102400,
+    phpVersion: '8.2',
+    phpExtensions: ['mysqli', 'pdo', 'curl', 'opcache', 'gd', 'mbstring', 'zip'],
+    status: 'active',
+    sslStatus: 'active',
+    sslProvider: "Let's Encrypt",
+    sslExpiresAt: '2027-01-01T00:00:00Z',
+    forceHttps: true,
+    documentRoot: `/home/${currentUser.username && currentUser.username !== 'admin' ? currentUser.username : 'pelanggan'}/public_html`,
+    ipAddress: '172.67.223.133',
+    databaseCount: 1,
+    emailCount: 1,
+    ftpCount: 1,
+    nameservers: ['ns1.cloudpro.id', 'ns2.cloudpro.id'],
+    createdAt: new Date().toISOString(),
+  };
+
+  const safeResellerFallback: HostingAccount = {
+    id: 'acc-reseller-sample',
+    primaryDomain: 'klien-reseller.my.id',
+    domain: 'klien-reseller.my.id',
+    username: 'klienweb',
+    customerId: 'usr-cust-reseller-01',
+    customerName: 'Portal Klien Mitra Reseller',
+    customerEmail: 'admin@klien-reseller.my.id',
+    resellerId: currentUser.id,
+    serverId: 'srv-id-01',
+    serverName: 'ID-Cyber-01 (Jakarta)',
+    planId: 'plan-starter',
+    planName: 'Cloud Starter NVMe',
+    diskUsedMb: 1,
+    diskLimitMb: 10240,
+    bandwidthUsedMb: 50,
+    bandwidthLimitMb: 102400,
+    phpVersion: '8.2',
+    phpExtensions: ['mysqli', 'pdo', 'curl', 'opcache', 'gd', 'mbstring', 'zip'],
+    status: 'active',
+    sslStatus: 'active',
+    sslProvider: "Let's Encrypt",
+    sslExpiresAt: '2027-01-01T00:00:00Z',
+    forceHttps: true,
+    documentRoot: '/home/klienweb/public_html',
+    ipAddress: '172.67.223.133',
+    databaseCount: 1,
+    emailCount: 1,
+    ftpCount: 1,
+    nameservers: ['ns1.mitrahosting.my.id', 'ns2.mitrahosting.my.id'],
+    createdAt: new Date().toISOString(),
+  };
+
+  const safeFallbackAccount: HostingAccount = {
+    id: 'acc-rdm-01',
+    primaryDomain: 'denbaguse.my.id',
+    domain: 'denbaguse.my.id',
+    username: 'cloudpro',
+    customerId: 'usr-admin-01',
+    customerName: 'Jaenal Maskun (Website Pribadi)',
+    customerEmail: 'myboskue@gmail.com',
+    resellerId: 'usr-admin-01',
+    serverId: 'srv-sg-01',
+    serverName: 'SG-Edge-01 (Singapore)',
+    planId: 'plan-pro',
+    planName: 'Cloud Pro SSD',
+    diskUsedMb: 120,
+    diskLimitMb: 25600,
+    bandwidthUsedMb: 500,
+    bandwidthLimitMb: 512000,
+    phpVersion: '8.2',
+    phpExtensions: ['ioncube', 'mysqli', 'pdo'],
+    status: 'active',
+    sslStatus: 'active',
+    sslProvider: "Let's Encrypt",
+    sslExpiresAt: '2027-01-01T00:00:00Z',
+    forceHttps: true,
+    documentRoot: '/public_html',
+    ipAddress: '100.121.16.66',
+    databaseCount: 1,
+    emailCount: 1,
+    ftpCount: 1,
+    nameservers: ['ns1.denbaguse.my.id', 'ns2.denbaguse.my.id'],
+    createdAt: new Date().toISOString(),
+  };
+
+  // Strictly assign safe account matching user role so customers and resellers never touch acc-rdm-01 (denbaguse.my.id)
+  const safeSelectedAccount: HostingAccount =
+    selectedAccount ||
+    accessibleAccounts[0] ||
+    (currentUser.role === 'customer'
+      ? safeCustomerFallback
+      : currentUser.role === 'reseller'
+      ? safeResellerFallback
+      : safeFallbackAccount);
 
   const handleCreateDefaultRdmAccount = () => {
     if (currentUser.role === 'customer') {
@@ -481,7 +722,7 @@ const AppContent: React.FC = () => {
       id: 'acc-rdm-01',
       primaryDomain: 'denbaguse.my.id',
       domain: 'denbaguse.my.id',
-      username: 'madrasah',
+      username: 'cloudpro',
       customerId: 'usr-admin-01',
       customerName: 'Jaenal Maskun (Website Pribadi)',
       customerEmail: 'admin@denbaguse.my.id',
@@ -514,7 +755,7 @@ const AppContent: React.FC = () => {
       sslProvider: "Let's Encrypt / ZeroSSL",
       sslExpiresAt: '2027-01-01T00:00:00Z',
       forceHttps: true,
-      documentRoot: '/home/madrasah/public_html',
+      documentRoot: '/home/cloudpro/public_html',
       ipAddress: '172.67.223.133',
       databaseCount: 1,
       emailCount: 2,
@@ -610,151 +851,163 @@ const AppContent: React.FC = () => {
         </div>
 
         <div className="exec-module-surface min-w-0 w-full">
-          {component}
+          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTabState(getRootDashboardTab())}>
+            {component}
+          </ModuleErrorBoundary>
         </div>
       </div>
     );
   };
 
-  const renderAccountSuiteWrapper = (title: string, component: React.ReactNode) => {
-    if (!selectedAccount) return renderNoAccountPlaceholder();
+  const renderAccountSuiteWrapper = (
+    title: string,
+    renderComponent: (account: HostingAccount) => React.ReactNode
+  ) => {
+    const activeAcc =
+      (selectedAccount && accessibleAccounts.some(a => a.id === selectedAccount.id) ? selectedAccount : null) ||
+      (accessibleAccounts.length > 0 ? accessibleAccounts[0] : null) ||
+      (currentUser.role === 'admin' && accounts.length > 0 ? accounts[0] : null);
+
+    if (!activeAcc) return renderNoAccountPlaceholder();
 
     return (
       <div className="space-y-4 max-w-full overflow-hidden w-full min-w-0">
         {/* Executive Virtual Host Context Switcher & Grid Banner with 360° Perimeter Ring */}
         <div className="exec-card-ring relative overflow-hidden rounded-2xl w-full max-w-full min-w-0">
           <div className="p-4">
-          <div className="flex flex-col gap-3">
-            {/* Top Bar: Back Button, Title & Active Domain Context */}
-            <div className="flex items-center gap-2.5 min-w-0">
-              <button
-                type="button"
-                onClick={handleGoBack}
-                className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-sky-600 transition-colors cursor-pointer shrink-0 shadow-2xs active:scale-95"
-                title="Kembali ke halaman sebelumnya"
-              >
-                <ArrowLeft className="h-3.5 w-3.5 text-sky-600" />
-                <span>Kembali</span>
-              </button>
-              <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-sky-600 border border-slate-200/80 shrink-0">
-                <Globe className="h-4 w-4" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
-                    {title}
-                  </h3>
-                  <span className="hidden md:inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-700">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    ACTIVE VHOST
-                  </span>
+            <div className="flex flex-col gap-3">
+              {/* Top Bar: Back Button, Title & Active Domain Context */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <button
+                  type="button"
+                  onClick={handleGoBack}
+                  className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-sky-600 transition-colors cursor-pointer shrink-0 shadow-2xs active:scale-95"
+                  title="Kembali ke halaman sebelumnya"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5 text-sky-600" />
+                  <span>Kembali</span>
+                </button>
+                <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 text-sky-600 border border-slate-200/80 shrink-0">
+                  <Globe className="h-4 w-4" />
                 </div>
-                <p className="text-[11px] text-slate-500 truncate">
-                  Konteks Virtual Host: <strong className="font-mono text-slate-800 font-semibold">{selectedAccount.primaryDomain}</strong>
-                </p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                      {title}
+                    </h3>
+                    <span className="hidden md:inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      ACTIVE VHOST
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 truncate">
+                    Konteks Virtual Host: <strong className="font-mono text-slate-800 font-semibold">{activeAcc.primaryDomain}</strong>
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Second Row: Domain Dropdown (Full width on Android/Mobile) & Action Buttons */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 w-full">
-              {currentUser.role !== 'customer' && accessibleAccounts.length > 0 && (
-                <div className="flex items-center gap-2 w-full sm:w-auto sm:max-w-md min-w-0">
-                  <label htmlFor="active-vhost-selector" className="text-xs font-bold text-slate-700 shrink-0 flex items-center gap-1.5">
-                    <Globe className="h-3.5 w-3.5 text-sky-600" />
-                    <span className="sm:hidden">Akun:</span>
-                    <span className="hidden sm:inline">Pilih Akun Hosting:</span>
-                  </label>
-                  <div className="relative flex-1 min-w-0">
-                    <select
-                      id="active-vhost-selector"
-                      value={selectedAccount.id}
-                      onChange={(e) => {
-                        const acc = accessibleAccounts.find(a => a.id === e.target.value);
-                        if (acc) setActiveAccount(acc);
-                      }}
-                      className="w-full appearance-none rounded-xl border border-slate-300 bg-white pl-3 pr-8 py-2 font-mono text-xs font-bold text-slate-900 shadow-2xs focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden cursor-pointer"
-                    >
-                      {accessibleAccounts.map(acc => {
-                        const accSubs = db.getDomains(acc.id).filter(d => d.type === 'subdomain');
-                        return (
-                          <option key={acc.id} value={acc.id}>
-                            {acc.primaryDomain} ({acc.username}){accSubs.length > 0 ? ` • ${accSubs.length} Subdomain` : ''}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
-                      <ChevronDown className="h-3.5 w-3.5 text-sky-600" />
+              {/* Second Row: Domain Dropdown (Full width on Android/Mobile) & Action Buttons */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 w-full">
+                {currentUser.role !== 'customer' && accessibleAccounts.length > 0 && (
+                  <div className="flex items-center gap-2 w-full sm:w-auto sm:max-w-md min-w-0">
+                    <label htmlFor="active-vhost-selector" className="text-xs font-bold text-slate-700 shrink-0 flex items-center gap-1.5">
+                      <Globe className="h-3.5 w-3.5 text-sky-600" />
+                      <span className="sm:hidden">Akun:</span>
+                      <span className="hidden sm:inline">Pilih Akun Hosting:</span>
+                    </label>
+                    <div className="relative flex-1 min-w-0">
+                      <select
+                        id="active-vhost-selector"
+                        value={activeAcc.id}
+                        onChange={(e) => {
+                          const acc = accessibleAccounts.find(a => a.id === e.target.value);
+                          if (acc) setActiveAccount(acc);
+                        }}
+                        className="w-full appearance-none rounded-xl border border-slate-300 bg-white pl-3 pr-8 py-2 font-mono text-xs font-bold text-slate-900 shadow-2xs focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden cursor-pointer"
+                      >
+                        {accessibleAccounts.map(acc => {
+                          const accSubs = db.getDomains(acc.id).filter(d => d.type === 'subdomain');
+                          return (
+                            <option key={acc.id} value={acc.id}>
+                              {acc.primaryDomain} ({acc.username}){accSubs.length > 0 ? ` • ${accSubs.length} Subdomain` : ''}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
+                        <ChevronDown className="h-3.5 w-3.5 text-sky-600" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Action Buttons: 2-column full-width grid on mobile, inline flex on desktop */}
-              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0">
-                <button
-                  onClick={() => setIsWebsitePreviewOpen(true)}
-                  className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50/50 hover:text-sky-700 shadow-2xs cursor-pointer transition-colors active:scale-95"
-                  title="Lihat Hasil Kloning / Live Preview Website"
-                >
-                  <ExternalLink className="h-3.5 w-3.5 text-sky-600" />
-                  <span>Preview Web</span>
-                </button>
-                {currentUser.role !== 'customer' && (
-                  <button
-                    onClick={() => setIsCreateAccountOpen(true)}
-                    className="flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-sky-500 shadow-2xs cursor-pointer transition-colors active:scale-95"
-                  >
-                    <PlusCircle className="h-3.5 w-3.5" />
-                    <span>Provisi Akun</span>
-                  </button>
                 )}
-              </div>
-            </div>
-          </div>
 
-          {/* 4-Column Elegant Virtual Host Context Grid with 360° Perimeter Rings */}
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 border-t border-slate-100 pt-3">
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Domain Utama
-              </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-sky-700 truncate">
-                {selectedAccount.primaryDomain}
-              </div>
-            </div>
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Username Sistem
-              </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
-                {selectedAccount.username}
-              </div>
-            </div>
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Engine Runtime
-              </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
-                PHP {selectedAccount.phpVersion}{' '}
-                {selectedAccount.phpExtensions?.includes('ioncube') ? '· ionCube' : ''}
+                {/* Action Buttons: 2-column full-width grid on mobile, inline flex on desktop */}
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto shrink-0">
+                  <button
+                    onClick={() => setIsWebsitePreviewOpen(true)}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50/50 hover:text-sky-700 shadow-2xs cursor-pointer transition-colors active:scale-95"
+                    title="Lihat Hasil Kloning / Live Preview Website"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 text-sky-600" />
+                    <span>Preview Web</span>
+                  </button>
+                  {currentUser.role !== 'customer' && (
+                    <button
+                      onClick={() => setIsCreateAccountOpen(true)}
+                      className="flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-sky-500 shadow-2xs cursor-pointer transition-colors active:scale-95"
+                    >
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span>Provisi Akun</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="exec-tile-ring rounded-xl px-3 py-2">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Server &amp; IP
+
+            {/* 4-Column Elegant Virtual Host Context Grid with 360° Perimeter Rings */}
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 border-t border-slate-100 pt-3">
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Domain Utama
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-sky-700 truncate">
+                  {activeAcc.primaryDomain}
+                </div>
               </div>
-              <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
-                {selectedAccount.ipAddress}
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Username Sistem
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
+                  {activeAcc.username}
+                </div>
+              </div>
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Engine Runtime
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
+                  PHP {activeAcc.phpVersion}{' '}
+                  {activeAcc.phpExtensions?.includes('ioncube') ? '· ionCube' : ''}
+                </div>
+              </div>
+              <div className="exec-tile-ring rounded-xl px-3 py-2">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Server &amp; IP
+                </div>
+                <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 truncate">
+                  {activeAcc.ipAddress}
+                </div>
               </div>
             </div>
-          </div>
           </div>
         </div>
 
-        {/* Child Tool Component keyed by selectedAccount.id for strict multi-tenant isolation */}
-        <div key={selectedAccount.id} className="exec-module-surface min-w-0 w-full">
-          {component}
+        {/* Child Tool Component wrapped in ModuleErrorBoundary */}
+        <div key={activeAcc.id} className="exec-module-surface min-w-0 w-full">
+          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
+            {renderComponent(activeAcc)}
+          </ModuleErrorBoundary>
         </div>
       </div>
     );
@@ -829,83 +1082,117 @@ const AppContent: React.FC = () => {
       case 'cpanel-files':
         return renderAccountSuiteWrapper(
           'File Manager & Ekstraktor ZIP',
-          <FileManager key={`${selectedAccount?.id}-${fileManagerPath}`} account={selectedAccount!} initialPath={fileManagerPath} onBack={handleGoBack} />
+          (acc) => (
+            <FileManager
+              key={`${acc.id}-${fileManagerPath}`}
+              account={acc}
+              initialPath={fileManagerPath}
+              onBack={handleGoBack}
+            />
+          )
         );
       case 'website-cloner':
       case 'cloner':
         return renderAccountSuiteWrapper(
           'Kloning Website Otomatis (1-Click URL Cloner)',
-          <WebsiteClonerModule
-            account={selectedAccount!}
-            onOpenFileManager={(targetPath) => {
-              setFileManagerPath(targetPath);
-              setActiveTab('file-manager');
-            }}
-            onOpenPreview={(domain, docRoot) => {
-              if (docRoot) setFileManagerPath(docRoot);
-              setIsWebsitePreviewOpen(true);
-            }}
-            onNavigateTab={setActiveTab}
-          />
+          (acc) => (
+            <WebsiteClonerModule
+              account={acc}
+              onOpenFileManager={(targetPath) => {
+                setFileManagerPath(targetPath);
+                setActiveTab('file-manager');
+              }}
+              onOpenPreview={(domain, docRoot) => {
+                if (docRoot) setFileManagerPath(docRoot);
+                setIsWebsitePreviewOpen(true);
+              }}
+              onNavigateTab={setActiveTab}
+            />
+          )
         );
       case 'databases':
       case 'cpanel-database':
-        return renderAccountSuiteWrapper('MySQL Databases', <DatabaseManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('MySQL Databases', (acc) => <DatabaseManager account={acc} />);
       case 'emails':
       case 'cpanel-email':
-        return renderAccountSuiteWrapper('Email & Webmail', <EmailManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('Email & Webmail', (acc) => <EmailManager account={acc} />);
       case 'ssl':
       case 'cpanel-ssl':
-        return renderAccountSuiteWrapper('SSL & Let\'s Encrypt', <SslManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('SSL & Let\'s Encrypt', (acc) => <SslManager account={acc} />);
       case 'gateway-tunnel':
         if (currentUser.role !== 'admin') {
           return <CustomerDashboard onNavigate={setActiveTab} />;
         }
         return renderAccountSuiteWrapper(
           'Cloudflare Tunnel & IPv6 IndiHome Gateway',
-          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
+          (acc) => (
             <GatewayTunnelManager
-              account={selectedAccount!}
+              account={acc}
               onNavigateTab={setActiveTab}
               onOpenPreview={(domain, docRoot) => {
                 if (docRoot) setFileManagerPath(docRoot);
                 setIsWebsitePreviewOpen(true);
               }}
             />
-          </ModuleErrorBoundary>
+          )
         );
       case 'dns-zones':
       case 'cpanel-dns':
         return renderAccountSuiteWrapper(
           'DNS Zone Editor',
-          <DnsZoneEditor
-            account={selectedAccount!}
-            onOpenGatewayModule={() => setActiveTab('gateway-tunnel')}
-          />
+          (acc) => (
+            <DnsZoneEditor
+              account={acc}
+              onOpenGatewayModule={() => setActiveTab('gateway-tunnel')}
+            />
+          )
         );
       case 'domains':
       case 'subdomains':
       case 'cpanel-domains':
         return renderAccountSuiteWrapper(
           'Domain & Subdomain Manager',
-          <DomainSubdomainManager
-            account={selectedAccount!}
-            onOpenFileManager={(targetPath) => {
-              setFileManagerPath(targetPath);
-              setActiveTab('file-manager');
-            }}
-            onNavigateTab={(tab, domain) => {
-              if (domain) setBackupPreselectedDomain(domain);
-              setActiveTab(tab);
-            }}
-          />
+          (acc) => (
+            <DomainSubdomainManager
+              account={acc}
+              onOpenFileManager={(targetPath) => {
+                setFileManagerPath(targetPath);
+                setActiveTab('file-manager');
+              }}
+              onNavigateTab={(tab, domain) => {
+                if (domain) setBackupPreselectedDomain(domain);
+                setActiveTab(tab);
+              }}
+            />
+          )
         );
       case 'php-selector':
       case 'cpanel-php':
         return renderAccountSuiteWrapper(
           'PHP Selector & Versi',
-          <PhpConfigManager
-            account={selectedAccount!}
+          (acc) => (
+            <PhpConfigManager
+              account={acc}
+              preselectedDomain={backupPreselectedDomain}
+              onNavigateTab={(tab, domain) => {
+                if (domain) setBackupPreselectedDomain(domain);
+                setActiveTab(tab);
+              }}
+            />
+          )
+        );
+      case 'cron-jobs':
+      case 'cpanel-cron':
+        return renderAccountSuiteWrapper('Cron Jobs Otomasi', (acc) => <CronManager account={acc} />);
+      case 'backups':
+      case 'backup':
+      case 'cpanel-backup':
+        return renderSystemModuleWrapper(
+          'BACKUP SUITE',
+          'Modul Backup Website & Database (.ZIP)',
+          'Buat cadangan website terkompresi .ZIP, database MySQL terisolasi, dan unduh arsip server secara mandiri',
+          <BackupModule
+            account={safeSelectedAccount}
             preselectedDomain={backupPreselectedDomain}
             onNavigateTab={(tab, domain) => {
               if (domain) setBackupPreselectedDomain(domain);
@@ -913,24 +1200,48 @@ const AppContent: React.FC = () => {
             }}
           />
         );
-      case 'cron-jobs':
-      case 'cpanel-cron':
-        return renderAccountSuiteWrapper('Cron Jobs Otomasi', <CronManager account={selectedAccount!} />);
-      case 'backups':
-      case 'cpanel-backup':
-        return renderAccountSuiteWrapper(
-          'Backup & Restore (.ZIP)',
-          <ModuleErrorBoundary activeTab={activeTab} onResetTab={() => setActiveTab('dashboard')}>
-            <BackupManager account={selectedAccount!} preselectedDomain={backupPreselectedDomain} />
-          </ModuleErrorBoundary>
+      case 'restore':
+      case 'cpanel-restore':
+        return renderSystemModuleWrapper(
+          'RECOVERY SUITE',
+          'Modul Restore Website & Database (.ZIP)',
+          'Pulihkan website dari arsip server, berkas .ZIP komputer lokal, atau tarik otomatis dari URL remote dengan proteksi safety snapshot',
+          <RestoreModule
+            account={safeSelectedAccount}
+            preselectedDomain={backupPreselectedDomain}
+            onNavigateTab={(tab, domain) => {
+              if (domain) setBackupPreselectedDomain(domain);
+              setActiveTab(tab);
+            }}
+          />
         );
       case 'disk-usage':
-      case 'disk-cleaner':
       case 'cpanel-disk':
-        return renderAccountSuiteWrapper(
-          'Analisa Penggunaan Disk & Pembersih Sampah',
-          <DiskUsageCleanerModule
-            account={selectedAccount!}
+        return renderSystemModuleWrapper(
+          'STORAGE ANALYZER',
+          'Modul Disk Usage & Analisa Kuota',
+          'Pantau pemakaian penyimpanan riil NVMe per akun klien, document root website, folder subdomain, dan komponen file aktif',
+          <DiskUsageModule
+            account={safeSelectedAccount}
+            onOpenFileManager={(targetPath) => {
+              setFileManagerPath(targetPath);
+              setActiveTab('file-manager');
+            }}
+            onNavigateTab={(tab, domain) => {
+              if (domain) setBackupPreselectedDomain(domain);
+              setActiveTab(tab);
+            }}
+          />
+        );
+      case 'disk-cleaner':
+      case 'cpanel-cleaner':
+      case 'cleaner':
+        return renderSystemModuleWrapper(
+          'STORAGE CLEANER',
+          'Modul Disk Cleaner & Pembersih Sampah',
+          'Pembersihan aman 100% (Zero Error) untuk chunk JS/CSS usang, berkas ZIP sementara, dan crash log tanpa menyentuh uploads & database',
+          <DiskCleanerModule
+            account={safeSelectedAccount}
             onOpenFileManager={(targetPath) => {
               setFileManagerPath(targetPath);
               setActiveTab('file-manager');
@@ -943,7 +1254,7 @@ const AppContent: React.FC = () => {
         );
       case 'media-storage':
       case 'cpanel-media':
-        return renderAccountSuiteWrapper('Cloudflare R2 & Media', <MediaStorageManager account={selectedAccount!} />);
+        return renderAccountSuiteWrapper('Cloudflare R2 & Media', (acc) => <MediaStorageManager account={acc} />);
       case 'plans':
       case 'packages':
         return renderSystemModuleWrapper(
@@ -982,10 +1293,13 @@ const AppContent: React.FC = () => {
           <SecurityCenter />
         );
       case 'tailscale-mesh':
+      case 'terminal':
+      case 'ssh':
+      case 'ssh-direct':
         return renderSystemModuleWrapper(
-          'WIREGUARD MESH VPN',
-          'Tailscale Mesh VPN & Remote SSH Sync',
-          'Akses terminal SSH jarak jauh tanpa port-forwarding dan sinkronisasi GitHub otomatis',
+          'TERMINAL & MESH SSH',
+          'Tailscale Mesh VPN & Web Terminal SSH',
+          'Akses terminal SSH jarak jauh, console command line, dan sinkronisasi GitHub otomatis',
           <TailscaleMeshNode />
         );
       case 'whitelabel':
@@ -1042,7 +1356,7 @@ const AppContent: React.FC = () => {
           canGoBack={!isRootDashboard || navHistory.length > 0}
           onNavigate={setActiveTab}
         />
-        <main className="flex-1 min-w-0 w-full max-w-full overflow-x-clip bg-exec-canvas p-3 pb-24 sm:p-6 sm:pb-24 lg:py-8 lg:pl-8 lg:pr-18">
+        <main className="flex-1 min-w-0 w-full max-w-full overflow-x-clip bg-exec-canvas p-3 sm:p-6 lg:p-8">
           <div className="mx-auto max-w-7xl w-full min-w-0">
             <ModuleErrorBoundary
               activeTab={activeTab}
@@ -1057,16 +1371,7 @@ const AppContent: React.FC = () => {
         </main>
       </div>
 
-      {/* Unified Floating Glass Micro-Dock with Integrated WhatsApp Support */}
-      <FloatingGlassDock
-        activeTab={activeTab}
-        onNavigate={setActiveTab}
-        activeDomain={selectedAccount?.primaryDomain}
-        defaultPhoneNumber="6281226738883"
-      />
-
-      {/* Live System Sensor Detector & Diagnostic Inspector */}
-      <SystemSensorDetector />
+      <WhatsAppFloatingButton defaultPhoneNumber="6281226738883" />
 
       {/* Global Modals & Drawers */}
       {selectedAccount && (

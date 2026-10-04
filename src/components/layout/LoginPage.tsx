@@ -147,7 +147,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-3 sm:p-6 lg:p-10 relative overflow-hidden">
       {/* Subtle Executive Architectural Lighting & Grid */}
       <div
         className="pointer-events-none absolute inset-0 opacity-20"
@@ -160,9 +160,9 @@ export const LoginPage: React.FC = () => {
       <div className="pointer-events-none absolute -top-40 left-1/4 h-96 w-96 rounded-full bg-sky-500/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-40 right-1/4 h-96 w-96 rounded-full bg-sky-600/10 blur-3xl" />
 
-      <div className="exec-dark-ring w-full max-w-5xl relative z-10 grid grid-cols-1 lg:grid-cols-12 rounded-3xl backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden">
-        {/* ================= LEFT COLUMN: EXECUTIVE INFRASTRUCTURE SHOWCASE ================= */}
-        <div className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-slate-800/80 bg-gradient-to-b from-slate-900/90 via-slate-950/80 to-slate-950">
+      <div className="exec-dark-ring w-full max-w-md sm:max-w-xl lg:max-w-5xl relative z-10 grid grid-cols-1 lg:grid-cols-12 rounded-2xl sm:rounded-3xl backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden">
+        {/* ================= LEFT COLUMN: EXECUTIVE INFRASTRUCTURE SHOWCASE (Desktop / Large Tablet Only) ================= */}
+        <div className="hidden lg:flex lg:col-span-7 flex-col justify-between p-8 lg:p-10 border-r border-slate-800/80 bg-gradient-to-b from-slate-900/90 via-slate-950/80 to-slate-950">
           <div className="space-y-6">
             {/* Official Brand Lockup + Live SLA Indicator */}
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -196,8 +196,8 @@ export const LoginPage: React.FC = () => {
               </p>
             </div>
 
-            {/* 3 Architectural Pillars (Hidden on very small screens to keep mobile login fast, visible sm+) */}
-            <div className="hidden sm:grid grid-cols-1 gap-3 pt-1">
+            {/* 3 Architectural Pillars */}
+            <div className="grid grid-cols-1 gap-3 pt-1">
               <div className="flex items-start gap-3.5 rounded-2xl border border-slate-800/90 bg-slate-900/60 p-3.5">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-700/80 bg-slate-800/80 text-sky-400">
                   <Server className="h-4.5 w-4.5" />
@@ -252,27 +252,42 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* ================= RIGHT COLUMN: AUTHENTICATION VAULT ================= */}
-        <div className="lg:col-span-5 flex flex-col justify-between p-6 sm:p-8 lg:p-10 bg-slate-900/95">
+        {/* ================= RIGHT COLUMN: AUTHENTICATION VAULT (Streamlined for Mobile/Android & Full on Desktop) ================= */}
+        <div className="lg:col-span-5 flex flex-col justify-between p-4 sm:p-7 lg:p-10 bg-slate-900/95">
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <h2 className="text-base sm:text-lg font-extrabold text-white tracking-tight">
+            {/* Mobile Header Branding with Logo & SLA (< lg screens) */}
+            <div className="flex lg:hidden items-center justify-between gap-2 pb-3 mb-3.5 border-b border-slate-800/80">
+              <CloudProLogo
+                variant="full"
+                size="md"
+                cloudTextColor="text-white"
+                brandSuffix="Enterprise"
+                showSubtitle={false}
+              />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[9px] font-bold text-emerald-300 shrink-0">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                SLA 99.99%
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between mb-1">
+              <h2 className="text-sm sm:text-base lg:text-lg font-extrabold text-white tracking-tight">
                 Autentikasi Portal
               </h2>
               <span className="rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-sky-300">
                 {roleLabels[selectedRole].badge}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mb-5">
-              Pilih tingkat otorisasi portal dan masukkan kredensial resmi Anda.
+            <p className="text-[11px] sm:text-xs text-slate-400 mb-3.5 sm:mb-4">
+              Pilih tingkat otorisasi portal dan masukkan kredensial akun Anda.
             </p>
 
-            {/* Cohesive Monochromatic Role Selector Tabs */}
-            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800/90 mb-5 text-xs">
+            {/* Touch-Friendly Role Selector Tabs */}
+            <div className="grid grid-cols-3 gap-1 p-1 bg-slate-950 rounded-xl border border-slate-800/90 mb-3.5 sm:mb-4 text-xs">
               <button
                 type="button"
                 onClick={() => handleRoleSelect('admin')}
-                className={`py-2 px-2 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`py-2 sm:py-2.5 px-1 rounded-lg font-bold transition-all cursor-pointer text-center text-[10.5px] sm:text-xs ${
                   selectedRole === 'admin'
                     ? 'bg-sky-600 text-white shadow-xs'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/70'
@@ -283,7 +298,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleRoleSelect('reseller')}
-                className={`py-2 px-2 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`py-2 sm:py-2.5 px-1 rounded-lg font-bold transition-all cursor-pointer text-center text-[10.5px] sm:text-xs ${
                   selectedRole === 'reseller'
                     ? 'bg-sky-600 text-white shadow-xs'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/70'
@@ -294,7 +309,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleRoleSelect('customer')}
-                className={`py-2 px-2 rounded-lg font-bold transition-all cursor-pointer ${
+                className={`py-2 sm:py-2.5 px-1 rounded-lg font-bold transition-all cursor-pointer text-center text-[10.5px] sm:text-xs ${
                   selectedRole === 'customer'
                     ? 'bg-sky-600 text-white shadow-xs'
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/70'
@@ -304,10 +319,10 @@ export const LoginPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Smart Device Auto-Fill Status Banner (Shown only when device is recognized from a past login) */}
+            {/* Smart Device Auto-Fill Status Banner */}
             {isAutoFilledFromDevice && (
-              <div className="mb-4 flex items-center justify-between gap-2 rounded-xl border border-sky-500/30 bg-sky-950/40 px-3 py-2 text-[11px] text-sky-200">
-                <div className="flex items-center gap-2 min-w-0">
+              <div className="mb-3 flex items-center justify-between gap-2 rounded-xl border border-sky-500/30 bg-sky-950/40 px-3 py-1.5 sm:py-2 text-[10.5px] sm:text-[11px] text-sky-200">
+                <div className="flex items-center gap-1.5 min-w-0">
                   <Sparkles className="h-3.5 w-3.5 text-sky-400 shrink-0" />
                   <span className="truncate">
                     Perangkat dikenali &bull; Kredensial terisi otomatis
@@ -316,7 +331,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleClearDeviceMemory}
-                  className="inline-flex items-center gap-1 shrink-0 font-mono text-[10px] font-semibold text-slate-400 hover:text-rose-300 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 shrink-0 font-mono text-[9.5px] sm:text-[10px] font-semibold text-slate-400 hover:text-rose-300 transition-colors cursor-pointer"
                   title="Kosongkan kredensial yang tersimpan di perangkat ini"
                 >
                   <RotateCcw className="h-3 w-3" />
@@ -326,19 +341,19 @@ export const LoginPage: React.FC = () => {
             )}
 
             {errorMessage && (
-              <div className="mb-4 rounded-xl border border-rose-500/40 bg-rose-950/50 p-3 text-xs text-rose-200 flex items-center gap-2">
+              <div className="mb-3 rounded-xl border border-rose-500/40 bg-rose-950/50 p-2.5 sm:p-3 text-[11px] sm:text-xs text-rose-200 flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
-            <form onSubmit={handleLoginSubmit} autoComplete="on" className="space-y-4">
+            <form onSubmit={handleLoginSubmit} autoComplete="on" className="space-y-3 sm:space-y-3.5">
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold text-slate-300">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-300">
                     Username / Email Akun
                   </label>
-                  <span className="font-mono text-[10px] text-slate-500">
+                  <span className="font-mono text-[9px] sm:text-[10px] text-slate-500">
                     {roleLabels[selectedRole].title}
                   </span>
                 </div>
@@ -356,13 +371,13 @@ export const LoginPage: React.FC = () => {
                       setUsername(e.target.value);
                       if (errorMessage) setErrorMessage('');
                     }}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-950/90 pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden transition-all"
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950/90 pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">
                   Kata Sandi Keamanan
                 </label>
                 <div className="relative">
@@ -373,13 +388,13 @@ export const LoginPage: React.FC = () => {
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     autoComplete="current-password"
-                    placeholder="Masukkan kata sandi akun Anda..."
+                    placeholder="Masukkan kata sandi..."
                     value={password}
                     onChange={e => {
                       setPassword(e.target.value);
                       if (errorMessage) setErrorMessage('');
                     }}
-                    className="w-full rounded-xl border border-slate-800 bg-slate-950/90 pl-10 pr-10 py-2.5 text-xs text-white placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden transition-all"
+                    className="w-full rounded-xl border border-slate-800 bg-slate-950/90 pl-10 pr-10 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-hidden transition-all"
                   />
                   <button
                     type="button"
@@ -394,7 +409,7 @@ export const LoginPage: React.FC = () => {
 
               {/* Device Auto-Fill Toggle */}
               <div className="flex items-center justify-between pt-0.5">
-                <label className="inline-flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer select-none">
+                <label className="inline-flex items-center gap-2 text-[10.5px] sm:text-[11px] text-slate-400 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={rememberDevice}
@@ -407,34 +422,30 @@ export const LoginPage: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-500 py-3 text-xs font-bold text-white shadow-lg shadow-sky-600/20 transition-all cursor-pointer active:scale-[0.99]"
+                className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-500 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white shadow-lg shadow-sky-600/20 transition-all cursor-pointer active:scale-[0.99]"
               >
                 <span>
-                  Masuk ke Portal{' '}
+                  Masuk Portal{' '}
                   {selectedRole === 'admin'
                     ? 'Root Admin'
                     : selectedRole === 'reseller'
                     ? 'Reseller'
-                    : 'Klien cPanel'}
+                    : 'cPanel Klien'}
                 </span>
                 <ArrowRight className="h-4 w-4" />
               </button>
             </form>
           </div>
 
-          <div className="mt-6 space-y-3">
-            <div className="rounded-xl border border-slate-800/90 bg-slate-950/70 p-3 text-[11px] text-slate-400 flex items-start gap-2.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span>
-                Sesi login dienkripsi penuh. Setelah berhasil masuk satu kali, perangkat ini akan
-                mengenali akun Anda secara otomatis pada kunjungan berikutnya.
-              </span>
+          <div className="mt-4 sm:mt-5 space-y-2 text-center">
+            <div className="rounded-xl border border-slate-800/90 bg-slate-950/70 p-2 sm:p-2.5 text-[10px] sm:text-[10.5px] text-slate-400 flex items-center justify-center gap-2">
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+              <span>Sesi login aman &bull; Perangkat akan mengenali akun Anda</span>
             </div>
 
-            <div className="text-center text-[11px] text-slate-500">
+            <div className="text-[10px] sm:text-[11px] text-slate-500">
               &copy; {new Date().getFullYear()}{' '}
-              <strong className="text-slate-300 font-semibold">Cloud PRO Enterprise</strong>. Seluruh
-              hak cipta dilindungi.
+              <strong className="text-slate-300 font-semibold">Cloud PRO Enterprise</strong>. Seluruh hak cipta dilindungi.
             </div>
           </div>
         </div>

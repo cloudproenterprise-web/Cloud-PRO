@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Menu,
   Bell,
@@ -21,10 +21,12 @@ import {
   LogOut,
   ArrowLeft,
   Home,
+  GitBranch,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useServer } from '../../context/ServerContext';
 import { CloudProLogo } from '../common/CloudProLogo';
+import { GitCommitVerifierModal } from '../common/GitCommitVerifierModal';
 
 interface TopBarProps {
   onToggleSidebar: () => void;
@@ -51,8 +53,29 @@ export const TopBar: React.FC<TopBarProps> = ({
   if (!currentUser) return null;
 
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showCommitModal, setShowCommitModal] = useState(false);
+  const [commitHash, setCommitHash] = useState<string>('2770df5');
+  const [isCommitUpToDate, setIsCommitUpToDate] = useState<boolean>(true);
+
+  React.useEffect(() => {
+    fetch('/api/system/git-commit-info')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.ok && data.local?.shortHash) {
+          setCommitHash(data.local.shortHash);
+          setIsCommitUpToDate(!!data.isUpToDate);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const unreadNotifsCount = notifications.filter(n => !n.isRead).length;
+
+  useEffect(() => {
+    const handleOpenCommit = () => setShowCommitModal(true);
+    window.addEventListener('open-git-commit-modal', handleOpenCommit);
+    return () => window.removeEventListener('open-git-commit-modal', handleOpenCommit);
+  }, []);
 
   const breadcrumbInfo = () => {
     switch (currentTab) {
@@ -126,8 +149,19 @@ export const TopBar: React.FC<TopBarProps> = ({
       case 'cpanel-cron':
         return { title: 'Cron Jobs Scheduler', category: 'cPanel' };
       case 'backups':
+      case 'backup':
       case 'cpanel-backup':
-        return { title: 'Backup & 1-Click Restore', category: 'cPanel' };
+        return { title: 'Backup Website & Database (.ZIP)', category: 'Backup & Recovery' };
+      case 'restore':
+      case 'cpanel-restore':
+        return { title: 'Restore Website & Database (.ZIP)', category: 'Backup & Recovery' };
+      case 'disk-usage':
+      case 'cpanel-disk':
+        return { title: 'Analisa Penggunaan Disk', category: 'Penyimpanan' };
+      case 'disk-cleaner':
+      case 'cpanel-cleaner':
+      case 'cleaner':
+        return { title: 'Pembersih File Sampah (Disk Cleaner)', category: 'Penyimpanan' };
       default:
         return { title: 'Management Console', category: 'Cloud PRO' };
     }
@@ -178,9 +212,9 @@ export const TopBar: React.FC<TopBarProps> = ({
             </button>
 
             {/* Desktop Breadcrumb Separator & Title with Sub-Label */}
-            <div className="hidden md:flex flex-col justify-center border-l border-slate-200 pl-3.5 dark:border-slate-700 leading-tight">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
+            <div className="hidden md:flex flex-col justify-center border-l border-slate-200 pl-3.5 dark:border-slate-700 leading-tight min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white truncate">
                   {currentInfo.title}
                 </span>
               </div>
@@ -193,8 +227,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   {currentInfo.category}
                 </button>
                 <span className="text-slate-300 dark:text-slate-600">&bull;</span>
-                <span className="font-mono text-slate-500 dark:text-slate-400">
-                  Node: {primaryServer?.hostname || 'denbaguse.my.id'}
+                <span className="font-mono text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                  {currentUser.role === 'admin' ? `Node: ${primaryServer?.hostname || 'denbaguse.my.id'}` : 'Cluster: Cloud PRO Edge'}
                 </span>
               </div>
             </div>
@@ -220,6 +254,20 @@ export const TopBar: React.FC<TopBarProps> = ({
 
         {/* Right Zone: Quick Action Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {/* Git Commit Status Button: KHUSUS DESKTOP (hidden di Android/Mobile agar tidak menutupi judul header) */}
+          <button
+            onClick={() => setShowCommitModal(true)}
+            title="Status Kommit GitHub & Verifikasi Integritas Versi Server"
+            className="hidden md:flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-mono font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition-colors shadow-2xs cursor-pointer"
+          >
+            <GitBranch className={`h-3.5 w-3.5 ${isCommitUpToDate ? 'text-emerald-500' : 'text-amber-500'}`} />
+            <span className="hidden sm:inline text-[11px] text-slate-400">commit:</span>
+            <span className={`text-[11px] font-bold ${isCommitUpToDate ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+              {commitHash}
+            </span>
+            <span className={`flex h-1.5 w-1.5 rounded-full ${isCommitUpToDate ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`} />
+          </button>
+
           {/* Reset Default Data Button (Desktop only) */}
           <button
             onClick={resetDatabase}
@@ -295,7 +343,13 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </div>
 
                 <div className="mt-2 space-y-1">
-                  {allUsers.map(user => (
+                  {allUsers
+                    .filter(user => {
+                      if (currentUser.role === 'admin') return true;
+                      // Non-admins (resellers & customers) must NEVER see Root Administrator account
+                      return user.role !== 'admin' && (user.id === currentUser.id || user.role === 'customer');
+                    })
+                    .map(user => (
                     <button
                       key={user.id}
                       onClick={() => {
@@ -330,18 +384,25 @@ export const TopBar: React.FC<TopBarProps> = ({
                 </div>
 
                 <div className="mt-2 border-t border-slate-100 pt-2 dark:border-slate-800 space-y-1">
-                  {currentUser.role !== 'admin' && (
-                    <button
-                      onClick={() => {
-                        switchRole('admin');
-                        setShowUserDropdown(false);
-                      }}
-                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-sky-600 hover:bg-sky-100 dark:bg-slate-800 dark:text-sky-400 dark:hover:bg-slate-700 transition-colors"
-                    >
-                      <UserCheck className="h-4 w-4" />
-                      <span>Kembali ke Root Administrator</span>
-                    </button>
-                  )}
+                  {/* Git Commit Status Button for Mobile / Android */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowUserDropdown(false);
+                      setShowCommitModal(true);
+                    }}
+                    className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer border border-slate-100"
+                  >
+                    <div className="flex items-center gap-2">
+                      <GitBranch className={`h-4 w-4 ${isCommitUpToDate ? 'text-emerald-500' : 'text-amber-500'}`} />
+                      <div>
+                        <div className="font-semibold text-slate-800">Status Versi Server (Git)</div>
+                        <div className="text-[10px] text-slate-400 font-mono">Commit: {commitHash}</div>
+                      </div>
+                    </div>
+                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  </button>
+
                   <button
                     onClick={() => {
                       setShowUserDropdown(false);
@@ -391,6 +452,13 @@ export const TopBar: React.FC<TopBarProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Git Commit & Update Verification Modal */}
+      <GitCommitVerifierModal
+        isOpen={showCommitModal}
+        onClose={() => setShowCommitModal(false)}
+        onOpenTerminal={() => onNavigate?.('terminal')}
+      />
     </div>
   );
 };

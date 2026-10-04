@@ -70,9 +70,12 @@ export const HostingAccountList: React.FC<HostingAccountListProps> = ({
     return acc.customerId === currentUser.id;
   };
 
-  // Auto-seed and keep Reseller's own primary domain account in sync with Reseller Profile & User
+  const hasSyncedOwnAccountRef = React.useRef(false);
+
+  // Auto-seed and keep Reseller's own primary domain account in sync with Reseller Profile & User (runs once)
   useEffect(() => {
-    if (currentUser.role === 'reseller') {
+    if (currentUser.role === 'reseller' && !hasSyncedOwnAccountRef.current) {
+      hasSyncedOwnAccountRef.current = true;
       const existingOwn = accounts.find(
         a =>
           a.id === `acc-own-${currentUser.id}` ||
@@ -130,7 +133,6 @@ export const HostingAccountList: React.FC<HostingAccountListProps> = ({
           createdAt: new Date().toISOString(),
         };
         db.saveHostingAccount(ownResellerAcc);
-        refreshAll();
       } else if (
         existingOwn.primaryDomain.toLowerCase() !== resellerBrandDomain ||
         existingOwn.customerName !== expectedCustomerName ||
@@ -143,7 +145,6 @@ export const HostingAccountList: React.FC<HostingAccountListProps> = ({
           customerName: expectedCustomerName,
           customerEmail: currentUser.email,
         });
-        refreshAll();
       }
     }
   }, [
@@ -226,14 +227,24 @@ export const HostingAccountList: React.FC<HostingAccountListProps> = ({
 
   // Scope accounts by role
   const roleScopedAccounts = accounts.filter(acc => {
+    if (currentUser.role === 'admin') return true;
     if (currentUser.role === 'reseller') {
       return (
         acc.resellerId === currentUser.id &&
         acc.id !== 'acc-rdm-01' &&
-        acc.primaryDomain.toLowerCase() !== 'denbaguse.my.id'
+        acc.primaryDomain.toLowerCase() !== 'denbaguse.my.id' &&
+        acc.customerId !== 'usr-admin-01'
       );
     }
-    return true;
+    // Customer
+    return (
+      (acc.customerId === currentUser.id ||
+        acc.username === currentUser.username ||
+        acc.customerEmail === currentUser.email) &&
+      acc.id !== 'acc-rdm-01' &&
+      acc.primaryDomain.toLowerCase() !== 'denbaguse.my.id' &&
+      acc.customerId !== 'usr-admin-01'
+    );
   });
 
   // Apply search & status filter

@@ -59,8 +59,10 @@ export const PrivateNameserverManager: React.FC = () => {
   const [domain, setDomain] = useState(selectedConfig.domain);
   const [ns1Host, setNs1Host] = useState(selectedConfig.ns1Host);
   const [ns1Ip, setNs1Ip] = useState(selectedConfig.ns1Ip);
+  const [ns1Ipv6, setNs1Ipv6] = useState(selectedConfig.ns1Ipv6 || '');
   const [ns2Host, setNs2Host] = useState(selectedConfig.ns2Host);
   const [ns2Ip, setNs2Ip] = useState(selectedConfig.ns2Ip);
+  const [ns2Ipv6, setNs2Ipv6] = useState(selectedConfig.ns2Ipv6 || '');
   const [soaEmail, setSoaEmail] = useState(selectedConfig.soaEmail);
   const [defaultTtl, setDefaultTtl] = useState(selectedConfig.defaultTtl || 3600);
   const [dnssecEnabled, setDnssecEnabled] = useState(selectedConfig.dnssecEnabled);
@@ -85,8 +87,10 @@ export const PrivateNameserverManager: React.FC = () => {
     setDomain(cfg.domain);
     setNs1Host(cfg.ns1Host);
     setNs1Ip(cfg.ns1Ip);
+    setNs1Ipv6(cfg.ns1Ipv6 || '');
     setNs2Host(cfg.ns2Host);
     setNs2Ip(cfg.ns2Ip);
+    setNs2Ipv6(cfg.ns2Ipv6 || '');
     setSoaEmail(cfg.soaEmail);
     setDefaultTtl(cfg.defaultTtl || 3600);
     setDnssecEnabled(cfg.dnssecEnabled);
@@ -120,8 +124,10 @@ export const PrivateNameserverManager: React.FC = () => {
       domain: domain.trim(),
       ns1Host: ns1Host.trim(),
       ns1Ip: ns1Ip.trim(),
+      ns1Ipv6: ns1Ipv6.trim() || undefined,
       ns2Host: ns2Host.trim(),
       ns2Ip: ns2Ip.trim(),
+      ns2Ipv6: ns2Ipv6.trim() || undefined,
       soaEmail: soaEmail.trim(),
       defaultTtl: Number(defaultTtl),
       dnssecEnabled,
@@ -224,6 +230,49 @@ export const PrivateNameserverManager: React.FC = () => {
         </div>
       </div>
 
+      {/* IndiHome & Local Server IPv6 DDNS Architecture Guide */}
+      <div className="rounded-2xl border border-sky-200 bg-sky-50/80 p-5 dark:border-sky-900/60 dark:bg-sky-950/20 text-xs">
+        <div className="flex items-start gap-3">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-600 text-white font-bold text-xs">
+            <Info className="h-4 w-4" />
+          </div>
+          <div className="space-y-2 flex-1">
+            <h4 className="font-bold uppercase tracking-wider text-sky-900 dark:text-sky-200">
+              Integrasi Server Lokal / IndiHome IPv6 DDNS &amp; Nameserver Klien
+            </h4>
+            <div className="text-slate-700 dark:text-slate-300 leading-relaxed space-y-1.5">
+              <p>
+                <strong>Apakah nameserver klien bisa menggunakan domain Cloud PRO atau domain sendiri?</strong><br />
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold">&bull; YA, BISA MENGGUNAKAN DOMAIN APA SAJA:</span> Anda bebas menggunakan domain server utama Anda (contoh: <code className="bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-300">ns1.{domain}</code> &amp; <code className="bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-300">ns2.{domain}</code>), domain resmi Cloud PRO (<code className="bg-white dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-[11px] font-semibold text-sky-700 dark:text-sky-300">ns1.cloudpro.id</code>), maupun domain brand reseller Anda.
+              </p>
+              <p>
+                <strong>Karakteristik Jaringan IndiHome:</strong> Jaringan IndiHome menerapkan <em>CGNAT</em> pada IPv4 (IP privat), namun memberikan <strong>IP Publik Asli IPv6 (/64)</strong> yang bisa diakses langsung dari internet global. Agar seluruh pengunjung website klien (baik pengguna wifi/seluler IPv4 maupun IPv6) dapat membuka website tanpa terkendala, Cloud PRO mendukung 2 metode:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                <div className="rounded-xl border border-sky-200 bg-white/90 p-3 dark:border-sky-900 dark:bg-slate-900/90">
+                  <div className="font-bold text-sky-950 dark:text-sky-200 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Metode 1: Cloudflare Dual-Stack (Direkomendasikan)</span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400">
+                    Domain nameserver dipasang di Cloudflare dengan Proxy AAAA IPv6 aktif. Cloudflare otomatis menyediakan jembatan IPv4 + IPv6 global ke server lokal Anda.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-sky-200 bg-white/90 p-3 dark:border-sky-900 dark:bg-slate-900/90">
+                  <div className="font-bold text-sky-950 dark:text-sky-200 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    <span>Metode 2: Cloudflare Zero Trust Tunnel</span>
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400">
+                    Aktifkan modul <code className="font-mono text-[10px]">cloudflared</code> bawaan Cloud PRO. Semua domain &amp; subdomain klien langsung tembus tanpa perlu IP Publik statis dan tanpa setting port-forwarding modem.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Guide Step-by-Step for Glue Records */}
       <div className="rounded-2xl border border-teal-100 bg-teal-50/60 p-5 dark:border-teal-950 dark:bg-teal-950/20">
         <div className="flex items-start gap-3">
@@ -239,36 +288,52 @@ export const PrivateNameserverManager: React.FC = () => {
             </p>
 
             <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
-              <div className="flex items-center justify-between rounded-xl border border-teal-200 bg-white p-3 dark:border-teal-800 dark:bg-slate-900">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase text-slate-400">Primary Nameserver (NS1)</div>
-                  <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                    {ns1Host} &rarr; <span className="text-teal-600 dark:text-teal-400">{ns1Ip}</span>
+              <div className="flex flex-col justify-between gap-2 rounded-xl border border-teal-200 bg-white p-3 dark:border-teal-800 dark:bg-slate-900">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-[10px] font-semibold uppercase text-slate-400">Primary Nameserver (NS1)</div>
+                    <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                      {ns1Host}
+                    </div>
                   </div>
+                  <button
+                    onClick={() => handleCopy(`${ns1Host} ${ns1Ip}${ns1Ipv6 ? ` ${ns1Ipv6}` : ''}`, 'ns1')}
+                    className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                    title="Salin Glue Record NS1"
+                  >
+                    {copiedKey === 'ns1' ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleCopy(`${ns1Host} ${ns1Ip}`, 'ns1')}
-                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  title="Salin Glue Record NS1"
-                >
-                  {copiedKey === 'ns1' ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-                </button>
+                <div className="space-y-0.5 font-mono text-[11px] border-t border-slate-100 pt-1.5 dark:border-slate-800">
+                  <div className="text-teal-600 dark:text-teal-400">IPv4 (A): <strong>{ns1Ip}</strong></div>
+                  {ns1Ipv6 && (
+                    <div className="text-sky-600 dark:text-sky-400 truncate">IPv6 (AAAA): <strong>{ns1Ipv6}</strong></div>
+                  )}
+                </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-teal-200 bg-white p-3 dark:border-teal-800 dark:bg-slate-900">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase text-slate-400">Secondary Nameserver (NS2)</div>
-                  <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                    {ns2Host} &rarr; <span className="text-teal-600 dark:text-teal-400">{ns2Ip}</span>
+              <div className="flex flex-col justify-between gap-2 rounded-xl border border-teal-200 bg-white p-3 dark:border-teal-800 dark:bg-slate-900">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-[10px] font-semibold uppercase text-slate-400">Secondary Nameserver (NS2)</div>
+                    <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                      {ns2Host}
+                    </div>
                   </div>
+                  <button
+                    onClick={() => handleCopy(`${ns2Host} ${ns2Ip}${ns2Ipv6 ? ` ${ns2Ipv6}` : ''}`, 'ns2')}
+                    className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                    title="Salin Glue Record NS2"
+                  >
+                    {copiedKey === 'ns2' ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                  </button>
                 </div>
-                <button
-                  onClick={() => handleCopy(`${ns2Host} ${ns2Ip}`, 'ns2')}
-                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  title="Salin Glue Record NS2"
-                >
-                  {copiedKey === 'ns2' ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-                </button>
+                <div className="space-y-0.5 font-mono text-[11px] border-t border-slate-100 pt-1.5 dark:border-slate-800">
+                  <div className="text-teal-600 dark:text-teal-400">IPv4 (A): <strong>{ns2Ip}</strong></div>
+                  {ns2Ipv6 && (
+                    <div className="text-sky-600 dark:text-sky-400 truncate">IPv6 (AAAA): <strong>{ns2Ipv6}</strong></div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -346,7 +411,7 @@ export const PrivateNameserverManager: React.FC = () => {
 
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300">
-                  IP Target NS1 (A Record Glue):
+                  IP Target NS1 (A Record Glue - IPv4):
                 </label>
                 <div className="mt-1 flex gap-2">
                   <input
@@ -368,6 +433,19 @@ export const PrivateNameserverManager: React.FC = () => {
                   )}
                 </div>
               </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                  IPv6 Target NS1 (AAAA Record Glue - Opsional):
+                </label>
+                <input
+                  type="text"
+                  value={ns1Ipv6}
+                  onChange={e => setNs1Ipv6(e.target.value)}
+                  placeholder="2001:db8::1 (Contoh IPv6 IndiHome / Server)"
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -385,7 +463,7 @@ export const PrivateNameserverManager: React.FC = () => {
 
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300">
-                  IP Target NS2 (A Record Glue):
+                  IP Target NS2 (A Record Glue - IPv4):
                 </label>
                 <div className="mt-1 flex gap-2">
                   <input
@@ -415,6 +493,19 @@ export const PrivateNameserverManager: React.FC = () => {
                     </button>
                   )}
                 </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300">
+                  IPv6 Target NS2 (AAAA Record Glue - Opsional):
+                </label>
+                <input
+                  type="text"
+                  value={ns2Ipv6}
+                  onChange={e => setNs2Ipv6(e.target.value)}
+                  placeholder="2001:db8::2 (Contoh IPv6 IndiHome / Server)"
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
               </div>
             </div>
           </div>

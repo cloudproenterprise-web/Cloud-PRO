@@ -1,0 +1,129 @@
+========================================================================
+PANDUAN LENGKAP CARA PASANG SIAKAD MADRASAH DI HOSTING PLESK / CPANEL (MYSQL)
+========================================================================
+
+Aplikasi Si@Kad Madrasah ini sudah dikompilasi menjadi paket Siap Pakai (Static Build)
+yang terhubung langsung ke Database MySQL/MariaDB bawaan hosting Anda!
+
+Anda TIDAK PERLU menginstall Node.js, npm, atau menjalankan 'npm install' di hosting!
+
+------------------------------------------------------------------------
+1. CARA INSTALL FILE WEB DI HOSTING PLESK / CPANEL
+------------------------------------------------------------------------
+1. Login ke Panel Hosting Anda (Plesk Panel / cPanel / DirectAdmin).
+2. Buka menu "File Manager".
+3. Masuk ke folder root domain Anda:
+   - Jika di Plesk: masuk ke folder `httpdocs`
+   - Jika di cPanel: masuk ke folder `public_html`
+4. Hapus file bawaan hosting jika ada (seperti index.html atau default.html bawaan).
+5. Upload file `siakadmadrasah-plesk-ready.zip` ke dalam folder tersebut.
+6. Klik kanan / pilih file zip tersebut, lalu pilih "Extract" / "Unpack".
+   PENTING: Jangan ekstrak ke dalam subfolder baru! Pastikan seluruh file terurai
+   langsung di dalam folder `httpdocs` (bukan di dalam httpdocs/siakadmadrasah-plesk-ready/).
+7. Pastikan seluruh file terurai langsung di dalam folder `httpdocs` / `public_html`
+   (termasuk file `.htaccess`, `index.php`, `index.html`, `api.php`, `db_config.php`, `config.js`, dan folder `assets/`).
+
+------------------------------------------------------------------------
+2. CARA MENGATASI ERROR 403 FORBIDDEN DI PLESK (PENTING!)
+------------------------------------------------------------------------
+Jika Anda membuka website di Plesk dan muncul "403 Forbidden":
+
+A. PENYEBAB UTAMA: File Terekstrak di Dalam Sub-Folder (Bukan di Root httpdocs)
+   - Buka File Manager di Plesk, masuk ke `httpdocs`.
+   - Cek apakah file berada di dalam subfolder seperti `siakadmadrasah-plesk-ready/`?
+   - Jika ya: Masuk ke subfolder tersebut, klik tombol "Select All", pilih tombol "Move" (Pindahkan),
+     dan pindahkan semua file ke `/httpdocs`.
+   - Pastikan file `index.php`, `index.html`, `.htaccess`, dan folder `assets` berada
+     persis di dalam `httpdocs/`.
+
+B. PERIKSA PERMISSION FILE & FOLDER (CHMOD)
+   - Folder harus memiliki permission 755 (rwxr-xr-x).
+   - File harus memiliki permission 644 (rw-r--r--).
+   - Di File Manager Plesk: Pilih semua file & folder -> klik "Change Permissions" (Ubah Izin).
+   - Atau gunakan tombol "Check Permissions" / "Restore Default Permissions" di Plesk.
+
+C. PERIKSA DOCUMENT ROOT DI HOSTING SETTINGS PLESK
+   - Di menu Plesk: Masuk ke "Websites & Domains" -> klik "Hosting Settings".
+   - Periksa kolom "Document root": Pastikan bernilai `httpdocs` (bukan folder lain).
+
+D. PASTIKAN PHP AKTIF DI PLESK
+   - Di menu Plesk: Masuk ke "Websites & Domains" -> klik "PHP Settings".
+   - Pastikan opsi "PHP support" tercentang AKTIF.
+   - Pilih versi PHP: PHP 8.1, 8.2, atau 8.3 (dengan handler FPM application served by Apache / Nginx).
+
+E. FILE .HTACCESS SUDAH DILENGKAPI IZIN APACHE 2.4
+   - File `.htaccess` terbaru sudah dilengkapi dengan `Require all granted` dan `Options -Indexes`
+     sehingga kompatibel penuh dengan standar keamanan Apache 2.4 di Plesk Obsidian.
+
+------------------------------------------------------------------------
+3. CARA MENGHUBUNGKAN DATABASE MYSQL / MARIADB HOSTING & MELIHAT PORT
+------------------------------------------------------------------------
+1. Di Panel Hosting (Plesk/cPanel), buka menu "Databases" -> "Add Database".
+2. Buat database baru, contoh nama: `siakad_madrasah`.
+3. Buat User Database & Password untuk database tersebut.
+4. Buka menu "phpMyAdmin", pilih database `siakad_madrasah` yang baru dibuat.
+5. Klik tab "Import", upload file `database-mysql.sql` (yang ada dalam zip ini) lalu klik "Kirim" / "Go".
+6. LOKASI PORT MYSQL DI HOSTING PLESK / CPANEL:
+   - Port standar MySQL / MariaDB pada semua server hosting (termasuk Plesk & cPanel) adalah **3306**.
+   - Di Plesk: Anda dapat melihat Host & Port pada halaman "Databases" -> Informasi koneksi database (tercantum `localhost` atau IP server dan port `3306`).
+   - Jika PHP berjalan di server yang sama dengan database (sebagian besar hosting Plesk), Anda cukup memakai Host: `localhost` dan Port: `3306`.
+7. Buka File Manager hosting Anda, edit file `db_config.php` dan masukkan rincian database Anda:
+
+   <?php
+   define('DB_HOST', 'localhost');
+   define('DB_NAME', 'jaenal_siakadmadrasah');
+   define('DB_USER', 'jaenal_siakadmadrah');
+   define('DB_PASS', 'masbagus15');
+
+8. Untuk Menguji Koneksi:
+   - Masuk ke Admin Si@Kad -> menu **Konfigurasi API & Database MySQL**.
+   - Masukkan Host, Port (3306), Database, Username, dan Password, lalu klik tombol **"Tes Koneksi MySQL"**.
+9. Selesai! Aplikasi Si@Kad Madrasah kini terhubung ke MySQL hosting Anda sendiri.
+
+------------------------------------------------------------------------
+3. TIPS OPTIMASI SUPAYA AKSES DI HOSTING SANGAT CEPAT & TANGKAS
+------------------------------------------------------------------------
+- File `.htaccess` bawaan paket ini sudah dikonfigurasi dengan:
+  * Gzip Compression (Mengecilkan ukuran file JS & CSS otomatis hingga 70%)
+  * Browser Caching (Menyimpan asset di browser pengunjung agar saat buka halaman berikutnya instan)
+  * SPA URL Rewrite (Supaya halaman /login, /admin, dll dapat diakses langsung tanpa error 404)
+  * Keep-Alive & Security Headers
+
+- Pengaturan di Plesk (Opsional untuk kecepatan maksimal):
+  1. Buka Plesk -> "Apache & Nginx Settings".
+  2. Centang "Smart static files processing".
+  3. Centang "Serve static files directly by Nginx" (jika Nginx tersedia).
+  4. Aktifkan HTTPS/SSL melalui menu "SSL/TLS Certificates" -> Let's Encrypt.
+
+------------------------------------------------------------------------
+4. UPDATE / TIMPA ZIP TANPA MENGHAPUS DATA (SAFE OVERWRITE PROTECTION)
+------------------------------------------------------------------------
+Paket ini telah dilengkapi mekanisme Perlindungan Timpa ZIP Otomatis:
+- Kredensial koneksi database Anda dilindungi melalui `db_config.local.php`
+  dan cadangan di `uploads/.db_config_backup.php`.
+- Saat Anda mengunggah dan mengekstrak file ZIP versi baru di cPanel (`public_html`)
+  maupun Plesk (`httpdocs`):
+  * Pengaturan database Anda TIDAK AKAN HILANG atau tertimpa.
+  * Seluruh data yang tersimpan di database MySQL TETAP UTUH.
+  * Berkas-berkas di folder `uploads/` (foto siswa, foto guru, SK, dokumen)
+    TETAP AMAN dan TIDAK AKAN TERHAPUS.
+
+------------------------------------------------------------------------
+5. FITUR BACKUP & RESTORE LENGKAP (DATABASE + GAMBAR + DOKUMEN)
+------------------------------------------------------------------------
+- Buka menu Admin -> "Backup & Restore Data".
+- Klik "Unduh Backup Lengkap (.ZIP)":
+  File ZIP yang diunduh mencakup:
+  1) `database.json`: seluruh data modul, pengaturan, dan SPMB
+  2) `uploads/`: seluruh gambar, foto GTK/siswa, sertifikat, dan dokumen
+  3) `manifest.json`: catatan versi, tanggal, dan rekap jumlah data
+  4) `database.sql`: dump script SQL yang siap diimpor di phpMyAdmin
+- Untuk memulihkan data (Restore):
+  Tinggal pilih berkas `.zip` backup tersebut di kotak "Impor Data (Restore)".
+  Sistem akan otomatis mengekstrak seluruh dokumen/gambar ke folder `uploads/`
+  dan mengembalikan seluruh data database secara serentak.
+
+========================================================================
+SIAKAD MIMA 2 Sanggreman - MySQL Database Ready & Safe Overwrite Protected!
+========================================================================
+

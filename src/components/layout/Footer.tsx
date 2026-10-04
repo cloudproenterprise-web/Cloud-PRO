@@ -17,6 +17,7 @@ import {
   CreditCard,
   Palette,
   Sparkles,
+  GitBranch,
 } from 'lucide-react';
 import { CloudProLogo } from '../common/CloudProLogo';
 import { useAuth } from '../../context/AuthContext';
@@ -313,6 +314,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <Lock className="h-3 w-3 text-sky-600" />
               <span>WireGuard Mesh</span>
             </span>
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('open-git-commit-modal'));
+              }}
+              title="Status Commit & Versi Git Server"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200/80 text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              <GitBranch className="h-3 w-3 text-emerald-600" />
+              <span>Git Synced</span>
+            </button>
           </div>
         </div>
       </div>

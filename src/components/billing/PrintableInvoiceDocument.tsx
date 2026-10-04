@@ -195,8 +195,7 @@ export const InvoiceDocumentSheet: React.FC<{
               {letterhead.headerSubtitle}
             </p>
             <p className="text-[9.5px] text-slate-500 mt-0.5">
-              {letterhead.officeAddress} &bull; Email: {letterhead.officialEmail} &bull; WA Resmi:{' '}
-              {letterhead.officialWhatsApp}
+              {letterhead.officeAddress} &bull; Email: {letterhead.officialEmail}
             </p>
           </div>
         </div>

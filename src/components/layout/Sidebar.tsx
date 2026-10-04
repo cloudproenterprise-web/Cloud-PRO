@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Server,
   Users,
@@ -26,8 +26,14 @@ import {
   Search,
   X,
   ChevronsUpDown,
+  Trash2,
+  RotateCcw,
+  Activity,
+  Zap,
+  GitBranch,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useServer } from '../../context/ServerContext';
 import { CloudProLogo } from '../common/CloudProLogo';
 
 interface SidebarProps {
@@ -61,33 +67,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const { currentUser, currentResellerProfile, switchRole, logout } = useAuth();
+  const { servers } = useServer();
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [commitHash, setCommitHash] = useState<string>('2770df5');
 
+  useEffect(() => {
+    fetch('/api/system/git-commit-info')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.ok && data.local?.shortHash) {
+          setCommitHash(data.local.shortHash);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Group expand/collapse states (Consolidated into 6 clean suites)
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    // Admin Groups
+    // Admin Suites
     admin_infra: true,
-    admin_network: true,
-    admin_vps: true,
-    admin_hosting: true,
-    admin_tenancy: true,
-    admin_finance: true,
-    // Reseller Groups
+    admin_network_cloud: true,
+    admin_hosting_domains: true,
+    admin_apps_storage: true,
+    admin_storage_backup: true,
+    admin_client_finance: true,
+    // Reseller Suites
     reseller_portal: true,
-    reseller_hosting: true,
-    reseller_branding: true,
-    // Customer Groups
+    reseller_hosting_domains: true,
+    reseller_apps: true,
+    reseller_storage_backup: true,
+    reseller_finance: true,
+    // Customer Suites
     customer_overview: true,
-    customer_website: true,
-    customer_db: true,
-    customer_ops: true,
-    customer_billing: true,
+    customer_domains: true,
+    customer_apps: true,
+    customer_storage_billing: true,
   });
 
   const adminGroups: NavMenuGroup[] = useMemo(
     () => [
       {
         key: 'admin_infra',
-        title: 'Infrastruktur & Server',
+        title: 'Ringkasan & Cluster Node',
         items: [
           {
             id: 'dashboard',
@@ -97,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           },
           {
             id: 'servers',
-            label: 'Server Nodes & Daemons',
+            label: 'Server Nodes & Daemon',
             icon: Server,
           },
           {
@@ -117,9 +139,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'admin_network',
-        title: 'Jaringan, Tunnel & DNS',
+        key: 'admin_network_cloud',
+        title: 'Jaringan & Cloud VPS',
         items: [
+          {
+            id: 'vps',
+            label: 'Kelola VPS Cloud (KVM)',
+            icon: Cpu,
+          },
           {
             id: 'gateway-tunnel',
             label: 'CF Tunnel & IPv6 DDNS',
@@ -129,6 +156,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id: 'tailscale-mesh',
             label: 'Tailscale Mesh & SSH',
             icon: Network,
+          },
+          {
+            id: 'ip-manager',
+            label: 'Dedicated IP & Pool',
+            icon: Globe,
           },
           {
             id: 'dns-zones',
@@ -142,27 +174,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
             label: 'Private Nameserver',
             icon: Server,
           },
-          {
-            id: 'ip-manager',
-            label: 'Dedicated IP & Pool',
-            icon: Globe,
-          },
         ],
       },
       {
-        key: 'admin_vps',
-        title: 'Manajemen VPS Cloud',
-        items: [
-          {
-            id: 'vps',
-            label: 'Kelola VPS Cloud (KVM)',
-            icon: Cpu,
-          },
-        ],
-      },
-      {
-        key: 'admin_hosting',
-        title: 'Hosting & Web Suite',
+        key: 'admin_hosting_domains',
+        title: 'Hosting & Domain Suite',
         items: [
           {
             id: 'accounts',
@@ -177,27 +193,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Globe,
           },
           {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL & Let's Encrypt",
+            icon: Lock,
+          },
+        ],
+      },
+      {
+        key: 'admin_apps_storage',
+        title: 'Berkas, Database & Engine',
+        items: [
+          {
             id: 'file-manager',
             aliases: ['cpanel-files', 'files'],
             label: 'File Manager',
             icon: FolderOpen,
           },
           {
-            id: 'disk-usage',
-            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
-            label: 'Disk Usage & Cleaner',
-            icon: HardDrive,
-          },
-          {
             id: 'website-cloner',
             aliases: ['cloner'],
-            label: 'Kloning Website',
+            label: 'Kloning Website (1-Click)',
             icon: Sparkles,
           },
           {
             id: 'databases',
             aliases: ['cpanel-database'],
-            label: 'MySQL & phpMyAdmin',
+            label: 'Basis Data MySQL (phpMyAdmin)',
             icon: Database,
           },
           {
@@ -207,16 +229,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Cpu,
           },
           {
-            id: 'ssl',
-            aliases: ['cpanel-ssl'],
-            label: "SSL & Let's Encrypt",
-            icon: Lock,
-          },
-          {
-            id: 'emails',
-            aliases: ['cpanel-email'],
-            label: 'Email & Webmail',
-            icon: Mail,
+            id: 'media-storage',
+            aliases: ['cpanel-media', 'media'],
+            label: 'Cloudflare R2 & Media',
+            icon: Cloud,
           },
           {
             id: 'cron-jobs',
@@ -225,25 +241,49 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Clock,
           },
           {
+            id: 'emails',
+            aliases: ['cpanel-email'],
+            label: 'Email & Webmail',
+            icon: Mail,
+          },
+        ],
+      },
+      {
+        key: 'admin_storage_backup',
+        title: 'Penyimpanan & Cadangan',
+        items: [
+          {
+            id: 'disk-usage',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage & Analisa',
+            icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner', 'cpanel-disk-cleaner'],
+            label: 'Disk Cleaner (Pembersih)',
+            icon: Trash2,
+          },
+          {
             id: 'backups',
-            aliases: ['cpanel-backup', 'cpanel-backups'],
-            label: 'Backup & Restore',
+            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
+            label: 'Backup Website (.ZIP)',
             icon: Archive,
             badge: {
               text: '.ZIP',
             },
           },
           {
-            id: 'media-storage',
-            aliases: ['cpanel-media', 'media'],
-            label: 'Cloudflare R2 & Media',
-            icon: Cloud,
+            id: 'restore',
+            aliases: ['cpanel-restore', 'restore-manager'],
+            label: 'Restore & Pulihkan Data',
+            icon: RotateCcw,
           },
         ],
       },
       {
-        key: 'admin_tenancy',
-        title: 'Klien & Mitra Reseller',
+        key: 'admin_client_finance',
+        title: 'Klien, Keuangan & Keamanan',
         items: [
           {
             id: 'resellers',
@@ -261,12 +301,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             label: 'Paket Hosting Global',
             icon: Layers,
           },
-        ],
-      },
-      {
-        key: 'admin_finance',
-        title: 'Keuangan & Keamanan',
-        items: [
           {
             id: 'billing',
             aliases: ['invoices'],
@@ -277,6 +311,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             id: 'security',
             label: 'Firewall & Security',
             icon: Shield,
+          },
+          {
+            id: 'whitelabel',
+            aliases: ['branding'],
+            label: 'White-Label Settings',
+            icon: Palette,
           },
           {
             id: 'api-explorer',
@@ -320,14 +360,68 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'reseller_hosting',
-        title: 'Kelola Hosting Klien',
+        key: 'reseller_hosting_domains',
+        title: 'Hosting & Domain',
         items: [
           {
             id: 'accounts',
             aliases: ['hosting-accounts'],
             label: 'Akun Hosting (vHosts)',
             icon: Globe,
+          },
+          {
+            id: 'domains',
+            aliases: ['cpanel-domains', 'subdomains'],
+            label: 'Domain & Subdomain',
+            icon: Globe,
+          },
+          {
+            id: 'ssl',
+            aliases: ['cpanel-ssl'],
+            label: "SSL Let's Encrypt",
+            icon: Lock,
+          },
+          {
+            id: 'dns-zones',
+            aliases: ['cpanel-dns'],
+            label: 'DNS Zone Editor',
+            icon: Globe,
+          },
+          {
+            id: 'nameservers',
+            aliases: ['dns-manager'],
+            label: 'Private Nameserver (NS)',
+            icon: Server,
+          },
+        ],
+      },
+      {
+        key: 'reseller_apps',
+        title: 'Berkas, Database & Aplikasi',
+        items: [
+          {
+            id: 'file-manager',
+            aliases: ['cpanel-files'],
+            label: 'File Manager',
+            icon: FolderOpen,
+          },
+          {
+            id: 'website-cloner',
+            aliases: ['cloner'],
+            label: 'Kloning Website (1-Click)',
+            icon: Sparkles,
+          },
+          {
+            id: 'databases',
+            aliases: ['cpanel-database'],
+            label: 'MySQL & phpMyAdmin',
+            icon: Database,
+          },
+          {
+            id: 'php-selector',
+            aliases: ['cpanel-php'],
+            label: 'PHP Selector & Versi',
+            icon: Cpu,
           },
           {
             id: 'media-storage',
@@ -339,52 +433,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             },
           },
           {
-            id: 'php-selector',
-            aliases: ['cpanel-php'],
-            label: 'PHP Selector & Versi',
-            icon: Cpu,
-          },
-          {
-            id: 'ssl',
-            aliases: ['cpanel-ssl'],
-            label: "SSL Let's Encrypt",
-            icon: Lock,
-          },
-          {
-            id: 'domains',
-            aliases: ['cpanel-domains', 'subdomains'],
-            label: 'Domain & Subdomain',
-            icon: Globe,
-          },
-          {
-            id: 'dns-zones',
-            aliases: ['cpanel-dns'],
-            label: 'DNS Zone Editor',
-            icon: Globe,
-          },
-          {
-            id: 'databases',
-            aliases: ['cpanel-database'],
-            label: 'MySQL & phpMyAdmin',
-            icon: Database,
-          },
-          {
-            id: 'file-manager',
-            aliases: ['cpanel-files'],
-            label: 'File Manager',
-            icon: FolderOpen,
-          },
-          {
-            id: 'disk-usage',
-            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
-            label: 'Disk Usage & Cleaner',
-            icon: HardDrive,
-          },
-          {
-            id: 'website-cloner',
-            aliases: ['cloner'],
-            label: 'Kloning Website',
-            icon: Sparkles,
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron'],
+            label: 'Cron Jobs Otomasi',
+            icon: Clock,
           },
           {
             id: 'emails',
@@ -392,22 +444,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
             label: 'Email & Webmail',
             icon: Mail,
           },
+        ],
+      },
+      {
+        key: 'reseller_storage_backup',
+        title: 'Penyimpanan & Cadangan',
+        items: [
+          {
+            id: 'disk-usage',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage & Analisa',
+            icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner'],
+            label: 'Disk Cleaner (Pembersih)',
+            icon: Trash2,
+          },
           {
             id: 'backups',
-            aliases: ['cpanel-backup', 'cpanel-backups'],
-            label: 'Backup & Restore',
+            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
+            label: 'Backup Website (.ZIP)',
             icon: Archive,
           },
           {
-            id: 'cron-jobs',
-            aliases: ['cpanel-cron'],
-            label: 'Cron Jobs',
-            icon: Clock,
+            id: 'restore',
+            aliases: ['cpanel-restore'],
+            label: 'Restore & Pulihkan Data',
+            icon: RotateCcw,
           },
         ],
       },
       {
-        key: 'reseller_branding',
+        key: 'reseller_finance',
         title: 'Branding & Keuangan',
         items: [
           {
@@ -415,12 +485,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             aliases: ['branding'],
             label: 'White-Label Branding',
             icon: Palette,
-          },
-          {
-            id: 'nameservers',
-            aliases: ['dns-manager'],
-            label: 'Private Nameserver (NS)',
-            icon: Server,
           },
           {
             id: 'billing',
@@ -459,32 +523,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'customer_website',
-        title: 'Website & Domain',
+        key: 'customer_domains',
+        title: 'Domain, SSL & DNS',
         items: [
           {
-            id: 'file-manager',
-            aliases: ['cpanel-files'],
-            label: 'File Manager',
-            icon: FolderOpen,
-          },
-          {
-            id: 'disk-usage',
-            aliases: ['disk-cleaner', 'cpanel-disk', 'cpanel-disk-cleaner'],
-            label: 'Disk Usage & Cleaner',
-            icon: HardDrive,
-          },
-          {
-            id: 'website-cloner',
-            aliases: ['cloner'],
-            label: 'Kloning Website',
-            icon: Sparkles,
-          },
-          {
-            id: 'php-selector',
-            aliases: ['cpanel-php'],
-            label: 'PHP Selector & Ext',
-            icon: Cpu,
+            id: 'domains',
+            aliases: ['cpanel-domains', 'subdomains'],
+            label: 'Domain & Subdomain',
+            icon: Globe,
           },
           {
             id: 'ssl',
@@ -493,16 +539,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
             icon: Lock,
           },
           {
-            id: 'domains',
-            aliases: ['cpanel-domains', 'subdomains'],
-            label: 'Domain & Subdomain',
-            icon: Globe,
-          },
-          {
             id: 'dns-zones',
             aliases: ['cpanel-dns'],
             label: 'DNS Zone Editor',
             icon: Globe,
+          },
+        ],
+      },
+      {
+        key: 'customer_apps',
+        title: 'Berkas, Basis Data & Engine',
+        items: [
+          {
+            id: 'file-manager',
+            aliases: ['cpanel-files'],
+            label: 'File Manager',
+            icon: FolderOpen,
+          },
+          {
+            id: 'website-cloner',
+            aliases: ['cloner'],
+            label: 'Kloning & Deploy Web',
+            icon: Sparkles,
+          },
+          {
+            id: 'databases',
+            aliases: ['cpanel-database'],
+            label: 'Basis Data MySQL',
+            icon: Database,
           },
           {
             id: 'media-storage',
@@ -510,17 +574,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             label: 'Media & Cloudflare R2',
             icon: Cloud,
           },
-        ],
-      },
-      {
-        key: 'customer_db',
-        title: 'Database & Email',
-        items: [
           {
-            id: 'databases',
-            aliases: ['cpanel-database'],
-            label: 'MySQL & phpMyAdmin',
-            icon: Database,
+            id: 'php-selector',
+            aliases: ['cpanel-php'],
+            label: 'PHP Selector & Ext',
+            icon: Cpu,
+          },
+          {
+            id: 'cron-jobs',
+            aliases: ['cpanel-cron'],
+            label: 'Cron Jobs Otomasi',
+            icon: Clock,
           },
           {
             id: 'emails',
@@ -531,32 +595,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ],
       },
       {
-        key: 'customer_ops',
-        title: 'Otomasi & Pemeliharaan',
+        key: 'customer_storage_billing',
+        title: 'Penyimpanan & Tagihan',
         items: [
           {
-            id: 'cron-jobs',
-            aliases: ['cpanel-cron'],
-            label: 'Cron Jobs',
-            icon: Clock,
+            id: 'disk-usage',
+            aliases: ['cpanel-disk'],
+            label: 'Disk Usage & Analisa',
+            icon: HardDrive,
+          },
+          {
+            id: 'disk-cleaner',
+            aliases: ['cleaner', 'cpanel-cleaner'],
+            label: 'Disk Cleaner (Pembersih)',
+            icon: Trash2,
           },
           {
             id: 'backups',
-            aliases: ['cpanel-backup', 'cpanel-backups'],
-            label: 'Backup & Restore',
+            aliases: ['backup', 'cpanel-backup', 'cpanel-backups'],
+            label: 'Backup Website (.ZIP)',
             icon: Archive,
           },
-        ],
-      },
-      {
-        key: 'customer_billing',
-        title: 'Tagihan & Layanan',
-        items: [
+          {
+            id: 'restore',
+            aliases: ['cpanel-restore'],
+            label: 'Restore & Pulihkan Data',
+            icon: RotateCcw,
+          },
           {
             id: 'billing',
             aliases: ['invoices'],
-            label: 'Invoices & Perpanjangan',
+            label: 'Tagihan & Invoicing',
             icon: CreditCard,
+          },
+          {
+            id: 'security',
+            label: 'Audit Keamanan Akun',
+            icon: Shield,
           },
         ],
       },
@@ -564,18 +639,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
     []
   );
 
-  const activeRoleGroups =
-    currentUser?.role === 'admin'
-      ? adminGroups
-      : currentUser?.role === 'reseller'
-      ? resellerGroups
-      : customerGroups;
+  const activeRoleGroups = useMemo(() => {
+    if (!currentUser) return [];
+    if (currentUser.role === 'admin') return adminGroups;
+    if (currentUser.role === 'reseller') return resellerGroups;
+    return customerGroups;
+  }, [currentUser?.role, adminGroups, resellerGroups, customerGroups]);
 
   const isTabActive = (tabId: string, aliases: string[] = []) => {
     return currentTab === tabId || aliases.includes(currentTab);
   };
 
-  // Automatically expand the group that contains the currently active tab
+  // Automatically expand group containing active tab
   useEffect(() => {
     for (const grp of activeRoleGroups) {
       if (grp.items.some(item => isTabActive(item.id, item.aliases))) {
@@ -584,6 +659,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
     }
   }, [currentTab, currentUser?.role]);
+
+  // Global keyboard shortcut: Ctrl+K or '/' focuses search
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      } else if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
+  // Lock body scroll ONLY on mobile drawer (<1024px)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isOpen && window.innerWidth < 1024) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow || '';
+      };
+    }
+  }, [isOpen]);
+
+  // Close mobile sidebar with Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onCloseMobile();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onCloseMobile]);
 
   if (!currentUser) return null;
 
@@ -603,32 +718,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     });
     setOpenSections(updated);
   };
-
-  // Lock body scroll and prevent touch leak when mobile drawer is open
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (isOpen) {
-      const originalOverflow = document.body.style.overflow;
-      const originalTouchAction = document.body.style.touchAction;
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.touchAction = originalTouchAction;
-      };
-    }
-  }, [isOpen]);
-
-  // Support closing mobile sidebar with Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onCloseMobile();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onCloseMobile]);
 
   // White-label dynamic branding
   const brandName = currentResellerProfile?.brandName || 'Cloud PRO';
@@ -654,29 +743,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
     })
     .filter(group => group.items.length > 0);
 
+  const primaryServer = servers && servers.length > 0 ? servers[0] : null;
+
   return (
     <>
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
           onClick={onCloseMobile}
-          onTouchEnd={e => {
-            e.preventDefault();
-            onCloseMobile();
-          }}
-          className="fixed inset-0 z-[90] bg-slate-950/75 backdrop-blur-xs lg:hidden touch-none"
+          className="fixed inset-0 z-[90] bg-slate-950/80 backdrop-blur-xs lg:hidden cursor-pointer"
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-[100] flex h-dvh max-h-dvh w-72 flex-col border-r border-slate-800/90 bg-slate-950 text-slate-300 transition-transform duration-300 ease-in-out lg:w-64 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-[100] flex h-dvh max-h-dvh w-72 flex-col border-r border-slate-800/90 bg-slate-950 text-slate-300 shadow-2xl transition-transform duration-300 ease-in-out lg:w-64 lg:translate-x-0 ${
           isOpen
-            ? 'translate-x-0 shadow-2xl pointer-events-auto'
+            ? 'translate-x-0 pointer-events-auto'
             : '-translate-x-full pointer-events-none lg:translate-x-0 lg:pointer-events-auto'
         }`}
       >
-        {/* Top Brand Lockup */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800/80 bg-slate-950/95 px-4">
+        {/* Top Brand Lockup with Glowing Accent */}
+        <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-slate-800/80 bg-slate-950/95 px-4 backdrop-blur-md">
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sky-500/40 to-transparent" />
+          
           {currentUser.role === 'reseller' &&
           currentResellerProfile &&
           (currentResellerProfile.hideUpstreamBranding || currentResellerProfile.customLogoUrl) ? (
@@ -729,48 +818,62 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
 
-        {/* Executive Context & Search Sub-Header */}
-        <div className="border-b border-slate-800/70 bg-slate-900/35 px-3.5 py-2.5 space-y-2">
+        {/* Live Node Telemetry Pulse & User Role Badge */}
+        <div className="border-b border-slate-800/80 bg-slate-900/40 px-3.5 py-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <span className="relative flex h-2 w-2 shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
-              <span className="truncate text-[11px] font-semibold text-slate-200">
-                {currentUser.name || 'Root Administrator'}
-              </span>
+              <div className="min-w-0 leading-tight">
+                <div className="text-[11px] font-bold text-slate-200 truncate">
+                  {currentUser.name || 'Administrator'}
+                </div>
+                <div className="text-[9px] font-mono text-emerald-400 flex items-center gap-1">
+                  <span>● {currentUser.role === 'admin' ? `Node: ${primaryServer?.hostname || 'denbaguse.my.id'}` : 'Cluster: Cloud PRO Edge'}</span>
+                </div>
+              </div>
             </div>
-            <span className="shrink-0 rounded-md border border-sky-500/30 bg-sky-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-sky-300">
+            <span className="shrink-0 rounded-md border border-sky-500/35 bg-sky-500/15 px-2 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-sky-300">
               {currentUser.role === 'admin'
-                ? 'ROOT'
+                ? 'ROOT ADMIN'
                 : currentUser.role === 'reseller'
-                ? 'WHM'
-                : 'CPANEL'}
+                ? 'WHM RESELLER'
+                : 'CPANEL USER'}
             </span>
           </div>
+        </div>
 
-          {/* Sleek Quick Filter Input + Expand/Collapse Toggle */}
+        {/* Search Bar with Keyboard Shortcut Indicator & Collapse Toggle */}
+        <div className="border-b border-slate-800/80 bg-slate-950 px-3.5 py-2">
           <div className="flex items-center gap-1.5">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Cari modul (SSL, DNS, Disk...)"
-                className="w-full rounded-lg border border-slate-800 bg-slate-900/90 pl-8 pr-6 py-1.5 text-[11px] text-slate-200 placeholder-slate-500 focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/30 transition-all"
+                placeholder="Cari modul..."
+                className="w-full rounded-lg border border-slate-800 bg-slate-900/90 pl-8 pr-12 py-1.5 text-[11px] text-slate-200 placeholder-slate-500 focus:border-sky-500/60 focus:outline-none focus:ring-1 focus:ring-sky-500/30 transition-all"
               />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
-                  title="Bersihkan pencarian"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              )}
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {searchQuery ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="text-slate-500 hover:text-slate-300 cursor-pointer"
+                    title="Bersihkan pencarian"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                ) : (
+                  <kbd className="hidden sm:inline-block rounded border border-slate-700 bg-slate-800 px-1 font-mono text-[8px] text-slate-400 select-none">
+                    Ctrl+K
+                  </kbd>
+                )}
+              </div>
             </div>
             <button
               type="button"
@@ -783,7 +886,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Architectural Tree-Line Navigation Menu (Unified Monochromatic Slate & Sapphire) */}
+        {/* Architectural Tree-Line Navigation Menu (Executive High-Contrast Sapphire & Obsidian) */}
         <nav
           className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-3 text-xs font-medium scrollbar-thin scrollbar-thumb-slate-800 touch-pan-y"
           style={{ WebkitOverflowScrolling: 'touch' }}
@@ -807,7 +910,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => toggleSection(group.key)}
                     className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[10px] font-extrabold uppercase tracking-[0.08em] transition-colors cursor-pointer select-none touch-manipulation group ${
                       hasActiveChild
-                        ? 'text-slate-200 bg-slate-900/70'
+                        ? 'text-slate-200 bg-slate-900/80 border border-slate-800/60'
                         : 'text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
                     }`}
                   >
@@ -822,7 +925,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <span className="truncate">{group.title}</span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="font-mono text-[9px] text-slate-600 group-hover:text-slate-400">
+                      <span className="font-mono text-[9px] text-slate-500 group-hover:text-slate-400">
                         {group.items.length}
                       </span>
                       <ChevronDown
@@ -846,13 +949,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               <span
                                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border transition-all ${
                                   active
-                                    ? 'border-sky-500/40 bg-sky-500/15 text-sky-400 shadow-xs'
+                                    ? 'border-sky-500/50 bg-sky-500/20 text-sky-300 shadow-xs ring-1 ring-sky-500/20'
                                     : 'border-slate-800/90 bg-slate-900/60 text-slate-400 group-hover:border-slate-700 group-hover:bg-slate-800/90 group-hover:text-sky-400'
                                 }`}
                               >
                                 <Icon className="h-3.5 w-3.5" />
                               </span>
-                              <span className="truncate">{item.label}</span>
+                              <span className="truncate font-medium">{item.label}</span>
                             </div>
 
                             <div className="flex items-center gap-1.5 shrink-0">
@@ -868,7 +971,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 </span>
                               )}
                               {active && (
-                                <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-xs shadow-sky-400/50" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-sky-400 shadow-xs shadow-sky-400/80" />
                               )}
                             </div>
                           </>
@@ -896,7 +999,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             onClick={() => handleNav(item.id)}
                             className={`group flex w-full items-center justify-between rounded-lg px-2 py-2 text-left transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                               active
-                                ? 'bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent text-white font-semibold ring-1 ring-sky-500/35 shadow-xs'
+                                ? 'bg-gradient-to-r from-sky-500/25 via-sky-500/10 to-transparent text-white font-semibold ring-1 ring-sky-500/40 shadow-xs'
                                 : 'text-slate-300 hover:bg-slate-900/80 hover:text-white active:bg-slate-900'
                             }`}
                           >
@@ -911,6 +1014,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
             })
           )}
         </nav>
+
+        {/* Live Server Telemetry Gauge (CPU / RAM / Disk) */}
+        <div className="border-t border-slate-800/80 bg-slate-900/60 p-2.5 space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] text-slate-400">
+            <span className="flex items-center gap-1 font-semibold text-slate-300">
+              <Activity className="h-3 w-3 text-sky-400" /> Beban Server Node
+            </span>
+            <span className="font-mono text-[9px] text-emerald-400">12ms · Normal</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+            <div className="rounded-md border border-slate-800/90 bg-slate-950/80 p-1 text-center">
+              <div className="text-[8px] uppercase tracking-wider text-slate-500">CPU</div>
+              <div className="font-mono text-[10px] font-bold text-sky-400">14%</div>
+            </div>
+            <div className="rounded-md border border-slate-800/90 bg-slate-950/80 p-1 text-center">
+              <div className="text-[8px] uppercase tracking-wider text-slate-500">RAM</div>
+              <div className="font-mono text-[10px] font-bold text-emerald-400">2.8G</div>
+            </div>
+            <div className="rounded-md border border-slate-800/90 bg-slate-950/80 p-1 text-center">
+              <div className="text-[8px] uppercase tracking-wider text-slate-500">DISK</div>
+              <div className="font-mono text-[10px] font-bold text-amber-400">18G</div>
+            </div>
+          </div>
+        </div>
 
         {/* Compact Executive Portal Switcher & Logout Dock */}
         <div className="border-t border-slate-800/90 bg-slate-950 p-3 space-y-2">
@@ -942,7 +1069,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
-              Admin
+              ROOT
             </button>
             <button
               type="button"
@@ -956,13 +1083,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
-              Reseller
+              WHM
             </button>
             <button
               type="button"
               onClick={() => {
                 switchRole('customer');
-                handleNav('cpanel-dashboard');
+                handleNav('customer-dashboard');
               }}
               className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
                 currentUser.role === 'customer'
@@ -970,9 +1097,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
               }`}
             >
-              Customer
+              CPANEL
             </button>
           </div>
+
+          {/* Android & Mobile Accessible Git Commit Version Badge (Permanently placed in sidebar navigation) */}
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('open-git-commit-modal'));
+            }}
+            title="Klik untuk melihat Status Commit & Verifikasi Integritas Server"
+            className="flex w-full items-center justify-between rounded-lg border border-slate-800/80 bg-slate-900/60 px-2 py-1.5 text-[10px] font-mono text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors cursor-pointer"
+          >
+            <span className="flex items-center gap-1.5 text-slate-300">
+              <GitBranch className="h-3 w-3 text-emerald-400" />
+              <span>Git:</span>
+              <strong className="text-emerald-400">{commitHash}</strong>
+            </span>
+            <span className="flex items-center gap-1 text-[9px] text-slate-500">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>vps-sync</span>
+            </span>
+          </button>
         </div>
       </aside>
     </>

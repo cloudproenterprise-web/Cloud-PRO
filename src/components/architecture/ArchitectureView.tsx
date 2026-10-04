@@ -46,12 +46,13 @@ export const ArchitectureView: React.FC = () => {
           </div>
 
           {/* Baris Pertama dengan Animasi Berjalan Writer (Typewriter) */}
-          <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white min-h-[1.75rem] leading-snug">
+          <h1 className="text-xs xs:text-sm sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white min-h-[1.75rem] leading-snug whitespace-nowrap overflow-x-auto sm:overflow-visible">
             <TypewriterText
               text="Cloud PRO - Reseller Hosting Management System"
               speed={35}
               delay={100}
               cursorColor="bg-emerald-500"
+              className="whitespace-nowrap"
             />
           </h1>
 

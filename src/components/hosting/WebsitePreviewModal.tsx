@@ -301,7 +301,7 @@ export const WebsitePreviewModal: React.FC<WebsitePreviewModalProps> = ({
           ? finalHtml.replace(/<head[^>]*>/i, m => `${m}\n${importMapTag}`)
           : `${importMapTag}\n${finalHtml}`;
       }
-      return finalHtml;
+      return finalHtml.replace(/<link[^>]*rel=["'][^"']*(?:icon|shortcut)[^"']*["'][^>]*>/gi, '');
     }
 
     if (indexHtmlFile && indexHtmlFile.content) {
@@ -351,6 +351,9 @@ export const WebsitePreviewModal: React.FC<WebsitePreviewModalProps> = ({
     var origReplace = history.replaceState;
     history.pushState = function() { try { return origPush.apply(this, arguments); } catch (e) {} };
     history.replaceState = function() { try { return origReplace.apply(this, arguments); } catch (e) {} };
+    if (window.location.pathname && (window.location.pathname.indexOf('/api/vhost/preview-render') !== -1 || window.location.pathname === 'blank' || window.location.pathname.indexOf('/public_html') !== -1)) {
+      try { origReplace.call(history, null, '', '/'); } catch (e) {}
+    }
   } catch (e) {}
   try {
     var origFetch = window.fetch;
@@ -380,6 +383,25 @@ export const WebsitePreviewModal: React.FC<WebsitePreviewModalProps> = ({
           : `${baseHrefTag}\n${importMapTag}\n${spaShim}\n${html}`;
       }
 
+      const alwaysRouteFix = `<script id="cloudpro-always-route-fix">
+(function(){
+  try {
+    var origPush = history.pushState;
+    var origReplace = history.replaceState;
+    history.pushState = function() { try { return origPush.apply(this, arguments); } catch (e) {} };
+    history.replaceState = function() { try { return origReplace.apply(this, arguments); } catch (e) {} };
+    if (window.location.pathname && (window.location.pathname.indexOf('/api/vhost/preview-render') !== -1 || window.location.pathname === 'blank' || window.location.pathname.indexOf('/public_html') !== -1)) {
+      try { origReplace.call(history, null, '', '/'); } catch (e) {}
+    }
+  } catch (e) {}
+})();
+</script>`;
+      if (!html.includes('cloudpro-always-route-fix')) {
+        html = /<head[^>]*>/i.test(html)
+          ? html.replace(/<head[^>]*>/i, m => `${m}\n${baseHrefTag}\n${alwaysRouteFix}`)
+          : `${baseHrefTag}\n${alwaysRouteFix}\n${html}`;
+      }
+
       if (cssInjection && !html.includes('<style')) {
         html = html.includes('</head>')
           ? html.replace('</head>', () => `${cssInjection}\n</head>`)
@@ -390,7 +412,7 @@ export const WebsitePreviewModal: React.FC<WebsitePreviewModalProps> = ({
           ? html.replace('</body>', () => `${jsInjection}\n</body>`)
           : `${html}\n${jsInjection}`;
       }
-      return html;
+      return html.replace(/<link[^>]*rel=["'][^"']*(?:icon|shortcut)[^"']*["'][^>]*>/gi, '');
     }
 
     if (indexPhpFile && indexPhpFile.content) {

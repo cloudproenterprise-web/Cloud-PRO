@@ -61,25 +61,25 @@ export const CloudProLogo: React.FC<CloudProLogoProps> = ({
         >
           <defs>
             <linearGradient id={`cloudGrad_${gradId}`} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#0066cc" />
+              <stop offset="0%" stopColor="#005dbd" />
               <stop offset="100%" stopColor="#003e82" />
             </linearGradient>
           </defs>
           <path
-            d="M 28 80 C 16 80 8 71 8 60 C 8 50 15 42 24 40 C 26 26 38 16 52 16 C 65 16 75 23 79 34 C 89 35 98 44 98 55 C 98 67 89 77 78 79 C 75 80 32 80 28 80 Z"
+            d="M 28 82 C 16 82 8 73 8 62 C 8 52 15 44 24 42 C 26 28 38 18 52 18 C 65 18 75 25 79 36 C 89 37 98 46 98 57 C 98 69 89 79 78 81 C 75 82 32 82 28 82 Z"
             fill={`url(#cloudGrad_${gradId})`}
           />
           <path
-            d="M 18 80 C 22 69 28 60 36 57 C 40 55.5 44 55.5 47 57 C 51 59.5 52.5 64.5 51 69 C 49 74 43 76 38 73 C 34.5 71 33 66.5 34.5 62 C 36 55 43 49 52 46 L 74 35"
+            d="M 18 82 C 22 71 28 62 36 59 C 40 57.5 44 57.5 47 59 C 51 61.5 52.5 66.5 51 71 C 49 76 43 78 38 75 C 34.5 73 33 68.5 34.5 64 C 36 57 43 51 52 48 L 74 37"
             stroke="#ffffff"
             strokeWidth="5.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
-          <polygon points="72,25 88,30 78,44 76,38 68,42" fill="#ffffff" />
+          <polygon points="72,27 88,32 78,46 76,40 68,44" fill="#ffffff" />
           <path
-            d="M 24 80 C 28 71 34 64 41 61"
+            d="M 24 82 C 28 73 34 66 41 63"
             stroke="#ffffff"
             strokeWidth="4.5"
             strokeLinecap="round"

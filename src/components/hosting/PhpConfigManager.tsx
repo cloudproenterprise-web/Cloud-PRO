@@ -227,7 +227,7 @@ export const PhpConfigManager: React.FC<PhpConfigManagerProps> = ({
   const { currentUser } = useAuth();
   const { showToast, refreshAll } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
   const buildDomainList = (): DomainEntity[] => {
     const raw = db.getDomains(account.id);

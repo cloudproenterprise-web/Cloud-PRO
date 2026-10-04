@@ -39,10 +39,40 @@ export const SecurityCenter: React.FC = () => {
 
   if (!currentUser) return null;
 
-  const filteredLogs = auditLogs.filter(log => {
+  // STRICT MULTI-TENANCY ISOLATION:
+  // Non-admins (resellers & customers) must NEVER see Root Administrator server audit logs, VPS actions, or admin data
+  const roleScopedAuditLogs = React.useMemo(() => {
+    if (currentUser.role === 'admin') return auditLogs;
+    return auditLogs.filter(log => {
+      if (log.userId === 'usr-admin-01' || log.role === 'admin') return false;
+      const dLower = String(log.details || '').toLowerCase();
+      if (
+        dLower.includes('denbaguse.my.id') ||
+        dLower.includes('root administrator') ||
+        dLower.includes('vps') ||
+        dLower.includes('tyo-dev') ||
+        dLower.includes('server utama')
+      ) {
+        return false;
+      }
+      return log.userId === currentUser.id;
+    });
+  }, [auditLogs, currentUser.role, currentUser.id]);
+
+  const filteredLogs = roleScopedAuditLogs.filter(log => {
     if (auditFilter === 'ALL') return true;
     return log.category === auditFilter;
   });
+
+  const roleScopedFirewallRules = React.useMemo(() => {
+    if (currentUser.role === 'admin') return firewallRules;
+    return firewallRules.filter(r => r.reason?.includes(currentUser.name) || r.reason?.includes(currentUser.id));
+  }, [firewallRules, currentUser.role, currentUser.id, currentUser.name]);
+
+  const roleScopedApiKeys = React.useMemo(() => {
+    if (currentUser.role === 'admin') return apiKeys;
+    return apiKeys.filter(k => k.userId === currentUser.id);
+  }, [apiKeys, currentUser.role, currentUser.id]);
 
   const handleToggle2FA = () => {
     const isNowOn = toggle2FA();
@@ -263,7 +293,7 @@ export const SecurityCenter: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Daftar Aturan IP Firewall ({firewallRules.length})
+              Daftar Aturan IP Firewall ({roleScopedFirewallRules.length})
             </h4>
             <button
               onClick={() => setShowAddFwModal(true)}
@@ -287,7 +317,7 @@ export const SecurityCenter: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
-                {firewallRules.map(rule => (
+                {roleScopedFirewallRules.map(rule => (
                   <tr key={rule.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                     <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
                       {rule.ipOrSubnet}
@@ -381,7 +411,7 @@ export const SecurityCenter: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Kunci API Terdaftar ({apiKeys.length})
+              Kunci API Terdaftar ({roleScopedApiKeys.length})
             </h4>
             <button
               onClick={() => setShowAddKeyModal(true)}
@@ -405,7 +435,7 @@ export const SecurityCenter: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-mono">
-                {apiKeys.map(k => (
+                {roleScopedApiKeys.map(k => (
                   <tr key={k.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
                     <td className="px-5 py-3.5 font-sans font-semibold text-slate-900 dark:text-white">
                       {k.name}

@@ -918,7 +918,7 @@ export class CloudProApi {
       return (
         `*${kop.headerTitle}*\n` +
         `${kop.headerSubtitle}\n` +
-        `Domain Server: ${kop.serverDomain} | WA: ${kop.officialWhatsApp}\n` +
+        `Domain Server: ${kop.serverDomain}\n` +
         `========================================\n` +
         `*BUKTI TAGIHAN LAYANAN (UNPAID INVOICE)*\n` +
         `Yth. *${inv.userName}*,\n\n` +
@@ -941,7 +941,7 @@ export class CloudProApi {
     return (
       `*${kop.headerTitle}*\n` +
       `${kop.headerSubtitle}\n` +
-      `Domain Server: ${kop.serverDomain} | WA: ${kop.officialWhatsApp}\n` +
+      `Domain Server: ${kop.serverDomain}\n` +
       `========================================\n` +
       `*BUKTI PEMBAYARAN RESMI (KWITANSI LUNAS / PAID)*\n` +
       `Yth. *${inv.userName}*,\n\n` +

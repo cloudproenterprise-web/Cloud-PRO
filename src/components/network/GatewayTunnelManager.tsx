@@ -37,7 +37,7 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
 
   // Native Linux cloudflared Tunnel Daemon State
   const DEFAULT_USER_TUNNEL_TOKEN =
-    'sudo cloudflared service install eyJhIjoiNDkzZmMzM2I1ZTJmY2Y0YTYwNGU5OTg2NjE1Yjg5ZmQiLCJ0IjoiOTllN2RhNzktODM0Ni00MjRkLWI5YWItZDRkNWYxNGZiODg5IiwicyI6IlpEQmpZekU0TURFdFlqTTVNUzAwWTJWbExXSTJPV0V0WTJOaE1HSXdOekk0TlRNeSJ9';
+    'sudo cloudflared service install eyJhIjoiZTkwMjEzZWRiMzQ3NmJiMzAwNzAyNmQ3Y2QyMjk2NjEiLCJ0IjoiNmZiMDE1YjItYzdiNS00Y2EwLTgxYjYtYzI4ZWVmYTZlNGU0IiwicyI6Ik5UVTBOMkkxWVRndFlqQmhaaTAwWmpVNExUbGxNMlF0WkdFM1ltRTVOamRoTUdaaCJ9';
   const [tunnelTokenInput, setTunnelTokenInput] = useState<string>(() => {
     return localStorage.getItem('cloudpro_tunnel_token_input') || DEFAULT_USER_TUNNEL_TOKEN;
   });
@@ -45,7 +45,7 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
   const [tunnelPid, setTunnelPid] = useState<number | null>(1716);
   const [tunnelLogs, setTunnelLogs] = useState<string[]>([
     '[05.12.01] Memulai Cloudflare Zero Trust Tunnel (HTTP/2) ke http://localhost:3000...',
-    '[05.12.01] INF Starting tunnel tunnelID=99e7da79-8346-424d-b9ab-d4d5f14fb889',
+    '[05.12.01] INF Starting tunnel tunnelID=6fb015b2-c7b5-4ca0-81b6-c28eefa6e4e4',
     '[05.12.01] INF Version 2026.9.3 (GOOS: linux, GoArch: amd64, protocol: http2)',
     '[05.12.02] INF Registered tunnel connection connIndex=0 location=sin06 protocol=http2',
     '[05.12.02] INF Registered tunnel connection connIndex=1 location=cgk01 protocol=http2',
@@ -610,7 +610,7 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2 font-bold text-rose-300 text-xs">
                     <AlertTriangle className="h-4 w-4 text-rose-400 shrink-0" />
-                    <span>Diagnostik Rute Tunnel &amp; CNAME (<code>servercloud.{rootDomain}</code>)</span>
+                    <span>Diagnostik Rute Tunnel &amp; CNAME (<code>cloudpro.{rootDomain}</code> &amp; <code>servercloud.{rootDomain}</code>)</span>
                   </div>
                   <button
                     type="button"
@@ -939,15 +939,30 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
                     </td>
                   </tr>
                 ))}
+                <tr className="bg-emerald-500/5 dark:bg-emerald-950/20 border-l-4 border-emerald-500">
+                  <td className="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-400">
+                    cloudpro.{rootDomain}
+                    <span className="ml-2 rounded bg-emerald-500/15 px-2 py-0.5 font-sans text-[10px] font-bold text-emerald-600 dark:text-emerald-300">
+                      Web Panel Admin Resmi
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 font-sans text-slate-600 dark:text-slate-300">
+                    Dashboard &amp; Portal Utama Cloud PRO Enterprise
+                  </td>
+                  <td className="px-4 py-3 text-sky-600 dark:text-sky-400">http://localhost:3000</td>
+                  <td className="px-4 py-3 text-right font-sans text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                    Resmi (Online)
+                  </td>
+                </tr>
                 <tr className="bg-slate-50/60 dark:bg-slate-950/50">
                   <td className="px-4 py-3 font-bold text-indigo-600 dark:text-indigo-400">
                     servercloud.{rootDomain}
                     <span className="ml-2 rounded bg-indigo-500/10 px-2 py-0.5 font-sans text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
-                      Subdomain Panel Cloud
+                      Subdomain Panel Alternatif
                     </span>
                   </td>
                   <td className="px-4 py-3 font-sans text-slate-600 dark:text-slate-300">
-                    Dashboard Control Panel Server Cloud PRO (Atau Custom Subdomain)
+                    Dashboard Control Panel Server Cloud PRO (Cadangan)
                   </td>
                   <td className="px-4 py-3 text-sky-600 dark:text-sky-400">http://localhost:3000</td>
                   <td className="px-4 py-3 text-right font-sans text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">

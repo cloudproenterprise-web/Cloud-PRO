@@ -21,10 +21,10 @@ export const SslManager: React.FC<SslManagerProps> = ({ account }) => {
   const { currentUser } = useAuth();
   const { showToast, refreshAll } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
   const [isIssuing, setIsIssuing] = useState(false);
-  const [forceHttps, setForceHttps] = useState(account.forceHttps);
+  const [forceHttps, setForceHttps] = useState(account?.forceHttps || false);
 
   const handleIssueSsl = async () => {
     setIsIssuing(true);

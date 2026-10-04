@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Globe,
   PlusCircle,
@@ -38,16 +38,16 @@ export const DomainSubdomainManager: React.FC<DomainSubdomainManagerProps> = ({
   const { currentUser } = useAuth();
   const { showToast, refreshAll, confirmAction } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
-  const [domains, setDomains] = useState<DomainEntity[]>(() => db.getDomains(account.id));
+  const [domains, setDomains] = useState<DomainEntity[]>(() => account?.id ? db.getDomains(account.id) : []);
   const [showSubdomainModal, setShowSubdomainModal] = useState(false);
   const [showAddonModal, setShowAddonModal] = useState(false);
   const [previewTarget, setPreviewTarget] = useState<{ domain: string; docRoot: string } | null>(null);
 
   // Subdomain form states
   const [subPrefix, setSubPrefix] = useState('');
-  const [parentDomain, setParentDomain] = useState(account.primaryDomain);
+  const [parentDomain, setParentDomain] = useState(account?.primaryDomain || '');
   const [subDocRoot, setSubDocRoot] = useState('');
   const [isCustomSubDocRoot, setIsCustomSubDocRoot] = useState(false);
   const [subPhpVersion, setSubPhpVersion] = useState<PhpVersion>('7.4');
@@ -61,14 +61,24 @@ export const DomainSubdomainManager: React.FC<DomainSubdomainManagerProps> = ({
   const [isSubmittingAddon, setIsSubmittingAddon] = useState(false);
 
   useEffect(() => {
-    setDomains([...db.getDomains(account.id)]);
-    setParentDomain(account.primaryDomain);
-  }, [account.id, account.primaryDomain]);
+    if (account?.id) {
+      setDomains([...db.getDomains(account.id)]);
+      setParentDomain(account.primaryDomain || '');
+    }
+  }, [account?.id, account?.primaryDomain]);
 
   // Refresh domain list
   const reloadDomains = () => {
     setDomains([...db.getDomains(account.id)]);
   };
+
+  const currentPlan = useMemo(() => {
+    return db.getHostingPlans().find(p => p.id === account?.planId);
+  }, [account?.planId]);
+
+  const maxSubdomains = currentPlan?.maxSubdomains ?? (currentPlan?.maxDomains ? currentPlan.maxDomains * 5 : 10);
+  const currentSubdomainsCount = domains.filter(d => d.type === 'subdomain').length;
+  const isSubdomainLimitReached = maxSubdomains < 999 && currentSubdomainsCount >= maxSubdomains;
 
   const isPresetActive = (prefix: string): boolean => {
     const targetFull = `${prefix.toLowerCase()}.${account.primaryDomain.toLowerCase()}`;
@@ -95,6 +105,14 @@ export const DomainSubdomainManager: React.FC<DomainSubdomainManagerProps> = ({
 
   const handleCreateSubdomain = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubdomainLimitReached) {
+      showToast(
+        'error',
+        'Batas Kuota Subdomain Tercapai',
+        `Akun telah mencapai batas maksimum ${maxSubdomains} subdomain pada paket ${currentPlan?.name || 'ini'}. Silakan upgrade paket hosting.`
+      );
+      return;
+    }
     if (!subPrefix.trim()) {
       showToast('error', 'Validasi Gagal', 'Prefix subdomain tidak boleh kosong.');
       return;
@@ -137,6 +155,14 @@ export const DomainSubdomainManager: React.FC<DomainSubdomainManagerProps> = ({
   };
 
   const handleQuickPresetSubdomain = async (prefix: string, phpVer: PhpVersion) => {
+    if (isSubdomainLimitReached && !isPresetActive(prefix)) {
+      showToast(
+        'error',
+        'Batas Kuota Subdomain Tercapai',
+        `Akun telah mencapai batas maksimum ${maxSubdomains} subdomain pada paket ${currentPlan?.name || 'ini'}. Silakan upgrade paket hosting.`
+      );
+      return;
+    }
     setIsSubmittingSub(true);
     try {
       const cleanPrefix = prefix.toLowerCase().trim();
@@ -249,14 +275,24 @@ export const DomainSubdomainManager: React.FC<DomainSubdomainManagerProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/80 text-xs font-mono">
+            <Globe className="h-3.5 w-3.5 text-sky-500" />
+            <span className="text-slate-500">Kuota Subdomain:</span>
+            <span className={`font-bold ${isSubdomainLimitReached ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
+              {currentSubdomainsCount} / {maxSubdomains >= 999 ? 'Unlimited' : maxSubdomains}
+            </span>
+          </div>
+
           <button
+            disabled={isSubdomainLimitReached}
             onClick={() => {
               setSubPrefix('');
               setIsCustomSubDocRoot(false);
               setShowSubdomainModal(true);
             }}
-            className="flex items-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-sky-500 shadow-xs cursor-pointer transition-colors"
+            title={isSubdomainLimitReached ? 'Batas kuota subdomain paket ini telah penuh' : 'Buat subdomain baru'}
+            className="flex items-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer transition-colors"
           >
             <PlusCircle className="h-3.5 w-3.5" />
             <span>+ Buat Subdomain</span>

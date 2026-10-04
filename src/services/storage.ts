@@ -638,7 +638,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     {
       id: 'cron-01',
       accountId: 'acc-rdm-01',
-      command: 'php /home/madrasah/public_html/artisan schedule:run >> /dev/null 2>&1',
+      command: 'php /home/cloudpro/public_html/artisan schedule:run >> /dev/null 2>&1',
       schedule: '0 2 * * *',
       description: 'Daily Automated RDM Database Sync & Backup',
       isActive: true,
@@ -1081,7 +1081,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
   optimizedMedia: [
     {
       id: 'med-01',
-      accountId: 'acc-madrasah-01',
+      accountId: 'acc-rdm-01',
       fileName: 'upacara_hari_guru_nasional_2026.webp',
       originalFileName: 'IMG_20260925_073014_RAW_CAMERA.jpg',
       mimeType: 'image/webp',
@@ -1098,7 +1098,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     },
     {
       id: 'med-02',
-      accountId: 'acc-madrasah-01',
+      accountId: 'acc-rdm-01',
       fileName: 'wisuda_tahfidz_al_quran_angkatan_viii.webp',
       originalFileName: 'DSC_0982_HIGHRES_FULL.png',
       mimeType: 'image/webp',
@@ -1115,7 +1115,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     },
     {
       id: 'med-03',
-      accountId: 'acc-madrasah-01',
+      accountId: 'acc-rdm-01',
       fileName: 'fasilitas_laboratorium_komputer_cbt.webp',
       originalFileName: 'PXL_20260920_112000.jpg',
       mimeType: 'image/webp',
@@ -1189,6 +1189,18 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       phpVersion: '8.2',
       sslStatus: 'active',
       createdAt: '2026-09-29T10:15:00Z',
+    },
+    {
+      id: 'dom-kartu-pelajar-01',
+      accountId: 'acc-rdm-01',
+      domain: 'kartu-pelajar.denbaguse.my.id',
+      type: 'subdomain',
+      parentDomain: 'denbaguse.my.id',
+      subdomainPrefix: 'kartu-pelajar',
+      documentRoot: '/home/cloudpro/public_html/kartu-pelajar',
+      phpVersion: '8.2',
+      sslStatus: 'active',
+      createdAt: '2026-10-04T02:00:00Z',
     },
     {
       id: 'dom-primary-02',
@@ -1504,13 +1516,19 @@ class StorageService {
           databases: (hasAccounts && Array.isArray(parsed.databases) && parsed.databases.length > 0) ? parsed.databases : INITIAL_STATE.databases,
           emailMailboxes: (hasAccounts && Array.isArray(parsed.emailMailboxes) && parsed.emailMailboxes.length > 0) ? parsed.emailMailboxes : INITIAL_STATE.emailMailboxes,
           dnsRecords: (hasAccounts && Array.isArray(parsed.dnsRecords) && parsed.dnsRecords.length > 0) ? parsed.dnsRecords : INITIAL_STATE.dnsRecords,
-          cronJobs: (hasAccounts && Array.isArray(parsed.cronJobs) && parsed.cronJobs.length > 0) ? parsed.cronJobs : INITIAL_STATE.cronJobs,
+          cronJobs: ((hasAccounts && Array.isArray(parsed.cronJobs) && parsed.cronJobs.length > 0) ? parsed.cronJobs : INITIAL_STATE.cronJobs).map((c: any) => ({
+            ...c,
+            command: (c.command || '').replace('/home/madrasah', '/home/cloudpro'),
+          })),
           vpsInstances: (parsed.vpsInstances && parsed.vpsInstances.length > 0) ? parsed.vpsInstances : INITIAL_STATE.vpsInstances,
           vpsSnapshots: (parsed.vpsSnapshots && parsed.vpsSnapshots.length > 0) ? parsed.vpsSnapshots : INITIAL_STATE.vpsSnapshots,
           vpsFirewallRules: (parsed.vpsFirewallRules && parsed.vpsFirewallRules.length > 0) ? parsed.vpsFirewallRules : INITIAL_STATE.vpsFirewallRules,
           nameserverConfigs: (parsed.nameserverConfigs && parsed.nameserverConfigs.length > 0) ? parsed.nameserverConfigs : INITIAL_STATE.nameserverConfigs,
           r2Configs: (parsed.r2Configs && parsed.r2Configs.length > 0) ? parsed.r2Configs : INITIAL_STATE.r2Configs,
-          optimizedMedia: (parsed.optimizedMedia && parsed.optimizedMedia.length > 0) ? parsed.optimizedMedia : INITIAL_STATE.optimizedMedia,
+          optimizedMedia: ((parsed.optimizedMedia && parsed.optimizedMedia.length > 0) ? parsed.optimizedMedia : INITIAL_STATE.optimizedMedia).map((m: any) => ({
+            ...m,
+            accountId: m.accountId === 'acc-madrasah-01' ? 'acc-rdm-01' : m.accountId,
+          })),
           domains: loadedDomains,
           databaseTables: parsed.databaseTables || INITIAL_STATE.databaseTables,
           deletedIds: Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [],
@@ -1805,12 +1823,13 @@ class StorageService {
         for (const [accId, sFiles] of Object.entries(data.vhostStore.filesByAccount)) {
           if (Array.isArray(sFiles)) {
             for (const sf of sFiles as any[]) {
-              if (sf && sf.type === 'file' && typeof sf.content === 'string') {
+              if (sf && (sf.type === 'file' || sf.type === 'directory')) {
                 const normPath = this.normalizeVirtualPath(sf.path || '').toLowerCase();
                 const key = `${accId}:${normPath}`;
                 const prev = fileMap.get(key);
 
                 if (
+                  typeof sf.content === 'string' &&
                   sf.content.includes('Website Berhasil Disinkronkan!') &&
                   prev &&
                   String(prev.id || '').startsWith('vf-clone-') &&
@@ -1819,20 +1838,18 @@ class StorageService {
                   continue;
                 }
 
-                if (!prev || prev.content !== sf.content) {
-                  fileMap.set(key, {
-                    ...(prev || {}),
-                    id: prev?.id || sf.id || `vf-vault-${Date.now()}`,
-                    accountId: accId,
-                    name: sf.name,
-                    path: sf.path,
-                    type: 'file',
-                    sizeBytes: sf.size || sf.content.length,
-                    permissions: '0644',
-                    updatedAt: new Date().toISOString(),
-                    content: sf.content,
-                  });
-                }
+                fileMap.set(key, {
+                  ...(prev || {}),
+                  id: prev?.id || sf.id || `vf-vault-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                  accountId: accId,
+                  name: sf.name,
+                  path: sf.path,
+                  type: sf.type || 'file',
+                  sizeBytes: sf.size || sf.sizeBytes || (typeof sf.content === 'string' ? sf.content.length : 0),
+                  permissions: sf.type === 'directory' ? '0755' : '0644',
+                  updatedAt: sf.updatedAt || new Date().toISOString(),
+                  content: typeof sf.content === 'string' ? sf.content : prev?.content,
+                });
               }
             }
           }
@@ -2738,14 +2755,11 @@ class StorageService {
           createdAt: acc.createdAt || new Date().toISOString(),
         };
         this.state.domains.push(autoPrimary);
-        this.saveState();
         return [autoPrimary, ...existing];
       }
-      if (stateChanged) this.saveState();
       return existing;
     }
 
-    if (stateChanged) this.saveState();
     return this.state.domains;
   }
 
@@ -3324,7 +3338,6 @@ class StorageService {
   public getNameserverConfigs(): PrivateNameserverConfig[] {
     if (!this.state.nameserverConfigs || this.state.nameserverConfigs.length === 0) {
       this.state.nameserverConfigs = [...(INITIAL_STATE.nameserverConfigs || [])];
-      this.saveState();
     }
     return this.state.nameserverConfigs;
   }
@@ -3412,7 +3425,6 @@ class StorageService {
       if (accountId !== 'acc-rdm-01' && acc && specific.publicCdnDomain.includes('denbaguse.my.id')) {
         specific.publicCdnDomain = `https://media.${cleanDomain}`;
         specific.bucketName = `r2-${cleanSlug}-media`;
-        this.saveState();
       }
       return specific;
     }
@@ -3434,7 +3446,6 @@ class StorageService {
         lastSyncedAt: new Date().toISOString(),
       };
       this.state.r2Configs.push(autoBoundConfig);
-      this.saveState();
       return autoBoundConfig;
     }
 

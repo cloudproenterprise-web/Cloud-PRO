@@ -249,29 +249,33 @@ export const BillingOverview: React.FC = () => {
     const accessibleIds = new Set(accessibleAccounts.map(a => a.id));
     if (currentUser.role === 'reseller') {
       return (
+        inv.userId !== 'usr-admin-01' &&
+        inv.userEmail !== 'admin@denbaguse.my.id' &&
+        inv.userEmail !== 'myboskue@gmail.com' &&
         (inv.resellerId === currentUser.id ||
           inv.userId === currentUser.id ||
-          inv.id === 'inv-default-unpaid-01' ||
-          (inv.accountId ? accessibleIds.has(inv.accountId) : false)) &&
-        inv.userEmail !== 'admin@denbaguse.my.id'
+          (inv.accountId ? accessibleIds.has(inv.accountId) : false))
       );
     }
     // Customer role: show automatic invoices belonging to this customer or their hosting accounts
     const belongsToCustomer =
       inv.userId === currentUser.id ||
       inv.userEmail === currentUser.email ||
-      inv.userId === 'usr-cust-02' ||
       (inv.accountId ? accessibleIds.has(inv.accountId) : false);
-    return belongsToCustomer && inv.userEmail !== 'admin@denbaguse.my.id';
+    return belongsToCustomer && inv.userEmail !== 'admin@denbaguse.my.id' && inv.userId !== 'usr-admin-01';
   });
 
   // Split Reseller invoices into Function 1 (Cloud PRO -> Reseller) and Function 2 (Reseller -> Clients)
   const resellerCloudProInvoices = roleScopedInvoices.filter(inv => isCloudProToResellerInvoice(inv));
   const resellerClientInvoices = roleScopedInvoices.filter(inv => !isCloudProToResellerInvoice(inv));
 
-  // Auto-seed official Cloud PRO -> Reseller subscription invoice so Function 1 is always ready
+  const hasSeededResellerInvRef = useRef(false);
+  const hasSeededCustomerInvRef = useRef(false);
+
+  // Auto-seed official Cloud PRO -> Reseller subscription invoice so Function 1 is always ready (runs once)
   useEffect(() => {
-    if (isResellerRole && resellerCloudProInvoices.length === 0) {
+    if (isResellerRole && resellerCloudProInvoices.length === 0 && !hasSeededResellerInvRef.current) {
+      hasSeededResellerInvRef.current = true;
       const now = new Date();
       const due = new Date(now.getTime() + 7 * 86400000);
       const resellerBrand = currentResellerProfile?.brandName || currentUser.name;
@@ -301,13 +305,13 @@ export const BillingOverview: React.FC = () => {
         ],
       };
       db.saveInvoice(cloudProInv);
-      refreshAll();
     }
   }, [isResellerRole, resellerCloudProInvoices.length, currentUser.id]);
 
-  // Auto-generate automatic hosting invoice for Customer if none exists yet
+  // Auto-generate automatic hosting invoice for Customer if none exists yet (runs once)
   useEffect(() => {
-    if (isCustomerRole && accessibleAccounts.length > 0 && roleScopedInvoices.length === 0) {
+    if (isCustomerRole && accessibleAccounts.length > 0 && roleScopedInvoices.length === 0 && !hasSeededCustomerInvRef.current) {
+      hasSeededCustomerInvRef.current = true;
       const acc = accessibleAccounts[0];
       const now = new Date();
       const due = new Date(now.getTime() + 7 * 86400000);
@@ -338,7 +342,6 @@ export const BillingOverview: React.FC = () => {
         ],
       };
       db.saveInvoice(autoInv);
-      refreshAll();
     }
   }, [isCustomerRole, accessibleAccounts.length, roleScopedInvoices.length]);
 

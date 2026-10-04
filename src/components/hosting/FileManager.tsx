@@ -60,7 +60,7 @@ export const FileManager: React.FC<FileManagerProps> = ({ account, initialPath, 
   const { currentUser } = useAuth();
   const { showToast, confirmAction } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
   // Resolve path cleanly (strips /home/<user> if present)
   const resolveCleanPath = (p?: string) => {
@@ -129,7 +129,7 @@ export const FileManager: React.FC<FileManagerProps> = ({ account, initialPath, 
   const [isDiskScanning, setIsDiskScanning] = useState(false);
   const [isCleaningDisk, setIsCleaningDisk] = useState(false);
   const [isQuickPulling, setIsQuickPulling] = useState(false);
-  const [diskScanAttempted, setDiskScanAttempted] = useState<Record<string, boolean>>({});
+  const diskScanAttemptedRef = useRef<Record<string, boolean>>({});
 
   const allFiles = db.getVirtualFiles(account.id);
   const accountDomains = db.getDomains(account.id);
@@ -323,12 +323,13 @@ export const FileManager: React.FC<FileManagerProps> = ({ account, initialPath, 
   };
 
   useEffect(() => {
-    // If currentItems is empty for this folder and not yet scanned, auto-scan disk once
-    if (currentItems.length === 0 && !diskScanAttempted[currentPath]) {
-      setDiskScanAttempted(prev => ({ ...prev, [currentPath]: true }));
+    // Safely scan physical disk once per directory to sync active files
+    const scanKey = `${account.id}:${currentPath}`;
+    if (!diskScanAttemptedRef.current[scanKey]) {
+      diskScanAttemptedRef.current[scanKey] = true;
       syncFromDisk(currentPath, false);
     }
-  }, [currentPath, currentItems.length, diskScanAttempted, filesVersion]);
+  }, [currentPath, account.id]);
 
   const handleQuickPullSiakad = async () => {
     setIsQuickPulling(true);

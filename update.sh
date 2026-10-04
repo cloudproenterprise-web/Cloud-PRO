@@ -6,6 +6,31 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR" 2>/dev/null || true
 
+# Dukungan cek cepat tanpa update: bash update.sh --check
+if [ "$1" == "--check" ] || [ "$1" == "-c" ] || [ "$1" == "check" ]; then
+  echo "========================================================"
+  echo " [CloudPRO] Memeriksa Kommit Terbaru dari GitHub...     "
+  echo "========================================================"
+  git fetch origin main -q 2>/dev/null || true
+  LOCAL_C="$(git rev-parse --short HEAD 2>/dev/null || echo '-')"
+  LOCAL_M="$(git log -1 --pretty=%s 2>/dev/null || echo '-')"
+  REMOTE_C="$(git rev-parse --short origin/main 2>/dev/null || echo '-')"
+  REMOTE_M="$(git log -1 --pretty=%s origin/main 2>/dev/null || echo '-')"
+  REMOTE_D="$(git log -1 --pretty='%cd (%cr)' origin/main 2>/dev/null || echo '-')"
+
+  echo "● Versi di Server Anda : $LOCAL_C ($LOCAL_M)"
+  echo "● Versi Terbaru GitHub : $REMOTE_C ($REMOTE_M)"
+  echo "● Tanggal Rilis GitHub : $REMOTE_D"
+  echo "--------------------------------------------------------"
+  if [ "$LOCAL_C" == "$REMOTE_C" ] && [ "$LOCAL_C" != "-" ]; then
+    echo "✅ STATUS: Server Anda SUDAH menggunakan versi GitHub paling terbaru!"
+  else
+    echo "🌟 STATUS: DITEMUKAN VERSI BARU! Jalankan: bash update.sh"
+  fi
+  echo "========================================================"
+  exit 0
+fi
+
 echo "========================================================"
 echo " [CloudPRO] Memulai Update Server & Self-Healing SSH    "
 echo " Direktori Kerja: $SCRIPT_DIR"
@@ -41,8 +66,16 @@ heal_shell_rc() {
 
   # 4. Pasang alias update yang bersih tanpa mengunci TTY
   sed -i '/alias update=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias cek-update=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias versi=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias git-log=/d' "$RC_FILE" 2>/dev/null || true
+  sed -i '/alias git-status=/d' "$RC_FILE" 2>/dev/null || true
   if [[ "$RC_FILE" == *".bashrc" ]]; then
     echo "alias update='bash \"$SCRIPT_DIR/update.sh\"'" >> "$RC_FILE"
+    echo "alias cek-update='bash \"$SCRIPT_DIR/update.sh\" --check'" >> "$RC_FILE"
+    echo "alias versi='git -C \"$SCRIPT_DIR\" log -1 --format=\"[KOMMIT AKTIF] %h%n[JUDUL]        %s%n[TANGGAL]      %cd (%cr)%n[AUTHOR]       %an\"'" >> "$RC_FILE"
+    echo "alias git-log='git -C \"$SCRIPT_DIR\" log -1 --oneline'" >> "$RC_FILE"
+    echo "alias git-status='git -C \"$SCRIPT_DIR\" status'" >> "$RC_FILE"
   fi
 }
 
@@ -55,26 +88,134 @@ for TARGET_HOME in /root /home/*; do
       chmod 700 "$TARGET_HOME/.ssh" 2>/dev/null || true
       chmod 600 "$TARGET_HOME/.ssh/authorized_keys" 2>/dev/null || true
     fi
+    # Pasang update.sh langsung di root Home user agar 'bash update.sh' dari folder ~ tidak pernah error 'No such file'
+    if [ "$TARGET_HOME" != "$SCRIPT_DIR" ]; then
+      cat << 'WRAPPER_EOF' > "$TARGET_HOME/update.sh"
+#!/usr/bin/env bash
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+for candidate in "$SCRIPT_DIR/CloudPRO-Server" "$SCRIPT_DIR/Cloud-PRO" "/home/cloudpro/CloudPRO-Server" "/root/CloudPRO-Server" "/root/Cloud-PRO" "/var/www/Cloud-PRO" "/app/applet"; do
+  if [ -f "$candidate/update.sh" ] && [ "$candidate" != "$SCRIPT_DIR" ]; then
+    cd "$candidate" && exec bash update.sh "$@"
+  fi
+done
+echo "[ERROR] Direktori CloudPRO tidak ditemukan."
+exit 1
+WRAPPER_EOF
+      chmod +x "$TARGET_HOME/update.sh" 2>/dev/null || true
+    fi
   fi
 done
 
-# Jalankan sshd secara non-blocking (tanpa memicu prompt password polkit yang bikin hang)
+# Pasang perintah global /usr/local/bin/cloudpro & /usr/local/bin/update
+cat << 'BIN_EOF' > /tmp/cloudpro-global-bin
+#!/usr/bin/env bash
+SCRIPT_PATH=""
+for candidate in "/home/cloudpro/CloudPRO-Server" "/root/CloudPRO-Server" "/root/Cloud-PRO" "/var/www/Cloud-PRO" "$HOME/CloudPRO-Server" "$HOME/Cloud-PRO" "/app/applet"; do
+  if [ -f "$candidate/update.sh" ]; then
+    SCRIPT_PATH="$candidate"
+    break
+  fi
+done
+
+if [ -z "$SCRIPT_PATH" ]; then
+  echo "[ERROR] Direktori CloudPRO tidak ditemukan."
+  exit 1
+fi
+
+case "$1" in
+  update|up)
+    shift
+    cd "$SCRIPT_PATH" && exec bash update.sh "$@"
+    ;;
+  restart|reload)
+    pm2 restart cloudpro --update-env 2>/dev/null || pm2 restart all
+    echo "[OK] Service CloudPRO berhasil di-restart!"
+    ;;
+  logs|log)
+    pm2 logs cloudpro --lines 30
+    ;;
+  status|stat)
+    echo "========================================="
+    echo "  CloudPRO Enterprise Server Status"
+    echo "========================================="
+    echo "Direktori  : $SCRIPT_PATH"
+    echo "Versi Git  : $(git -C "$SCRIPT_PATH" rev-parse --short HEAD 2>/dev/null) - $(git -C "$SCRIPT_PATH" log -1 --pretty=%s 2>/dev/null)"
+    echo "Port 3000  : $(curl -sI --max-time 3 http://127.0.0.1:3000/ | grep -q HTTP && echo '🟢 ONLINE (Aktif)' || echo '🔴 OFFLINE')"
+    echo "Tunnel CF  : $(pgrep -f "cloudflared.*tunnel" >/dev/null && echo '🟢 AKTIF' || echo '⚪ TIDAK AKTIF')"
+    echo "URL Panel  : https://cloudpro.denbaguse.my.id"
+    echo "URL Web SSH: https://cloudpro.denbaguse.my.id/ssh"
+    echo "========================================="
+    ;;
+  *)
+    if [ -n "$1" ]; then
+      cd "$SCRIPT_PATH" && exec bash update.sh "$@"
+    else
+      echo "========================================="
+      echo "  CloudPRO Enterprise Command Line"
+      echo "========================================="
+      echo "Direktori  : $SCRIPT_PATH"
+      echo "Versi Git  : $(git -C "$SCRIPT_PATH" rev-parse --short HEAD 2>/dev/null) - $(git -C "$SCRIPT_PATH" log -1 --pretty=%s 2>/dev/null)"
+      echo "Status     : $(curl -sI --max-time 3 http://127.0.0.1:3000/ | grep -q HTTP && echo '🟢 Online di Port 3000' || echo '🔴 Offline')"
+      echo ""
+      echo "Perintah yang Tersedia:"
+      echo "  cloudpro update    -> Menarik update terbaru dari GitHub & me-reload server"
+      echo "  cloudpro restart   -> Me-restart service server PM2"
+      echo "  cloudpro logs      -> Melihat log aktivitas server"
+      echo "  cloudpro status    -> Memeriksa status kesehatan server"
+      echo "========================================="
+    fi
+    ;;
+esac
+BIN_EOF
+
+chmod +x /tmp/cloudpro-global-bin 2>/dev/null || true
+if [ "$(id -u)" -eq 0 ]; then
+  cp -f /tmp/cloudpro-global-bin /usr/local/bin/cloudpro 2>/dev/null || true
+  cp -f /tmp/cloudpro-global-bin /usr/local/bin/update 2>/dev/null || true
+else
+  sudo -n cp -f /tmp/cloudpro-global-bin /usr/local/bin/cloudpro 2>/dev/null || true
+  sudo -n cp -f /tmp/cloudpro-global-bin /usr/local/bin/update 2>/dev/null || true
+fi
+rm -f /tmp/cloudpro-global-bin 2>/dev/null || true
+
+# Jalankan sshd secara non-blocking & pasang keepalive agar koneksi SSH tidak pernah putus/dc otomatis
+SSHD_CFG="/etc/ssh/sshd_config"
+if [ -f "$SSHD_CFG" ]; then
+  if [ "$(id -u)" -eq 0 ]; then
+    sed -i '/ClientAliveInterval/d' "$SSHD_CFG" 2>/dev/null || true
+    sed -i '/ClientAliveCountMax/d' "$SSHD_CFG" 2>/dev/null || true
+    sed -i '/TCPKeepAlive/d' "$SSHD_CFG" 2>/dev/null || true
+    echo "ClientAliveInterval 30" >> "$SSHD_CFG"
+    echo "ClientAliveCountMax 120" >> "$SSHD_CFG"
+    echo "TCPKeepAlive yes" >> "$SSHD_CFG"
+  fi
+fi
+
 if [ "$(id -u)" -eq 0 ]; then
   mkdir -p /run/sshd 2>/dev/null || true
-  service ssh start 2>/dev/null < /dev/null || true
+  service ssh restart 2>/dev/null || service ssh start 2>/dev/null < /dev/null || true
 else
   sudo -n mkdir -p /run/sshd 2>/dev/null || true
-  sudo -n service ssh start 2>/dev/null < /dev/null || true
+  sudo -n service ssh restart 2>/dev/null || sudo -n service ssh start 2>/dev/null < /dev/null || true
 fi
-echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH telah diperbaiki!"
+echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH (Anti-Disconnect) telah dipasang!"
 
 echo "[1/3] Mengambil kode terbaru dari GitHub..."
+GITHUB_TOKEN="${GITHUB_TOKEN:-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}"
+DEFAULT_REPO="https://x-access-token:${GITHUB_TOKEN}@github.com/siakadmadrasah-lang/CloudPRO-Server.git"
 CURRENT_ORIGIN="$(git remote get-url origin 2>/dev/null || echo "")"
-if [ -n "$CURRENT_ORIGIN" ]; then
-  REPO_URL="$CURRENT_ORIGIN"
+
+if [ -n "$CURRENT_ORIGIN" ] && [[ "$CURRENT_ORIGIN" == *"github.com"* ]]; then
+  if [[ "$CURRENT_ORIGIN" != *"ghp_"* ]] && [[ "$CURRENT_ORIGIN" != *"x-access-token"* ]]; then
+    REPO_URL="$DEFAULT_REPO"
+  else
+    REPO_URL="$CURRENT_ORIGIN"
+  fi
 else
-  REPO_URL="https://github.com/siakadmadrasah-lang/CloudPRO-Server.git"
+  REPO_URL="$DEFAULT_REPO"
 fi
+
+export GIT_TERMINAL_PROMPT=0
 
 if [ ! -d ".git" ]; then
   echo "[INFO] Folder .git belum terdeteksi. Menginisialisasi repository Git otomatis..."
@@ -94,13 +235,34 @@ for STATE_FILE in cloudpro-full-state.json cloudpro-vhost-store.json cloudpro-tu
   fi
 done
 
+PREV_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo 'awal')"
+PREV_MSG="$(git log -1 --pretty=%s 2>/dev/null || echo '-')"
+
 git branch -D origin/main 2>/dev/null || true
-git fetch origin main
-if git merge-base --is-ancestor FETCH_HEAD HEAD 2>/dev/null && [ "$(git rev-parse HEAD 2>/dev/null)" != "$(git rev-parse FETCH_HEAD 2>/dev/null)" ]; then
-  echo "[INFO] Commit lokal sudah lebih baru dari GitHub origin/main. Mempertahankan versi terbaru..."
+echo " > Menghubungi GitHub & mengunduh kommit terbaru..."
+git fetch origin main --force -q
+
+NEW_COMMIT="$(git rev-parse --short FETCH_HEAD 2>/dev/null || echo 'unknown')"
+NEW_MSG="$(git log -1 --pretty=%s FETCH_HEAD 2>/dev/null || echo '-')"
+NEW_DATE="$(git log -1 --pretty='%cd (%cr)' FETCH_HEAD 2>/dev/null || echo '-')"
+NEW_AUTHOR="$(git log -1 --pretty='%an' FETCH_HEAD 2>/dev/null || echo '-')"
+
+echo "--------------------------------------------------------"
+echo " [STATUS SINKRONISASI GITHUB]"
+echo " ● Versi Lokal Sebelumnya : $PREV_COMMIT ($PREV_MSG)"
+echo " ● Versi Kommit GitHub    : $NEW_COMMIT"
+echo " ● Judul Kommit Terbaru   : $NEW_MSG"
+echo " ● Tanggal Rilis GitHub   : $NEW_DATE"
+echo " ● Author / Developer     : $NEW_AUTHOR"
+if [ "$PREV_COMMIT" != "$NEW_COMMIT" ] && [ "$PREV_COMMIT" != "awal" ]; then
+  echo " ● Status Sinkronisasi    : 🌟 DITEMUKAN PEMBARUAN BARU (Menerapkan ke Server...)"
 else
-  git reset --hard FETCH_HEAD
+  echo " ● Status Sinkronisasi    : ✅ SUDAH VERSI TERBARU (Menyinkronkan & menyegarkan service...)"
 fi
+echo "--------------------------------------------------------"
+
+git reset --hard FETCH_HEAD
+git clean -fd -e .cloudpro-data -e public_html -e dist 2>/dev/null || true
 git gc --prune=now -q 2>/dev/null || true
 
 # Pulihkan kembali state dari Persistent Vault ke .cloudpro-data setelah git reset
@@ -110,9 +272,20 @@ for STATE_FILE in cloudpro-full-state.json cloudpro-vhost-store.json cloudpro-tu
   fi
 done
 
-echo "[2/3] Menyinkronkan Service CloudPRO (Bebas Hang & Bebas Konflik Port 3000)..."
+echo "[2/3] Meng-compile aset web terbaru & menyinkronkan Service CloudPRO..."
 export NODE_ENV=production
 export PATH="$PATH:/usr/local/bin:$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node 2>/dev/null | tail -n 1)/bin"
+
+# Compile server backend cepat dan pastikan aset frontend dist/ tersedia
+if command -v npm &> /dev/null; then
+  if [ ! -f "dist/index.html" ] || [ ! -d "dist/assets" ]; then
+    echo "[BUILD] Meng-compile aset frontend dist..."
+    npm run build 2>&1 | tail -n 5 || true
+  else
+    echo "[BUILD] Meng-compile server.js terbaru..."
+    npm run build:server 2>&1 | tail -n 5 || true
+  fi
+fi
 
 # Hentikan proses node server.js / tsx server.ts liar di luar PM2 agar tidak berebut port 3000 (tanpa memutus terminal)
 if [ "$(id -u)" -ne 0 ]; then
@@ -120,14 +293,12 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 if command -v pm2 &> /dev/null; then
-  # Jika PM2 belum menjalankan cloudpro, bersihkan dulu proses node server.js lama di port 3000
-  if ! pm2 describe cloudpro &>/dev/null; then
-    OLD_PIDS=$(pgrep -f "node.*server\.js|tsx.*server\.ts" 2>/dev/null | grep -v "^$$\$" | grep -v "^$PPID\$" || true)
-    for pid in $OLD_PIDS; do
-      kill -9 "$pid" 2>/dev/null || sudo -n kill -9 "$pid" 2>/dev/null || true
-    done
-  fi
-  pm2 restart cloudpro --update-env 2>/dev/null || pm2 start server.js --name cloudpro --update-env 2>/dev/null || true
+  # Bersihkan dulu proses liar yang mengunci port 3000
+  OLD_PIDS=$(pgrep -f "node.*server\.js|tsx.*server\.ts" 2>/dev/null | grep -v "^$$\$" | grep -v "^$PPID\$" || true)
+  for pid in $OLD_PIDS; do
+    kill -9 "$pid" 2>/dev/null || sudo -n kill -9 "$pid" 2>/dev/null || true
+  done
+  pm2 restart cloudpro --update-env 2>/dev/null || pm2 start ecosystem.config.cjs 2>/dev/null || pm2 restart all 2>/dev/null || pm2 start server.js --name cloudpro --update-env 2>/dev/null || true
   pm2 save < /dev/null 2>/dev/null || true
   echo "[OK] Server CloudPRO aktif & berjalan segar via PM2!"
 else
@@ -162,12 +333,86 @@ CLEAN_RES=$(curl -s --max-time 5 -X POST http://127.0.0.1:3000/api/system/clean-
 if [ -n "$CLEAN_RES" ]; then
   echo " [DISK CLEANER] Sampah sisa instalasi lama berhasil dibersihkan otomatis!"
 fi
+
+# -------------------------------------------------------------------------
+# [AUTO-SYNC PERMANEN] PASANG CRONJOB OTOMATIS TIAP 5 MENIT
+# Server akan secara otomatis menarik update GitHub tanpa harus buka SSH lagi
+# -------------------------------------------------------------------------
+AUTO_SYNC_SCRIPT="/usr/local/bin/cloudpro-auto-sync.sh"
+if [ "$(id -u)" -eq 0 ] || sudo -n true 2>/dev/null; then
+  cat << 'EOF' > /tmp/cloudpro-auto-sync.sh
+#!/usr/bin/env bash
+for d in "/home/cloudpro/CloudPRO-Server" "/root/CloudPRO-Server" "$HOME/CloudPRO-Server" /home/*/CloudPRO-Server /root/Cloud-PRO /var/www/Cloud-PRO /home/*/*/Cloud-PRO /home/*/Cloud-PRO /app/applet; do
+  if [ -d "$d/.git" ]; then
+    cd "$d" || exit 0
+    git fetch origin main -q 2>/dev/null || exit 0
+    LOCAL_COMMIT=$(git rev-parse HEAD 2>/dev/null)
+    REMOTE_COMMIT=$(git rev-parse origin/main 2>/dev/null)
+    if [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ] && [ -n "$REMOTE_COMMIT" ]; then
+      git reset --hard origin/main -q 2>/dev/null
+      if command -v npm &>/dev/null; then
+        npm run build:server 2>&1 >/dev/null || true
+      fi
+      if command -v pm2 &>/dev/null; then
+        pm2 restart cloudpro --update-env 2>/dev/null || pm2 start ecosystem.config.cjs 2>/dev/null || true
+      fi
+    fi
+    break
+  fi
+done
+EOF
+  if [ "$(id -u)" -eq 0 ]; then
+    mv -f /tmp/cloudpro-auto-sync.sh "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    chmod +x "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    if ! crontab -l 2>/dev/null | grep -q "cloudpro-auto-sync.sh"; then
+      (crontab -l 2>/dev/null; echo "*/5 * * * * $AUTO_SYNC_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
+    fi
+  else
+    sudo -n mv -f /tmp/cloudpro-auto-sync.sh "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    sudo -n chmod +x "$AUTO_SYNC_SCRIPT" 2>/dev/null || true
+    if ! crontab -l 2>/dev/null | grep -q "cloudpro-auto-sync.sh"; then
+      (crontab -l 2>/dev/null; echo "*/5 * * * * $AUTO_SYNC_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
+    fi
+  fi
+  echo "[OK] Auto-Sync Otomatis (Tiap 5 Menit) telah aktif! Anda tidak perlu lagi buka SSH untuk update manual."
+fi
+
+LATEST_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo '-')"
+LATEST_FULL="$(git rev-parse HEAD 2>/dev/null || echo '-')"
+LATEST_MSG="$(git log -1 --pretty=%s 2>/dev/null || echo '-')"
+LATEST_DATE="$(git log -1 --pretty='%cd (%cr)' 2>/dev/null || echo '-')"
+LATEST_AUTHOR="$(git log -1 --pretty='%an' 2>/dev/null || echo '-')"
+
 if curl -sI --max-time 5 http://127.0.0.1:3000/ | grep -q "HTTP"; then
   echo "========================================================"
-  echo " >>> UPDATE SUKSES! SERVER AKTIF DI PORT 3000 <<<"
-  echo " [TERVERIFIKASI] Respon server & API Cloud PRO 100% AKTIF!"
-  echo " Buka https://servercloud.denbaguse.my.id atau https://denbaguse.my.id"
+  echo " >>> UPDATE SUKSES! SERVER AKTIF & TERVERIFIKASI <<<"
+  echo "========================================================"
+  echo " [TANDA RESMI VERSI TERBARU GITHUB]:"
+  echo " ● Commit Hash   : $LATEST_COMMIT ($LATEST_FULL)"
+  echo " ● Judul Commit  : $LATEST_MSG"
+  echo " ● Tanggal Rilis : $LATEST_DATE"
+  echo " ● Author        : $LATEST_AUTHOR"
+  echo " ● Port 3000     : AKTIF (HTTP 200 OK)"
+  echo "--------------------------------------------------------"
+  echo " [ALAMAT WEB PANEL AKTIF]:"
+  echo " 👉 Panel Utama (Resmi) : https://cloudpro.denbaguse.my.id"
+  echo " 👉 Panel Cadangan      : https://servercloud.denbaguse.my.id"
+  echo " 👉 Web Virtual Host    : https://denbaguse.my.id"
+  echo "--------------------------------------------------------"
+  echo " [PERINTAH CEPAT DI SSH TERMINAL]:"
+  echo " * Cek Kommit Aktif  : ketik 'versi'"
+  echo " * Cek Update GitHub : ketik 'cek-update'"
+  echo " * Jalankan Update   : ketik 'update'"
+  echo "--------------------------------------------------------"
+  echo " PENTING AGAR TAMPILAN TERBARU LANGSUNG MUNCUL DI BROWSER:"
+  echo " 1. Browser Anda masih menyimpan cache tampilan lama."
+  echo " 2. Tekan tombol CTRL + SHIFT + R (atau CTRL + F5) di PC."
+  echo " 3. Di HP: Buka menu titik tiga di browser -> Muat Ulang,"
+  echo "    atau coba buka lewat Tab Samaran (Incognito Window)."
   echo "========================================================"
 else
-  echo "Server sedang memuat, cek dengan: pm2 status"
+  echo "========================================================"
+  echo " [PERHATIAN] Server sedang booting, cek dengan: pm2 status"
+  echo " Commit Terpasang: $LATEST_COMMIT ($LATEST_MSG)"
+  echo "========================================================"
 fi

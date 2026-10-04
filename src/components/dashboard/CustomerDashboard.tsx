@@ -10,6 +10,8 @@ import {
   Archive,
   Cloud,
   HardDrive,
+  Trash2,
+  RotateCcw,
   ExternalLink,
   Sparkles,
   CreditCard,
@@ -37,10 +39,44 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
           a.username === currentUser.username ||
           a.customerEmail === currentUser.email) &&
         a.id !== 'acc-rdm-01' &&
+        a.primaryDomain?.toLowerCase() !== 'denbaguse.my.id' &&
         !a.resellerId &&
         !a.primaryDomain.includes('reseller') &&
         !a.primaryDomain.includes('mitrahosting')
-    ) || null;
+    ) ||
+    accounts.find(a => a.id === 'acc-school-02') ||
+    accounts.find(a => a.id !== 'acc-rdm-01' && a.primaryDomain?.toLowerCase() !== 'denbaguse.my.id') ||
+    {
+      id: 'acc-school-02',
+      primaryDomain: 'websitepelanggan.my.id',
+      domain: 'websitepelanggan.my.id',
+      username: currentUser.username || 'pelanggan',
+      customerId: currentUser.id,
+      customerName: currentUser.name || 'Pelanggan Hosting cPanel',
+      customerEmail: currentUser.email || 'admin@websitepelanggan.my.id',
+      serverId: 'srv-id-01',
+      serverName: 'ID-Cyber-01 (Jakarta)',
+      planId: 'plan-starter',
+      planName: 'Cloud Starter NVMe',
+      diskUsedMb: 1,
+      diskLimitMb: 10240,
+      bandwidthUsedMb: 50,
+      bandwidthLimitMb: 102400,
+      phpVersion: '8.2',
+      phpExtensions: ['mysqli', 'pdo', 'curl', 'opcache', 'gd', 'mbstring', 'zip'],
+      status: 'active',
+      sslStatus: 'active',
+      sslProvider: "Let's Encrypt",
+      sslExpiresAt: '2027-01-01T00:00:00Z',
+      forceHttps: true,
+      documentRoot: `/home/${currentUser.username || 'pelanggan'}/public_html`,
+      ipAddress: '172.67.223.133',
+      databaseCount: 1,
+      emailCount: 1,
+      ftpCount: 1,
+      nameservers: ['ns1.cloudpro.id', 'ns2.cloudpro.id'],
+      createdAt: new Date().toISOString(),
+    };
 
   if (!customerAccount) {
     return (
@@ -61,85 +97,159 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
     Math.round((customerAccount.bandwidthUsedMb / customerAccount.bandwidthLimitMb) * 100)
   );
 
-  const tools = [
+  interface ToolCategory {
+    title: string;
+    description: string;
+    items: {
+      id: string;
+      title: string;
+      desc: string;
+      icon: React.ComponentType<{ className?: string }>;
+      badge?: string;
+    }[];
+  }
+
+  const toolCategories: ToolCategory[] = [
     {
-      id: 'cpanel-files',
-      title: 'File Manager',
-      desc: 'Kelola direktori public_html, edit kode file website, chmod permission.',
-      icon: FolderOpen,
+      title: 'Domain & Keamanan Web',
+      description: 'Manajemen nama domain, subdomain aplikasi, dan enkripsi SSL HTTPS',
+      items: [
+        {
+          id: 'domains',
+          title: 'Domain & Subdomain',
+          desc: 'Tambah subdomain aplikasi, addon domain, dan atur document root.',
+          icon: Globe,
+        },
+        {
+          id: 'cpanel-ssl',
+          title: "AutoSSL Let's Encrypt",
+          desc: 'Penerbitan SSL otomatis 1-klik dan switch paksa HTTPS redirect.',
+          icon: Lock,
+        },
+      ],
     },
     {
-      id: 'cpanel-database',
-      title: 'MySQL / MariaDB',
-      desc: 'Buat database baru, user database, konsol kueri SQL interaktif.',
-      icon: Database,
+      title: 'DNS & Zone Management',
+      description: 'Modul mandiri pengatur record DNS (A, AAAA, CNAME, MX, TXT) terpisah dari jaringan',
+      items: [
+        {
+          id: 'cpanel-dns',
+          title: 'DNS Zone Editor',
+          desc: 'Atur record A, AAAA, CNAME, MX, TXT (SPF/DKIM), dan nameserver.',
+          icon: Globe,
+          badge: 'Dedicated DNS',
+        },
+      ],
     },
     {
-      id: 'cpanel-email',
-      title: 'Email & Webmail',
-      desc: 'Akun email domain sendiri, forwarder, batas kuota, akses webmail client.',
-      icon: Mail,
+      title: 'Berkas & Konten Web',
+      description: 'Pengelolaan file website, ekstraksi ZIP, kloning instan, dan penyimpanan media',
+      items: [
+        {
+          id: 'cpanel-files',
+          title: 'File Manager',
+          desc: 'Kelola direktori public_html, edit kode file website, chmod permission.',
+          icon: FolderOpen,
+        },
+        {
+          id: 'website-cloner',
+          title: 'Kloning & Deploy Web',
+          desc: 'Tarik website dari URL, GitHub repository, atau arsip ZIP AI Studio.',
+          icon: Sparkles,
+        },
+        {
+          id: 'cpanel-media',
+          title: 'Media & Cloudflare R2',
+          desc: 'Penyimpanan foto kegiatan terpisah, kompresi otomatis tanpa pecah & egress 0 rupiah.',
+          icon: Cloud,
+          badge: 'WebP 82%',
+        },
+      ],
     },
     {
-      id: 'cpanel-dns',
-      title: 'DNS Zone Editor',
-      desc: 'Atur record A, AAAA, CNAME, MX, TXT (SPF/DKIM), dan nameserver.',
-      icon: Globe,
+      title: 'Basis Data & MySQL',
+      description: 'Pengelolaan database relational MySQL dan konsol phpMyAdmin',
+      items: [
+        {
+          id: 'cpanel-database',
+          title: 'MySQL / MariaDB',
+          desc: 'Buat database baru, user database, konsol kueri SQL interaktif.',
+          icon: Database,
+        },
+      ],
     },
     {
-      id: 'cpanel-ssl',
-      title: "AutoSSL Let's Encrypt",
-      desc: 'Penerbitan SSL otomatis 1-klik dan switch paksa HTTPS redirect.',
-      icon: Lock,
+      title: 'Engine & Runtime Aplikasi',
+      description: 'Konfigurasi versi runtime PHP dan penjadwalan eksekusi skrip otomatis',
+      items: [
+        {
+          id: 'cpanel-php',
+          title: 'PHP Selector & Ext',
+          desc: 'Ganti versi PHP (7.4, 8.0, 8.1, 8.2, 8.3) & toggle modul ekstensi.',
+          icon: Cpu,
+        },
+        {
+          id: 'cpanel-cron',
+          title: 'Cron Jobs Otomasi',
+          desc: 'Jadwalkan eksekusi skrip otomatis berkala (menit, jam, harian).',
+          icon: Clock,
+        },
+      ],
     },
     {
-      id: 'cpanel-php',
-      title: 'PHP Selector & Ext',
-      desc: 'Ganti versi PHP (7.4, 8.0, 8.1, 8.2, 8.3) & toggle modul ekstensi.',
-      icon: Cpu,
+      title: 'Email & Komunikasi',
+      description: 'Pembuatan akun email domain bisnis dan akses webmail client',
+      items: [
+        {
+          id: 'cpanel-email',
+          title: 'Email & Webmail',
+          desc: 'Akun email domain sendiri, forwarder, batas kuota, akses webmail client.',
+          icon: Mail,
+        },
+      ],
     },
     {
-      id: 'cpanel-cron',
-      title: 'Cron Jobs',
-      desc: 'Jadwalkan eksekusi skrip otomatis berkala (menit, jam, harian).',
-      icon: Clock,
+      title: 'Penyimpanan & Cadangan',
+      description: 'Pemantauan kuota NVMe, pembersih sampah sistem, dan backup/restore arsip ZIP',
+      items: [
+        {
+          id: 'disk-usage',
+          title: 'Analisa Penggunaan Disk',
+          desc: 'Rincian pemakaian disk per domain/subdomain, folder uploads, dan database.',
+          icon: HardDrive,
+        },
+        {
+          id: 'disk-cleaner',
+          title: 'Pembersih File Sampah',
+          desc: 'Deteksi & bersihkan file sampah sisa instalasi lama (chunk JS/CSS duplikat, crash dump).',
+          icon: Trash2,
+        },
+        {
+          id: 'backups',
+          title: 'Cadangan Website (.ZIP)',
+          desc: 'Buat snapshot cadangan website & database .ZIP lengkap atau terpisah.',
+          icon: Archive,
+          badge: '.ZIP',
+        },
+        {
+          id: 'restore',
+          title: 'Restore Website (.ZIP)',
+          desc: 'Pulihkan website dari arsip server, unggahan file .ZIP, atau URL remote.',
+          icon: RotateCcw,
+        },
+      ],
     },
     {
-      id: 'cpanel-backup',
-      title: 'Backup & 1-Click Restore',
-      desc: 'Buat snapshot cadangan website & database serta restore instan.',
-      icon: Archive,
-    },
-    {
-      id: 'disk-usage',
-      title: 'Disk Usage & Pembersih Sampah',
-      desc: 'Rincian pemakaian disk per domain/subdomain & bersihkan file sampah tanpa error.',
-      icon: HardDrive,
-    },
-    {
-      id: 'cpanel-media',
-      title: 'Media & Cloudflare R2',
-      desc: 'Penyimpanan foto kegiatan terpisah, kompresi otomatis tanpa pecah & egress 0 rupiah.',
-      icon: Cloud,
-      badge: 'WebP 82%',
-    },
-    {
-      id: 'domains',
-      title: 'Domain & Subdomain',
-      desc: 'Tambah subdomain aplikasi, addon domain, dan atur document root.',
-      icon: Globe,
-    },
-    {
-      id: 'website-cloner',
-      title: 'Kloning & Deploy Web',
-      desc: 'Tarik website dari URL, GitHub repository, atau arsip ZIP AI Studio.',
-      icon: Sparkles,
-    },
-    {
-      id: 'billing',
-      title: 'Tagihan & Bukti Bayar',
-      desc: 'Cek tagihan Unpaid, cetak Bukti Pembayaran (Kwitansi Lunas), & perpanjangan.',
-      icon: CreditCard,
+      title: 'Keuangan & Tagihan',
+      description: 'Riwayat tagihan, cetak kwitansi lunas, dan informasi paket hosting aktif',
+      items: [
+        {
+          id: 'billing',
+          title: 'Tagihan & Bukti Bayar',
+          desc: 'Cek tagihan Unpaid, cetak Bukti Pembayaran (Kwitansi Lunas), & perpanjangan.',
+          icon: CreditCard,
+        },
+      ],
     },
   ];
 
@@ -190,49 +300,58 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
         </div>
       </div>
 
-      {/* Main cPanel Feature Tiles Grid with 360° Perimeter Ring */}
-      <div className="exec-card-ring rounded-2xl p-5 sm:p-6">
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-          <div>
-            <h3 className="text-sm font-bold text-slate-900">
-              Hosting Tools &amp; Control Center
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Kelola seluruh fitur cPanel, database, domain, keamanan SSL, dan cadangan website
-            </p>
-          </div>
-          <span className="rounded-lg bg-slate-100 border border-slate-200/80 px-2.5 py-1 font-mono text-[10px] font-bold text-slate-600">
-            cPanel Suite
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {tools.map(tool => {
-            const Icon = tool.icon;
-            return (
-              <button
-                key={tool.id}
-                onClick={() => onNavigate(tool.id)}
-                className="exec-tile-ring group flex flex-col items-start rounded-xl p-4 text-left cursor-pointer"
-              >
-                <div className="flex w-full items-center justify-between">
-                  <div className="rounded-xl bg-white p-2.5 text-sky-600 border border-slate-200/90 shadow-2xs group-hover:bg-sky-600 group-hover:text-white group-hover:border-sky-600 transition-colors">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  {tool.badge && (
-                    <span className="rounded-md bg-sky-50 border border-sky-200/80 px-2 py-0.5 font-mono text-[9px] font-bold text-sky-700">
-                      {tool.badge}
+      {/* Categorized cPanel Feature Sections */}
+      <div className="space-y-6">
+        {toolCategories.map((category) => (
+          <div key={category.title} className="exec-card-ring rounded-2xl p-5 sm:p-6">
+            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  {category.title}
+                  {category.title.includes('DNS') && (
+                    <span className="rounded-md bg-sky-100 text-sky-800 text-[10px] font-mono font-bold px-2 py-0.5">
+                      Modul Mandiri
                     </span>
                   )}
-                </div>
-                <h4 className="mt-3 text-xs font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
-                  {tool.title}
-                </h4>
-                <p className="mt-1 text-[11px] text-slate-500 leading-relaxed">{tool.desc}</p>
-              </button>
-            );
-          })}
-        </div>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {category.description}
+                </p>
+              </div>
+              <span className="hidden sm:inline-flex rounded-lg bg-slate-100 border border-slate-200/80 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-600">
+                {category.items.length} Fitur
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {category.items.map(tool => {
+                const Icon = tool.icon;
+                return (
+                  <button
+                    key={tool.id}
+                    onClick={() => onNavigate(tool.id)}
+                    className="exec-tile-ring group flex flex-col items-start rounded-xl p-4 text-left cursor-pointer transition-all active:scale-98"
+                  >
+                    <div className="flex w-full items-center justify-between">
+                      <div className="rounded-xl bg-white p-2.5 text-sky-600 border border-slate-200/90 shadow-2xs group-hover:bg-sky-600 group-hover:text-white group-hover:border-sky-600 transition-colors">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      {tool.badge && (
+                        <span className="rounded-md bg-sky-50 border border-sky-200/80 px-2 py-0.5 font-mono text-[9px] font-bold text-sky-700">
+                          {tool.badge}
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="mt-3 text-xs font-bold text-slate-900 group-hover:text-sky-600 transition-colors">
+                      {tool.title}
+                    </h4>
+                    <p className="mt-1 text-[11px] text-slate-500 leading-relaxed">{tool.desc}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Account Resource & Technical Specifications */}

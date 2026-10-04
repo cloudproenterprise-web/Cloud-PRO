@@ -22,9 +22,9 @@ export const EmailManager: React.FC<EmailManagerProps> = ({ account }) => {
   const { currentUser } = useAuth();
   const { showToast, confirmAction } = useServer();
 
-  if (!currentUser) return null;
+  if (!currentUser || !account) return null;
 
-  const [emails, setEmails] = useState<EmailMailbox[]>(() => db.getEmails(account.id));
+  const [emails, setEmails] = useState<EmailMailbox[]>(() => account?.id ? db.getEmails(account.id) : []);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [emailUser, setEmailUser] = useState('');
   const [quotaMb, setQuotaMb] = useState(1024);
