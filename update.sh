@@ -122,11 +122,17 @@ if [ -z "$SCRIPT_PATH" ]; then
   exit 1
 fi
 
-case "$1" in
-  update|up)
+BIN_NAME="$(basename "$0")"
+
+# Jika dipanggil langsung sebagai 'update' atau argumen pertamanya adalah 'update' / 'up', LANGSUNG jalankan update.sh
+if [ "$BIN_NAME" = "update" ] || [ "$1" = "update" ] || [ "$1" = "up" ]; then
+  if [ "$1" = "update" ] || [ "$1" = "up" ]; then
     shift
-    cd "$SCRIPT_PATH" && exec bash update.sh "$@"
-    ;;
+  fi
+  cd "$SCRIPT_PATH" && exec bash update.sh "$@"
+fi
+
+case "$1" in
   restart|reload)
     pm2 restart cloudpro --update-env 2>/dev/null || pm2 restart all
     echo "[OK] Service CloudPRO berhasil di-restart!"
@@ -158,6 +164,7 @@ case "$1" in
       echo "Status     : $(curl -sI --max-time 3 http://127.0.0.1:3000/ | grep -q HTTP && echo '🟢 Online di Port 3000' || echo '🔴 Offline')"
       echo ""
       echo "Perintah yang Tersedia:"
+      echo "  update             -> Menarik update terbaru dari GitHub & me-reload server"
       echo "  cloudpro update    -> Menarik update terbaru dari GitHub & me-reload server"
       echo "  cloudpro restart   -> Me-restart service server PM2"
       echo "  cloudpro logs      -> Melihat log aktivitas server"
