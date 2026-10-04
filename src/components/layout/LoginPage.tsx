@@ -256,27 +256,17 @@ export const LoginPage: React.FC = () => {
         {/* ================= RIGHT COLUMN: AUTHENTICATION VAULT (Streamlined for Mobile/Android & Full on Desktop) ================= */}
         <div className="lg:col-span-5 flex flex-col justify-between p-4 sm:p-7 lg:p-10 bg-slate-900/95">
           <div>
-            {/* Mobile Header Branding with Full-Size Logo & Stacked SLA Sub-bar (< lg screens) */}
-            <div className="flex lg:hidden flex-col gap-2 pb-3.5 mb-4 border-b border-slate-800/80">
-              <div className="flex items-center justify-between">
-                <CloudProLogo
-                  variant="full"
-                  size="md"
-                  cloudTextColor="text-white"
-                  brandSuffix="Enterprise"
-                  showSubtitle={false}
-                  noTruncate={true}
-                />
-              </div>
-              <div className="flex items-center justify-between pt-0.5">
-                <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                  Enterprise Cloud Panel
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[9px] font-bold text-emerald-300 shrink-0 shadow-xs">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                  SLA 99.99% HA
-                </span>
-              </div>
+            {/* Mobile Header Branding (< lg screens): Full-Size Logo & Subtitle */}
+            <div className="flex lg:hidden items-center justify-between pb-3.5 mb-4 border-b border-slate-800/80">
+              <CloudProLogo
+                variant="full"
+                size="md"
+                cloudTextColor="text-white"
+                brandSuffix="Enterprise"
+                showSubtitle={true}
+                subtitleText="ENTERPRISE CLOUD PANEL"
+                noTruncate={true}
+              />
             </div>
 
             <div className="flex items-center justify-between mb-1">
@@ -446,13 +436,20 @@ export const LoginPage: React.FC = () => {
             </form>
           </div>
 
-          <div className="mt-4 sm:mt-5 space-y-2 text-center">
-            <div className="rounded-xl border border-slate-800/90 bg-slate-950/70 p-2 sm:p-2.5 text-[10px] sm:text-[10.5px] text-slate-400 flex items-center justify-center gap-2">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-              <span>Sesi login aman &bull; Perangkat akan mengenali akun Anda</span>
+          {/* Executive Security & Infrastructure Telemetry Footer with Live SLA */}
+          <div className="mt-4 sm:mt-5 space-y-2.5">
+            <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-800/90 bg-slate-950/70 p-2 sm:p-2.5 text-[10px] sm:text-[10.5px]">
+              <div className="flex items-center gap-1.5 text-slate-300 min-w-0">
+                <CheckCircle2 className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+                <span className="truncate">Sesi Aman &bull; TLS 1.3 QUIC</span>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 sm:px-2.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold text-emerald-300 shrink-0 shadow-xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                SLA 99.99% HA
+              </span>
             </div>
 
-            <div className="text-[10px] sm:text-[11px] text-slate-500">
+            <div className="text-center text-[10px] sm:text-[11px] text-slate-500">
               &copy; {new Date().getFullYear()}{' '}
               <strong className="text-slate-300 font-semibold">Cloud PRO Enterprise</strong>. Seluruh hak cipta dilindungi.
             </div>
