@@ -9,6 +9,8 @@ interface CloudProLogoProps {
   cloudTextColor?: string; // Khusus kustomisasi warna teks 'Cloud'
   brandPrefix?: string; // Opsional awalan merk (misal: 'Platform')
   brandSuffix?: string; // Opsional akhiran merk (misal: 'Enterprise')
+  noTruncate?: boolean; // Mencegah judul terpotong / ellipsis
+  textSizeClass?: string; // Kustomisasi kelas ukuran teks judul
 }
 
 export const CloudProLogo: React.FC<CloudProLogoProps> = ({
@@ -20,6 +22,8 @@ export const CloudProLogo: React.FC<CloudProLogoProps> = ({
   cloudTextColor,
   brandPrefix,
   brandSuffix,
+  noTruncate = false,
+  textSizeClass,
 }) => {
   const gradId = React.useId().replace(/:/g, '');
   const iconPixelSizes = {
@@ -89,8 +93,12 @@ export const CloudProLogo: React.FC<CloudProLogoProps> = ({
       </div>
 
       {variant !== 'icon' && (
-        <div className="flex flex-col leading-none min-w-0">
-          <div className={`font-extrabold tracking-tight truncate ${textSizes[size]}`}>
+        <div className={`flex flex-col leading-none ${noTruncate ? 'min-w-0' : 'min-w-0'}`}>
+          <div
+            className={`font-extrabold tracking-tight ${
+              noTruncate ? 'whitespace-nowrap' : 'truncate'
+            } ${textSizeClass || textSizes[size]}`}
+          >
             {brandPrefix && (
               <>
                 <span className={cloudTextColor ? cloudTextColor : "text-slate-900 dark:text-white"}>
@@ -113,10 +121,12 @@ export const CloudProLogo: React.FC<CloudProLogoProps> = ({
           </div>
           {showSubtitle && (
             <div
-              className={`font-bold uppercase text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 ${subSizes[size]}`}
+              className={`font-bold uppercase text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1 ${subSizes[size]} ${
+                noTruncate ? 'whitespace-nowrap' : ''
+              }`}
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-sky-500 shrink-0" />
-              <span className="truncate">
+              <span className={noTruncate ? 'whitespace-nowrap' : 'truncate'}>
                 {subtitleText || (variant === 'compact' ? 'ENTERPRISE CLOUD PANEL' : 'ENTERPRISE CLOUD INFRASTRUCTURE')}
               </span>
             </div>

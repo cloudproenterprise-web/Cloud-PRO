@@ -165,7 +165,7 @@ export const LoginPage: React.FC = () => {
         <div className="hidden lg:flex lg:col-span-7 flex-col justify-between p-8 lg:p-10 border-r border-slate-800/80 bg-gradient-to-b from-slate-900/90 via-slate-950/80 to-slate-950">
           <div className="space-y-6">
             {/* Official Brand Lockup + Live SLA Indicator */}
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
               <CloudProLogo
                 variant="full"
                 size="lg"
@@ -173,9 +173,10 @@ export const LoginPage: React.FC = () => {
                 brandSuffix="Enterprise"
                 showSubtitle={true}
                 subtitleText="ENTERPRISE CLOUD PANEL"
+                noTruncate={true}
               />
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-[10px] font-bold text-emerald-300">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-mono text-[10px] font-bold text-emerald-300 shrink-0 whitespace-nowrap shadow-xs">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                 SLA 99.99% HA
               </span>
             </div>
@@ -255,19 +256,27 @@ export const LoginPage: React.FC = () => {
         {/* ================= RIGHT COLUMN: AUTHENTICATION VAULT (Streamlined for Mobile/Android & Full on Desktop) ================= */}
         <div className="lg:col-span-5 flex flex-col justify-between p-4 sm:p-7 lg:p-10 bg-slate-900/95">
           <div>
-            {/* Mobile Header Branding with Logo & SLA (< lg screens) */}
-            <div className="flex lg:hidden items-center justify-between gap-2 pb-3 mb-3.5 border-b border-slate-800/80">
-              <CloudProLogo
-                variant="full"
-                size="md"
-                cloudTextColor="text-white"
-                brandSuffix="Enterprise"
-                showSubtitle={false}
-              />
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[9px] font-bold text-emerald-300 shrink-0">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                SLA 99.99%
-              </span>
+            {/* Mobile Header Branding with Full-Size Logo & Stacked SLA Sub-bar (< lg screens) */}
+            <div className="flex lg:hidden flex-col gap-2 pb-3.5 mb-4 border-b border-slate-800/80">
+              <div className="flex items-center justify-between">
+                <CloudProLogo
+                  variant="full"
+                  size="md"
+                  cloudTextColor="text-white"
+                  brandSuffix="Enterprise"
+                  showSubtitle={false}
+                  noTruncate={true}
+                />
+              </div>
+              <div className="flex items-center justify-between pt-0.5">
+                <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
+                  Enterprise Cloud Panel
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[9px] font-bold text-emerald-300 shrink-0 shadow-xs">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  SLA 99.99% HA
+                </span>
+              </div>
             </div>
 
             <div className="flex items-center justify-between mb-1">
