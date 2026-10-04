@@ -26,9 +26,10 @@
     <text x="0" y="52" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="800" font-size="52" fill="#1e293b" letter-spacing="-0.5">
       Cloud <tspan fill="#005dbd">PRO</tspan>
     </text>
-    <!-- Tagline -->
-    <text x="2" y="76" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#475569" letter-spacing="3">
-      ADVANCED TECH | SECURE SOLUTIONS
+    <!-- Tagline matching Image 2 -->
+    <circle cx="6" cy="72" r="3.5" fill="#0ea5e9" />
+    <text x="16" y="76" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#64748b" letter-spacing="2">
+      ENTERPRISE CLOUD PANEL
     </text>
   </g>
 </svg>

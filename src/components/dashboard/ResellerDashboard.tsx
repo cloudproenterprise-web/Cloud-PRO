@@ -29,6 +29,7 @@ import { useServer } from '../../context/ServerContext';
 import { CloudProApi } from '../../services/api';
 import { db } from '../../services/storage';
 import { HostingAccount } from '../../types';
+import { CloudProLogo } from '../common/CloudProLogo';
 
 interface ResellerDashboardProps {
   onNavigate: (tab: string) => void;
@@ -305,17 +306,12 @@ export const ResellerDashboard: React.FC<ResellerDashboardProps> = ({
       <div className="exec-card-ring relative overflow-hidden rounded-2xl">
         <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5 min-w-0 flex-1">
-            {currentResellerProfile?.customLogoUrl ? (
-              <img
-                src={currentResellerProfile.customLogoUrl}
-                alt={currentResellerProfile.brandName}
-                className="h-12 w-12 shrink-0 rounded-xl object-contain border border-slate-200 bg-white p-1 shadow-2xs"
-              />
-            ) : (
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-sky-400 border border-slate-800 shadow-xs">
-                <HardDrive className="h-5 w-5" />
-              </div>
-            )}
+            <CloudProLogo
+              variant="compact"
+              size="lg"
+              showSubtitle={true}
+              subtitleText="ENTERPRISE CLOUD PANEL"
+            />
             <div className="space-y-2 min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />

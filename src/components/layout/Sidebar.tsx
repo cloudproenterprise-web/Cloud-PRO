@@ -766,42 +766,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="relative flex h-16 shrink-0 items-center justify-between border-b border-slate-800/80 bg-slate-950/95 px-4 backdrop-blur-md">
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-sky-500/40 to-transparent" />
           
-          {currentUser.role === 'reseller' &&
-          currentResellerProfile &&
-          (currentResellerProfile.hideUpstreamBranding || currentResellerProfile.customLogoUrl) ? (
-            <div className="flex items-center gap-3 min-w-0">
-              {currentResellerProfile.customLogoUrl ? (
-                <img
-                  src={currentResellerProfile.customLogoUrl}
-                  alt={brandName}
-                  className="h-9 w-9 shrink-0 rounded-lg object-contain bg-white/95 p-0.5 border border-slate-700 shadow-xs"
-                />
-              ) : (
-                <div
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white font-bold shadow-xs"
-                  style={{ backgroundColor: themeColor }}
-                >
-                  <HardDrive className="h-5 w-5" />
-                </div>
-              )}
-              <div className="min-w-0">
-                <h1 className="text-base font-bold text-white tracking-tight leading-none truncate">
-                  {brandName}
-                </h1>
-                <p className="mt-1 font-mono text-[10px] text-slate-400 leading-none truncate">
-                  {panelDomain}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <CloudProLogo
-              variant="compact"
-              size="md"
-              cloudTextColor="text-white"
-              showSubtitle={true}
-              subtitleText="ENTERPRISE CLOUD PANEL"
-            />
-          )}
+          {/* Official Cloud PRO Master Brand (Permanently locked across all roles, desktop & mobile) */}
+          <CloudProLogo
+            variant="compact"
+            size="md"
+            cloudTextColor="text-white"
+            showSubtitle={true}
+            subtitleText="ENTERPRISE CLOUD PANEL"
+          />
 
           {/* Mobile Close Button */}
           <button
