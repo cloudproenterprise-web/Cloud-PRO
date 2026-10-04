@@ -5829,18 +5829,18 @@ try {
     }
   });
 
-  // Dedicated 1-Click Git Auto-Sync from Web UI
-  app.post('/api/system/git-sync', async (_req, res) => {
+  // Reusable background auto-sync function
+  const performGitAutoSync = async (reason: string = 'manual') => {
     try {
       const { exec } = await import('child_process');
       const backupVhost = JSON.stringify(vhostStore, null, 2);
       const backupFull = persistedFullAppState ? JSON.stringify(persistedFullAppState, null, 2) : null;
+      console.log(`[Git Auto-Sync] Triggered (${reason}). Pulling latest commit from GitHub...`);
       
       exec(
-        'git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1 && (npm run build:server 2>&1 || true) && (pm2 reload cloudpro --update-env 2>&1 || true)',
-        { cwd: process.cwd(), timeout: 45000 },
-        (err, stdout, stderr) => {
-          // Restore data safely
+        'git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1 && (npm run build 2>&1 || npm run build:server 2>&1 || true) && (pm2 reload cloudpro --update-env 2>&1 || true)',
+        { cwd: process.cwd(), timeout: 60000 },
+        (err, stdout) => {
           try {
             writeVaultJson(
               VHOST_STORE_PATH,
@@ -5854,15 +5854,25 @@ try {
                 JSON.parse(backupFull)
               );
             }
-          } catch {
-            // Data preservation fallback
-          }
+          } catch {}
           if (err) {
-            console.warn('[Git Auto-Sync] Warning during sync execution:', err.message);
+            console.warn('[Git Auto-Sync] Warning during execution:', err.message);
+          } else {
+            console.log('[Git Auto-Sync] Successfully updated to latest GitHub commit!');
           }
         }
       );
+      return true;
+    } catch (e: any) {
+      console.error('[Git Auto-Sync] Error:', e?.message);
+      return false;
+    }
+  };
 
+  // Dedicated 1-Click Git Auto-Sync from Web UI
+  app.post(['/api/system/git-sync', '/api/system/sync-now'], async (_req, res) => {
+    try {
+      await performGitAutoSync('web_ui');
       return res.json({
         ok: true,
         message: 'Perintah pembaruan otomatis telah dikirim ke server. Server sedang menyinkronkan kode dari GitHub...',
@@ -5871,6 +5881,45 @@ try {
       return res.status(500).json({ ok: false, message: err?.message || 'Gagal memulai sinkronisasi.' });
     }
   });
+
+  // Dedicated GitHub Webhook Receiver for Instant Real-Time Sync on Commit Push
+  app.post(['/api/system/github-webhook', '/api/system/webhook'], async (req, res) => {
+    try {
+      console.log('[GitHub Webhook] Push event received from GitHub!');
+      performGitAutoSync('github_webhook');
+      return res.status(200).json({
+        ok: true,
+        message: 'GitHub webhook received. Auto-sync triggered successfully.',
+      });
+    } catch (e: any) {
+      return res.status(500).json({ ok: false, message: e?.message });
+    }
+  });
+
+  // Automatic Background GitHub Commit Poller (Every 60 seconds)
+  // Ensures VPS server stays permanently synchronized with GitHub without manual SSH intervention
+  setInterval(async () => {
+    try {
+      const gitDir = path.join(process.cwd(), '.git');
+      if (!fs.existsSync(gitDir)) return;
+      const { exec } = await import('child_process');
+      exec(
+        'git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main -q 2>/dev/null',
+        { cwd: process.cwd(), timeout: 15000 },
+        (err) => {
+          if (err) return;
+          try {
+            const localCommit = execSync('git rev-parse HEAD 2>/dev/null', { cwd: process.cwd(), timeout: 3000 }).toString().trim();
+            const remoteCommit = execSync('git rev-parse origin/main 2>/dev/null', { cwd: process.cwd(), timeout: 3000 }).toString().trim();
+            if (localCommit && remoteCommit && localCommit !== remoteCommit) {
+              console.log(`[Auto-Sync Daemon] Detected new GitHub commit (${remoteCommit.slice(0, 7)} vs local ${localCommit.slice(0, 7)}). Auto-updating...`);
+              performGitAutoSync('background_poller');
+            }
+          } catch {}
+        }
+      );
+    } catch {}
+  }, 60_000);
 
   app.post('/api/vhost/sync', (req, res) => {
     const { accounts, subdomains, filesByAccount, userInitiated } = req.body || {};
@@ -9846,6 +9895,28 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
               : 'application/octet-stream';
         res.setHeader('Content-Type', m);
         return res.sendFile(c);
+      }
+    }
+
+    // Smart auto-heal for panel JS/CSS bundle hash mismatches to strictly prevent blank white screens
+    if (fileName.startsWith('index-') && (fileName.endsWith('.js') || fileName.endsWith('.css'))) {
+      const isJs = fileName.endsWith('.js');
+      const distAssetsDir = path.join(process.cwd(), 'dist', 'assets');
+      if (fs.existsSync(distAssetsDir)) {
+        try {
+          const matches = fs.readdirSync(distAssetsDir).filter(f => f.startsWith('index-') && (isJs ? f.endsWith('.js') : f.endsWith('.css')));
+          if (matches.length > 0) {
+            const sorted = matches.sort((a, b) => {
+              const statA = fs.statSync(path.join(distAssetsDir, a)).mtimeMs;
+              const statB = fs.statSync(path.join(distAssetsDir, b)).mtimeMs;
+              return statB - statA;
+            });
+            const bestMatch = path.join(distAssetsDir, sorted[0]);
+            res.setHeader('Content-Type', isJs ? 'application/javascript; charset=utf-8' : 'text/css; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache');
+            return res.sendFile(bestMatch);
+          }
+        } catch {}
       }
     }
     next();

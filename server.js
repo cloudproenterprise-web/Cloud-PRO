@@ -5658,15 +5658,16 @@ ${routeFixScript}`);
       });
     }
   });
-  app.post("/api/system/git-sync", async (_req, res) => {
+  const performGitAutoSync = async (reason = "manual") => {
     try {
       const { exec: exec2 } = await import("child_process");
       const backupVhost = JSON.stringify(vhostStore, null, 2);
       const backupFull = persistedFullAppState ? JSON.stringify(persistedFullAppState, null, 2) : null;
+      console.log(`[Git Auto-Sync] Triggered (${reason}). Pulling latest commit from GitHub...`);
       exec2(
-        "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1 && (npm run build:server 2>&1 || true) && (pm2 reload cloudpro --update-env 2>&1 || true)",
-        { cwd: process.cwd(), timeout: 45e3 },
-        (err, stdout, stderr) => {
+        "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1 && (npm run build 2>&1 || npm run build:server 2>&1 || true) && (pm2 reload cloudpro --update-env 2>&1 || true)",
+        { cwd: process.cwd(), timeout: 6e4 },
+        (err, stdout) => {
           try {
             writeVaultJson(
               VHOST_STORE_PATH,
@@ -5683,10 +5684,21 @@ ${routeFixScript}`);
           } catch {
           }
           if (err) {
-            console.warn("[Git Auto-Sync] Warning during sync execution:", err.message);
+            console.warn("[Git Auto-Sync] Warning during execution:", err.message);
+          } else {
+            console.log("[Git Auto-Sync] Successfully updated to latest GitHub commit!");
           }
         }
       );
+      return true;
+    } catch (e) {
+      console.error("[Git Auto-Sync] Error:", e?.message);
+      return false;
+    }
+  };
+  app.post(["/api/system/git-sync", "/api/system/sync-now"], async (_req, res) => {
+    try {
+      await performGitAutoSync("web_ui");
       return res.json({
         ok: true,
         message: "Perintah pembaruan otomatis telah dikirim ke server. Server sedang menyinkronkan kode dari GitHub..."
@@ -5695,6 +5707,42 @@ ${routeFixScript}`);
       return res.status(500).json({ ok: false, message: err?.message || "Gagal memulai sinkronisasi." });
     }
   });
+  app.post(["/api/system/github-webhook", "/api/system/webhook"], async (req, res) => {
+    try {
+      console.log("[GitHub Webhook] Push event received from GitHub!");
+      performGitAutoSync("github_webhook");
+      return res.status(200).json({
+        ok: true,
+        message: "GitHub webhook received. Auto-sync triggered successfully."
+      });
+    } catch (e) {
+      return res.status(500).json({ ok: false, message: e?.message });
+    }
+  });
+  setInterval(async () => {
+    try {
+      const gitDir = path.join(process.cwd(), ".git");
+      if (!fs.existsSync(gitDir)) return;
+      const { exec: exec2 } = await import("child_process");
+      exec2(
+        "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main -q 2>/dev/null",
+        { cwd: process.cwd(), timeout: 15e3 },
+        (err) => {
+          if (err) return;
+          try {
+            const localCommit = execSync("git rev-parse HEAD 2>/dev/null", { cwd: process.cwd(), timeout: 3e3 }).toString().trim();
+            const remoteCommit = execSync("git rev-parse origin/main 2>/dev/null", { cwd: process.cwd(), timeout: 3e3 }).toString().trim();
+            if (localCommit && remoteCommit && localCommit !== remoteCommit) {
+              console.log(`[Auto-Sync Daemon] Detected new GitHub commit (${remoteCommit.slice(0, 7)} vs local ${localCommit.slice(0, 7)}). Auto-updating...`);
+              performGitAutoSync("background_poller");
+            }
+          } catch {
+          }
+        }
+      );
+    } catch {
+    }
+  }, 6e4);
   app.post("/api/vhost/sync", (req, res) => {
     const { accounts, subdomains, filesByAccount, userInitiated } = req.body || {};
     const deletedSet = new Set(
@@ -9052,6 +9100,27 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
         const m = ext === "js" ? "application/javascript; charset=utf-8" : ext === "css" ? "text/css; charset=utf-8" : "application/octet-stream";
         res.setHeader("Content-Type", m);
         return res.sendFile(c);
+      }
+    }
+    if (fileName.startsWith("index-") && (fileName.endsWith(".js") || fileName.endsWith(".css"))) {
+      const isJs = fileName.endsWith(".js");
+      const distAssetsDir = path.join(process.cwd(), "dist", "assets");
+      if (fs.existsSync(distAssetsDir)) {
+        try {
+          const matches = fs.readdirSync(distAssetsDir).filter((f) => f.startsWith("index-") && (isJs ? f.endsWith(".js") : f.endsWith(".css")));
+          if (matches.length > 0) {
+            const sorted = matches.sort((a, b) => {
+              const statA = fs.statSync(path.join(distAssetsDir, a)).mtimeMs;
+              const statB = fs.statSync(path.join(distAssetsDir, b)).mtimeMs;
+              return statB - statA;
+            });
+            const bestMatch = path.join(distAssetsDir, sorted[0]);
+            res.setHeader("Content-Type", isJs ? "application/javascript; charset=utf-8" : "text/css; charset=utf-8");
+            res.setHeader("Cache-Control", "no-cache");
+            return res.sendFile(bestMatch);
+          }
+        } catch {
+        }
       }
     }
     next();

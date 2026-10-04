@@ -276,15 +276,10 @@ echo "[2/3] Meng-compile aset web terbaru & menyinkronkan Service CloudPRO..."
 export NODE_ENV=production
 export PATH="$PATH:/usr/local/bin:$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node 2>/dev/null | tail -n 1)/bin"
 
-# Compile server backend cepat dan pastikan aset frontend dist/ tersedia
+# Compile frontend (Vite) & backend (server.js) secara lengkap agar tidak terjadi blank screen
 if command -v npm &> /dev/null; then
-  if [ ! -f "dist/index.html" ] || [ ! -d "dist/assets" ]; then
-    echo "[BUILD] Meng-compile aset frontend dist..."
-    npm run build 2>&1 | tail -n 5 || true
-  else
-    echo "[BUILD] Meng-compile server.js terbaru..."
-    npm run build:server 2>&1 | tail -n 5 || true
-  fi
+  echo "[BUILD] Meng-compile aset frontend & backend CloudPRO terbaru..."
+  npm run build 2>&1 | tail -n 10 || npm run build:server 2>&1 || true
 fi
 
 # Hentikan proses node server.js / tsx server.ts liar di luar PM2 agar tidak berebut port 3000 (tanpa memutus terminal)
