@@ -1255,7 +1255,7 @@ class StorageService {
         set.add(id);
       }
     }
-    this.state.deletedIds = Array.from(set).slice(-600);
+    this.state.deletedIds = Array.from(set).slice(-2500);
   }
 
   private loadState(): DatabaseState {
@@ -1500,38 +1500,71 @@ class StorageService {
           }
         } catch {}
 
+        const loadedDeletedIds: string[] = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
+        const deletedSet = new Set<string>(loadedDeletedIds);
+
+        const loadedPlans: HostingPlan[] = (
+          Array.isArray(parsed.hostingPlans) ? (parsed.hostingPlans as HostingPlan[]) : INITIAL_STATE.hostingPlans
+        ).filter((p: HostingPlan) => !deletedSet.has(p.id));
+
+        const loadedServers: ServerNode[] = (
+          Array.isArray(parsed.serverNodes) ? (parsed.serverNodes as ServerNode[]) : INITIAL_STATE.serverNodes
+        ).filter((s: ServerNode) => !deletedSet.has(s.id));
+
         return {
           ...INITIAL_STATE,
           ...parsed,
-          users: loadedUsers.map(u => ({
-            ...u,
-            creditBalance: typeof u.creditBalance === 'number' && !Number.isNaN(u.creditBalance) ? u.creditBalance : 0,
-          })),
-          resellerProfiles: Array.isArray(parsed.resellerProfiles) ? parsed.resellerProfiles : INITIAL_STATE.resellerProfiles,
-          backups: loadedBackups,
-          invoices: loadedInvoices,
-          ipAddresses: (Array.isArray(parsed.ipAddresses) && parsed.ipAddresses.length > 0) ? parsed.ipAddresses : INITIAL_STATE.ipAddresses,
-          hostingAccounts: loadedAccounts,
-          virtualFiles: loadedFiles,
-          databases: (hasAccounts && Array.isArray(parsed.databases) && parsed.databases.length > 0) ? parsed.databases : INITIAL_STATE.databases,
-          emailMailboxes: (hasAccounts && Array.isArray(parsed.emailMailboxes) && parsed.emailMailboxes.length > 0) ? parsed.emailMailboxes : INITIAL_STATE.emailMailboxes,
-          dnsRecords: (hasAccounts && Array.isArray(parsed.dnsRecords) && parsed.dnsRecords.length > 0) ? parsed.dnsRecords : INITIAL_STATE.dnsRecords,
-          cronJobs: ((hasAccounts && Array.isArray(parsed.cronJobs) && parsed.cronJobs.length > 0) ? parsed.cronJobs : INITIAL_STATE.cronJobs).map((c: any) => ({
-            ...c,
-            command: (c.command || '').replace('/home/madrasah', '/home/cloudpro'),
-          })),
-          vpsInstances: (parsed.vpsInstances && parsed.vpsInstances.length > 0) ? parsed.vpsInstances : INITIAL_STATE.vpsInstances,
-          vpsSnapshots: (parsed.vpsSnapshots && parsed.vpsSnapshots.length > 0) ? parsed.vpsSnapshots : INITIAL_STATE.vpsSnapshots,
-          vpsFirewallRules: (parsed.vpsFirewallRules && parsed.vpsFirewallRules.length > 0) ? parsed.vpsFirewallRules : INITIAL_STATE.vpsFirewallRules,
-          nameserverConfigs: (parsed.nameserverConfigs && parsed.nameserverConfigs.length > 0) ? parsed.nameserverConfigs : INITIAL_STATE.nameserverConfigs,
-          r2Configs: (parsed.r2Configs && parsed.r2Configs.length > 0) ? parsed.r2Configs : INITIAL_STATE.r2Configs,
-          optimizedMedia: ((parsed.optimizedMedia && parsed.optimizedMedia.length > 0) ? parsed.optimizedMedia : INITIAL_STATE.optimizedMedia).map((m: any) => ({
-            ...m,
-            accountId: m.accountId === 'acc-madrasah-01' ? 'acc-rdm-01' : m.accountId,
-          })),
-          domains: loadedDomains,
+          users: loadedUsers
+            .filter((u: User) => !deletedSet.has(u.id) || u.role === 'admin')
+            .map((u: User) => ({
+              ...u,
+              creditBalance: typeof u.creditBalance === 'number' && !Number.isNaN(u.creditBalance) ? u.creditBalance : 0,
+            })),
+          resellerProfiles: (Array.isArray(parsed.resellerProfiles) ? (parsed.resellerProfiles as ResellerProfile[]) : INITIAL_STATE.resellerProfiles)
+            .filter((r: ResellerProfile) => !deletedSet.has(r.id)),
+          serverNodes: loadedServers,
+          hostingPlans: loadedPlans,
+          backups: loadedBackups.filter((b: AccountBackup) => !deletedSet.has(b.id)),
+          invoices: loadedInvoices.filter((i: Invoice) => !deletedSet.has(i.id)),
+          ipAddresses: ((Array.isArray(parsed.ipAddresses)) ? parsed.ipAddresses : INITIAL_STATE.ipAddresses)
+            .filter((ip: any) => !deletedSet.has(ip.id)),
+          hostingAccounts: loadedAccounts.filter((a: HostingAccount) => !deletedSet.has(a.id)),
+          virtualFiles: loadedFiles.filter((f: VirtualFile) => !deletedSet.has(f.id)),
+          databases: ((Array.isArray(parsed.databases)) ? parsed.databases : INITIAL_STATE.databases)
+            .filter((db: any) => !deletedSet.has(db.id)),
+          emailMailboxes: ((Array.isArray(parsed.emailMailboxes)) ? parsed.emailMailboxes : INITIAL_STATE.emailMailboxes)
+            .filter((em: any) => !deletedSet.has(em.id)),
+          dnsRecords: ((Array.isArray(parsed.dnsRecords)) ? parsed.dnsRecords : INITIAL_STATE.dnsRecords)
+            .filter((d: any) => !deletedSet.has(d.id)),
+          cronJobs: (((Array.isArray(parsed.cronJobs)) ? parsed.cronJobs : INITIAL_STATE.cronJobs) as CronJobItem[])
+            .filter((c: any) => !deletedSet.has(c.id))
+            .map((c: any) => ({
+              ...c,
+              command: (c.command || '').replace('/home/madrasah', '/home/cloudpro'),
+            })),
+          vpsInstances: ((Array.isArray(parsed.vpsInstances)) ? parsed.vpsInstances : INITIAL_STATE.vpsInstances)
+            .filter((v: any) => !deletedSet.has(v.id)),
+          vpsSnapshots: ((Array.isArray(parsed.vpsSnapshots)) ? parsed.vpsSnapshots : INITIAL_STATE.vpsSnapshots)
+            .filter((s: any) => !deletedSet.has(s.id)),
+          vpsFirewallRules: ((Array.isArray(parsed.vpsFirewallRules)) ? parsed.vpsFirewallRules : INITIAL_STATE.vpsFirewallRules)
+            .filter((r: any) => !deletedSet.has(r.id)),
+          firewallRules: (Array.isArray(parsed.firewallRules) ? (parsed.firewallRules as FirewallRule[]) : INITIAL_STATE.firewallRules)
+            .filter((f: FirewallRule) => !deletedSet.has(f.id)),
+          apiKeys: (Array.isArray(parsed.apiKeys) ? (parsed.apiKeys as ApiKeyItem[]) : INITIAL_STATE.apiKeys)
+            .filter((k: ApiKeyItem) => !deletedSet.has(k.id)),
+          nameserverConfigs: ((Array.isArray(parsed.nameserverConfigs)) ? parsed.nameserverConfigs : INITIAL_STATE.nameserverConfigs)
+            .filter((ns: any) => !deletedSet.has(ns.id)),
+          r2Configs: ((Array.isArray(parsed.r2Configs)) ? parsed.r2Configs : INITIAL_STATE.r2Configs)
+            .filter((r: any) => !deletedSet.has(r.id)),
+          optimizedMedia: (((Array.isArray(parsed.optimizedMedia)) ? parsed.optimizedMedia : INITIAL_STATE.optimizedMedia) as OptimizedMediaFile[])
+            .filter(m => !deletedSet.has(m.id))
+            .map((m: any) => ({
+              ...m,
+              accountId: m.accountId === 'acc-madrasah-01' ? 'acc-rdm-01' : m.accountId,
+            })),
+          domains: loadedDomains.filter(d => !deletedSet.has(d.id)),
           databaseTables: parsed.databaseTables || INITIAL_STATE.databaseTables,
-          deletedIds: Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [],
+          deletedIds: loadedDeletedIds,
           letterheadConfig: loadedLetterhead,
           stateUpdatedAt: parsed.stateUpdatedAt || Date.now(),
         };
@@ -1563,7 +1596,7 @@ class StorageService {
     };
   }
 
-  private saveState(syncToServer = true): void {
+  private saveState(syncToServer = true, immediateSync = false): void {
     try {
       this.state.stateUpdatedAt = Date.now();
 
@@ -1611,13 +1644,16 @@ class StorageService {
 
       this.notifyListeners();
 
-      // 4. Automatically sync FULL state to the server's Persistent Vault ONLY after initial server hydration completes
-      // Debounced by 1200ms to eliminate background CPU spikes and network churn
-      if (syncToServer && this.hasHydratedFromServer && !this.isHydrating) {
+      // 4. Automatically sync FULL state to the server's Persistent Vault ONLY after initial server hydration completes (or immediately on explicit deletion/mutation)
+      if (syncToServer && !this.isHydrating) {
         if (this.vaultSyncTimer) clearTimeout(this.vaultSyncTimer);
-        this.vaultSyncTimer = setTimeout(() => {
+        if (immediateSync) {
           this.syncToServerVault(true).catch(() => {});
-        }, 1200);
+        } else if (this.hasHydratedFromServer) {
+          this.vaultSyncTimer = setTimeout(() => {
+            this.syncToServerVault(true).catch(() => {});
+          }, 1200);
+        }
       }
     } catch {
       // Graceful fallback: memory and server vault maintain data
@@ -1690,7 +1726,7 @@ class StorageService {
         const deletedSet = new Set<string>([...vaultDeleted, ...localDeleted]);
 
         if (deletedSet.size !== localDeleted.length) {
-          this.state.deletedIds = Array.from(deletedSet).slice(-600);
+          this.state.deletedIds = Array.from(deletedSet).slice(-2500);
           updated = true;
         }
 
@@ -2179,7 +2215,7 @@ class StorageService {
     }
 
     this.markDeleted(idsToMark);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   public getResellerProfiles(): ResellerProfile[] {
@@ -2221,8 +2257,9 @@ class StorageService {
   }
 
   public deleteServerNode(id: string): void {
+    this.markDeleted(id);
     this.state.serverNodes = this.state.serverNodes.filter(s => s.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Hosting Plans ---
@@ -2242,8 +2279,9 @@ class StorageService {
   }
 
   public deleteHostingPlan(planId: string): void {
+    this.markDeleted(planId);
     this.state.hostingPlans = this.state.hostingPlans.filter(p => p.id !== planId);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Hosting Accounts ---
@@ -2370,7 +2408,7 @@ class StorageService {
     this.state.cronJobs = this.state.cronJobs.filter(c => c.accountId !== accId);
     this.state.backups = this.state.backups.filter(b => b.accountId !== accId);
     this.markDeleted(idsToMark);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Virtual Files ---
@@ -2545,8 +2583,9 @@ class StorageService {
   public deleteVirtualFile(fileId: string): void {
     const target = this.state.virtualFiles.find(f => f.id === fileId);
     if (!target) {
+      this.markDeleted(fileId);
       this.state.virtualFiles = this.state.virtualFiles.filter(f => f.id !== fileId);
-      this.saveState();
+      this.saveState(true, true);
       return;
     }
 
@@ -2554,16 +2593,26 @@ class StorageService {
     const cleanPathLower = cleanPath.toLowerCase();
     const isDir = target.type === 'directory';
 
+    const idsToMark: string[] = [fileId];
     // Remove file and, if directory, all nested children recursively
     this.state.virtualFiles = this.state.virtualFiles.filter(f => {
       const fNorm = f.path.replace(/\\/g, '/').toLowerCase();
       if (isDir) {
-        return !(fNorm === cleanPathLower || fNorm.startsWith(cleanPathLower + '/'));
+        if (fNorm === cleanPathLower || fNorm.startsWith(cleanPathLower + '/')) {
+          idsToMark.push(f.id);
+          return false;
+        }
+        return true;
       }
-      return f.id !== fileId && fNorm !== cleanPathLower;
+      if (f.id === fileId || fNorm === cleanPathLower) {
+        idsToMark.push(f.id);
+        return false;
+      }
+      return true;
     });
 
-    this.saveState();
+    this.markDeleted(idsToMark);
+    this.saveState(true, true);
 
     // Call server deletion endpoint so physical disk & vhostStore are cleaned up permanently!
     if (typeof window !== 'undefined') {
@@ -2590,17 +2639,28 @@ class StorageService {
       .map(f => f.path.replace(/\\/g, '/').toLowerCase());
     const filePaths = new Set(targetItems.map(f => f.path.replace(/\\/g, '/').toLowerCase()));
 
+    const idsToMark: string[] = [...fileIds];
     this.state.virtualFiles = this.state.virtualFiles.filter(f => {
-      if (idSet.has(f.id)) return false;
+      if (idSet.has(f.id)) {
+        idsToMark.push(f.id);
+        return false;
+      }
       const fNorm = f.path.replace(/\\/g, '/').toLowerCase();
-      if (filePaths.has(fNorm)) return false;
+      if (filePaths.has(fNorm)) {
+        idsToMark.push(f.id);
+        return false;
+      }
       for (const dir of dirPaths) {
-        if (fNorm.startsWith(dir + '/')) return false;
+        if (fNorm.startsWith(dir + '/')) {
+          idsToMark.push(f.id);
+          return false;
+        }
       }
       return true;
     });
 
-    this.saveState();
+    this.markDeleted(idsToMark);
+    this.saveState(true, true);
 
     if (typeof window !== 'undefined') {
       fetch('/api/files/batch-delete', {
@@ -2633,8 +2693,9 @@ class StorageService {
   }
 
   public deleteDnsRecord(id: string): void {
+    this.markDeleted(id);
     this.state.dnsRecords = this.state.dnsRecords.filter(d => d.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Domains & Subdomains ---
@@ -2781,7 +2842,7 @@ class StorageService {
     if (!this.state.domains) return;
     this.markDeleted(id);
     this.state.domains = this.state.domains.filter(d => d.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Databases ---
@@ -2804,8 +2865,9 @@ class StorageService {
     if (dbObj && this.state.databaseTables && this.state.databaseTables[dbObj.dbName]) {
       delete this.state.databaseTables[dbObj.dbName];
     }
+    this.markDeleted(id);
     this.state.databases = this.state.databases.filter(d => d.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Database Tables (phpMyAdmin Per-Database Storage) ---
@@ -2852,7 +2914,8 @@ class StorageService {
       dbObj.sizeMb = Math.max(0.1, Number((totalKb / 1024).toFixed(2)));
     }
 
-    this.saveState();
+    this.markDeleted(`dbtable-${dbName}-${tableName}`);
+    this.saveState(true, true);
   }
 
   public clearDatabaseTables(dbName: string): void {
@@ -2883,8 +2946,9 @@ class StorageService {
   }
 
   public deleteEmail(id: string): void {
+    this.markDeleted(id);
     this.state.emailMailboxes = this.state.emailMailboxes.filter(m => m.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Cron Jobs ---
@@ -2903,8 +2967,9 @@ class StorageService {
   }
 
   public deleteCronJob(id: string): void {
+    this.markDeleted(id);
     this.state.cronJobs = this.state.cronJobs.filter(c => c.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Backups ---
@@ -2938,8 +3003,9 @@ class StorageService {
 
   public deleteBackup(id: string): void {
     if (!Array.isArray(this.state.backups)) return;
+    this.markDeleted(id);
     this.state.backups = this.state.backups.filter(b => b.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Invoices ---
@@ -3009,7 +3075,7 @@ class StorageService {
     if (!Array.isArray(this.state.invoices)) return;
     this.markDeleted(id);
     this.state.invoices = this.state.invoices.filter(i => i.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Audit Logs ---
@@ -3063,8 +3129,9 @@ class StorageService {
   }
 
   public deleteFirewallRule(id: string): void {
+    this.markDeleted(id);
     this.state.firewallRules = this.state.firewallRules.filter(r => r.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- API Keys ---
@@ -3081,8 +3148,9 @@ class StorageService {
   }
 
   public deleteApiKey(id: string): void {
+    this.markDeleted(id);
     this.state.apiKeys = this.state.apiKeys.filter(k => k.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- Notifications ---
@@ -3157,10 +3225,13 @@ class StorageService {
   }
 
   public deleteVpsInstance(id: string): void {
+    const snapIds = this.state.vpsSnapshots.filter(s => s.vpsId === id).map(s => s.id);
+    const ruleIds = this.state.vpsFirewallRules.filter(f => f.vpsId === id).map(f => f.id);
+    this.markDeleted([id, ...snapIds, ...ruleIds]);
     this.state.vpsInstances = this.state.vpsInstances.filter(v => v.id !== id);
     this.state.vpsSnapshots = this.state.vpsSnapshots.filter(s => s.vpsId !== id);
     this.state.vpsFirewallRules = this.state.vpsFirewallRules.filter(f => f.vpsId !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   public getVpsSnapshots(vpsId?: string): VpsSnapshot[] {
@@ -3176,8 +3247,9 @@ class StorageService {
   }
 
   public deleteVpsSnapshot(id: string): void {
+    this.markDeleted(id);
     this.state.vpsSnapshots = this.state.vpsSnapshots.filter(s => s.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   public getVpsFirewallRules(vpsId?: string): VpsFirewallRule[] {
@@ -3193,8 +3265,9 @@ class StorageService {
   }
 
   public deleteVpsFirewallRule(id: string): void {
+    this.markDeleted(id);
     this.state.vpsFirewallRules = this.state.vpsFirewallRules.filter(r => r.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // --- IP Address Management ---
@@ -3234,8 +3307,9 @@ class StorageService {
   }
 
   public deleteIpAddress(id: string): void {
+    this.markDeleted(id);
     this.state.ipAddresses = (this.state.ipAddresses || []).filter(i => i.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   public applyGlobalPublicIp(newPublicIp: string): { updatedServers: number; updatedAccounts: number; updatedDns: number } {
@@ -3363,11 +3437,12 @@ class StorageService {
 
   public deleteNameserverConfig(id: string): void {
     if (!this.state.nameserverConfigs) return;
+    this.markDeleted(id);
     this.state.nameserverConfigs = this.state.nameserverConfigs.filter(n => n.id !== id);
     if (this.state.nameserverConfigs.length > 0 && !this.state.nameserverConfigs.some(n => n.isDefaultGlobal)) {
       this.state.nameserverConfigs[0].isDefaultGlobal = true;
     }
-    this.saveState();
+    this.saveState(true, true);
   }
 
   public syncAllAccountsToNameserver(nsConfig: PrivateNameserverConfig): number {
@@ -3482,8 +3557,9 @@ class StorageService {
 
   public deleteOptimizedMedia(id: string): void {
     if (!this.state.optimizedMedia) return;
+    this.markDeleted(id);
     this.state.optimizedMedia = this.state.optimizedMedia.filter(m => m.id !== id);
-    this.saveState();
+    this.saveState(true, true);
   }
 
   // Cloud PRO Official Letterhead, Owner & Bank Account Config Methods

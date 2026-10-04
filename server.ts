@@ -654,7 +654,7 @@ function mergeFullAppStates(
   return {
     ...baseState,
     ...incomingState,
-    deletedIds: Array.from(deletedSet).slice(-600),
+    deletedIds: Array.from(deletedSet).slice(-2500),
     users: mergeById(baseState.users, incomingState.users),
     resellerProfiles: mergeById(baseState.resellerProfiles, incomingState.resellerProfiles),
     serverNodes: mergeById(baseState.serverNodes, incomingState.serverNodes),
