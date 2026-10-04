@@ -1,0 +1,26 @@
+{
+  "name": "Cloud PRO Enterprise Panel",
+  "short_name": "CloudPRO",
+  "description": "Cloud PRO Reseller Hosting & Server Management Panel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#005dbd",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png?v=cpro-master",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png?v=cpro-master",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg?v=cpro-master",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -132,38 +132,79 @@ const AppContent: React.FC = () => {
   } = useServer();
 
   // =========================================================================
-  // Official Cloud PRO Master Favicon Guard:
-  // Strict lockdown preventing any child iframe, cloned site script, or
-  // subdomain asset from hijacking or tampering with the browser tab icon.
+  // =========================================================================
+  // Official Cloud PRO Master Multi-Browser Favicon Guard:
+  // Strictly protects tab icon across Chrome, Safari, Edge, Opera, & Firefox.
+  // Preserves native formats (ICO, PNG, SVG, Apple Touch) so no browser renders a generic or broken icon.
   // =========================================================================
   useEffect(() => {
-    const OFFICIAL_FAVICON = '/favicon.svg?v=cloudpro-master-fixed';
+    const CPRO_VER = 'cpro-2026-v4';
+    const SVG_FAVICON = `/favicon.svg?v=${CPRO_VER}`;
+    const PNG_FAVICON_32 = `/favicon-32x32.png?v=${CPRO_VER}`;
+    const ICO_FAVICON = `/favicon.ico?v=${CPRO_VER}`;
+    const APPLE_TOUCH = `/apple-touch-icon.png?v=${CPRO_VER}`;
 
-    const enforceCloudProFavicon = () => {
-      const allIcons = document.querySelectorAll<HTMLLinkElement>(
-        "link[rel*='icon'], link[rel='shortcut icon'], link[rel='apple-touch-icon']"
-      );
-      allIcons.forEach(link => {
-        if (link.getAttribute('href') !== OFFICIAL_FAVICON) {
-          link.href = OFFICIAL_FAVICON;
-          link.type = 'image/svg+xml';
-        }
-      });
+    const enforceCloudProFaviconSuite = () => {
+      // 1. Apple Touch Icon (iOS Safari & Android PWA)
+      const appleLinks = document.querySelectorAll<HTMLLinkElement>("link[rel*='apple-touch-icon']");
+      if (appleLinks.length === 0) {
+        const link = document.createElement('link');
+        link.rel = 'apple-touch-icon';
+        link.sizes = '180x180';
+        link.href = APPLE_TOUCH;
+        document.head.appendChild(link);
+      } else {
+        appleLinks.forEach(l => {
+          if (!l.href.includes('apple-touch-icon.png')) {
+            l.href = APPLE_TOUCH;
+            l.type = 'image/png';
+          }
+        });
+      }
 
-      let primaryIcon = document.querySelector<HTMLLinkElement>("link[rel='icon']");
-      if (!primaryIcon) {
-        primaryIcon = document.createElement('link');
-        primaryIcon.rel = 'icon';
-        primaryIcon.type = 'image/svg+xml';
-        primaryIcon.href = OFFICIAL_FAVICON;
-        document.head.appendChild(primaryIcon);
+      // 2. Shortcut Icon / Legacy Browser Fallback (.ico)
+      const shortcutLinks = document.querySelectorAll<HTMLLinkElement>("link[rel='shortcut icon']");
+      if (shortcutLinks.length === 0) {
+        const link = document.createElement('link');
+        link.rel = 'shortcut icon';
+        link.type = 'image/x-icon';
+        link.href = ICO_FAVICON;
+        document.head.appendChild(link);
+      } else {
+        shortcutLinks.forEach(l => {
+          if (!l.href.includes('favicon.ico')) {
+            l.href = ICO_FAVICON;
+            l.type = 'image/x-icon';
+          }
+        });
+      }
+
+      // 3. PNG Favicon (Opera, Chrome, Edge high-res tab bar)
+      const pngIcon = document.querySelector<HTMLLinkElement>("link[rel='icon'][type='image/png']");
+      if (!pngIcon) {
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.type = 'image/png';
+        link.sizes = '32x32';
+        link.href = PNG_FAVICON_32;
+        document.head.appendChild(link);
+      }
+
+      // 4. SVG Favicon (Modern crisp vector tab bar)
+      const svgIcon = document.querySelector<HTMLLinkElement>("link[rel='icon'][type='image/svg+xml']");
+      if (!svgIcon) {
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.type = 'image/svg+xml';
+        link.href = SVG_FAVICON;
+        document.head.appendChild(link);
       }
     };
 
-    enforceCloudProFavicon();
+    enforceCloudProFaviconSuite();
 
     const observer = new MutationObserver(() => {
-      enforceCloudProFavicon();
+      enforceCloudProFaviconSuite();
     });
 
     observer.observe(document.head, {
@@ -173,7 +214,7 @@ const AppContent: React.FC = () => {
       attributeFilter: ['href', 'rel'],
     });
 
-    const interval = setInterval(enforceCloudProFavicon, 2000);
+    const interval = setInterval(enforceCloudProFaviconSuite, 3000);
 
     return () => {
       observer.disconnect();

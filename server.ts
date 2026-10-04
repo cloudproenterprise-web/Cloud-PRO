@@ -9817,34 +9817,85 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     return res.status(200).send(renderWebTerminalHtml(host, activeTerminalCwd));
   });
 
-  // Intercept all favicon and apple-touch-icon variants (including uploads/ and sub-routes)
-  // to ensure Cloud PRO branding is 100% locked and never hijacked by cloned websites
+  // Intercept all favicon, icon, and touch-icon variants (including uploads/ and sub-routes)
+  // to ensure Cloud PRO master branding is 100% consistent across all browsers (Chrome, Safari, Edge, Opera, Firefox)
   app.get(
     [
       '/favicon.svg',
       '/favicon.ico',
       '/favicon.png',
+      '/favicon-16x16.png',
+      '/favicon-32x32.png',
+      '/favicon-48x48.png',
+      '/favicon-96x96.png',
       '/apple-touch-icon.png',
+      '/apple-touch-icon-180x180.png',
       '/apple-touch-icon-precomposed.png',
+      '/android-chrome-192x192.png',
+      '/android-chrome-512x512.png',
+      '/site.webmanifest',
+      '/manifest.json',
       '/logo.svg',
       '/uploads/favicon*',
       '/uploads/apple-touch-icon*',
     ],
     (req, res) => {
       const rawUrl = (req.originalUrl || req.url || '').split('?')[0];
-      const fileName = path.basename(rawUrl);
-      const isSvg = fileName.endsWith('.svg');
-      const targetFile =
-        fileName === 'logo.svg'
-          ? path.join(process.cwd(), 'public', 'logo.svg')
-          : path.join(process.cwd(), 'public', 'favicon.svg');
+      const baseName = path.basename(rawUrl).toLowerCase();
 
-      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-      res.setHeader('Pragma', 'no-cache');
-      res.setHeader('Expires', '0');
-      res.setHeader('Content-Type', isSvg ? 'image/svg+xml' : 'image/svg+xml');
-      if (fs.existsSync(targetFile)) {
-        return res.sendFile(targetFile);
+      // Normalize target file
+      let localFileName = baseName;
+      let contentType = 'image/png';
+
+      if (baseName.endsWith('.ico') || baseName.includes('favicon.ico')) {
+        localFileName = 'favicon.ico';
+        contentType = 'image/x-icon';
+      } else if (baseName.endsWith('.svg')) {
+        localFileName = baseName === 'logo.svg' ? 'logo.svg' : 'favicon.svg';
+        contentType = 'image/svg+xml';
+      } else if (baseName.includes('apple-touch-icon') || baseName.includes('apple-icon')) {
+        localFileName = 'apple-touch-icon.png';
+        contentType = 'image/png';
+      } else if (baseName.includes('192')) {
+        localFileName = 'android-chrome-192x192.png';
+        contentType = 'image/png';
+      } else if (baseName.includes('512')) {
+        localFileName = 'android-chrome-512x512.png';
+        contentType = 'image/png';
+      } else if (baseName.includes('16x16')) {
+        localFileName = 'favicon-16x16.png';
+        contentType = 'image/png';
+      } else if (baseName.includes('32x32')) {
+        localFileName = 'favicon-32x32.png';
+        contentType = 'image/png';
+      } else if (baseName.endsWith('.webmanifest') || baseName === 'manifest.json') {
+        localFileName = baseName.endsWith('.webmanifest') ? 'site.webmanifest' : 'manifest.json';
+        contentType = 'application/manifest+json; charset=utf-8';
+      } else {
+        localFileName = 'favicon-32x32.png';
+        contentType = 'image/png';
+      }
+
+      // Check candidates in public/, dist/, or fallback to SVG
+      const candidates = [
+        path.join(process.cwd(), 'public', localFileName),
+        path.join(process.cwd(), 'dist', localFileName),
+        path.join(process.cwd(), 'public_html', localFileName),
+      ];
+
+      for (const cand of candidates) {
+        if (fs.existsSync(cand) && fs.statSync(cand).isFile()) {
+          res.setHeader('Content-Type', contentType);
+          res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+          return res.sendFile(cand);
+        }
+      }
+
+      // Final SVG fallback
+      const svgFallback = path.join(process.cwd(), 'public', 'favicon.svg');
+      if (fs.existsSync(svgFallback)) {
+        res.setHeader('Content-Type', 'image/svg+xml');
+        return res.sendFile(svgFallback);
       }
       return res.status(404).end();
     }
