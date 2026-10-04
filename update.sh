@@ -320,6 +320,43 @@ else
 fi
 
 # -------------------------------------------------------------------------
+# [AUTO-INSTALL & AUTO-SERVICE CLOUDFLARED] JIKA BELUM TERPASANG
+# Mengunduh binary resmi cloudflared dan memasangnya sebagai System Daemon permanen
+# -------------------------------------------------------------------------
+CLOUDFLARE_DEFAULT_TOKEN="eyJhIjoiZTkwMjEzZWRiMzQ3NmJiMzAwNzAyNmQ3Y2QyMjk2NjEiLCJ0IjoiNmZiMDE1YjItYzdiNS00Y2EwLTgxYjYtYzI4ZWVmYTZlNGU0IiwicyI6Ik5UVTBOMkkxWVRndFlqQmhaaTAwWmpVNExUbGxNMlF0WkdFM1ltRTVOamRoTUdaaCJ9"
+
+if ! command -v cloudflared &>/dev/null; then
+  echo "[CLOUDFLARE] Mengunduh binary resmi cloudflared..."
+  ARCH="$(uname -m)"
+  CF_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64"
+  if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+    CF_URL="https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64"
+  fi
+  if [ "$(id -u)" -eq 0 ]; then
+    curl -sL --retry 3 --connect-timeout 10 "$CF_URL" -o /usr/local/bin/cloudflared 2>/dev/null || true
+    chmod +x /usr/local/bin/cloudflared 2>/dev/null || true
+  else
+    sudo -n curl -sL --retry 3 --connect-timeout 10 "$CF_URL" -o /usr/local/bin/cloudflared 2>/dev/null || true
+    sudo -n chmod +x /usr/local/bin/cloudflared 2>/dev/null || true
+  fi
+  if command -v cloudflared &>/dev/null; then
+    echo "[OK] Binary cloudflared berhasil dipasang di /usr/local/bin/cloudflared!"
+  fi
+fi
+
+# Pasang cloudflared sebagai Systemd Service resmi jika belum ada
+if command -v cloudflared &>/dev/null && command -v systemctl &>/dev/null; then
+  if [ ! -f "/etc/systemd/system/cloudflared.service" ]; then
+    echo "[CLOUDFLARE] Memasang cloudflared sebagai System Service resmi 24/7..."
+    if [ "$(id -u)" -eq 0 ]; then
+      cloudflared service install "$CLOUDFLARE_DEFAULT_TOKEN" 2>/dev/null || true
+    else
+      sudo -n cloudflared service install "$CLOUDFLARE_DEFAULT_TOKEN" 2>/dev/null || true
+    fi
+  fi
+fi
+
+# -------------------------------------------------------------------------
 # [ANTI-SLEEP & ALWAYS-ON 24/7 ENFORCEMENT]
 # Mencegah OS Linux/WSL/Server masuk mode Sleep, Suspend, atau Hibernate saat malam hari
 # -------------------------------------------------------------------------
