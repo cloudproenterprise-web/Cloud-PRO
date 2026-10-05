@@ -720,9 +720,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   // White-label dynamic branding
-  const brandName = currentResellerProfile?.brandName || 'Cloud PRO';
+  const brandName = currentResellerProfile?.brandName || 'Karsa Cloud PRO';
   const themeColor = currentResellerProfile?.themeColor || '#0284c7';
-  const panelDomain = currentResellerProfile?.panelDomain || 'panel.cloudpro.net';
+  const panelDomain = currentResellerProfile?.panelDomain || 'panel.karsacloud.id';
 
   const handleNav = (tabId: string) => {
     onSelectTab(tabId);
@@ -803,7 +803,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {currentUser.name || 'Administrator'}
                 </div>
                 <div className="text-[9px] font-mono text-emerald-400 flex items-center gap-1">
-                  <span>● {currentUser.role === 'admin' ? `Node: ${primaryServer?.hostname || 'denbaguse.my.id'}` : 'Cluster: Cloud PRO Edge'}</span>
+                  <span>● {currentUser.role === 'admin' ? `Node: ${primaryServer?.hostname || 'denbaguse.my.id'}` : 'Cluster: Karsa Cloud PRO Edge'}</span>
                 </div>
               </div>
             </div>
@@ -1014,7 +1014,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Compact Executive Portal Switcher & Logout Dock */}
         <div className="border-t border-slate-800/90 bg-slate-950 p-3 space-y-2">
           {/* Untuk Akun Klien (Customer): Kunci di cPanel, jangan tampilkan switcher portal */}
-          {authenticatedRole === 'customer' || currentUser.role === 'customer' ? (
+          {authenticatedRole === 'customer' ? (
             <div className="flex items-center justify-between gap-2 py-0.5">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
@@ -1035,7 +1035,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span>Logout</span>
               </button>
             </div>
-          ) : authenticatedRole === 'reseller' || currentUser.role === 'reseller' ? (
+          ) : authenticatedRole === 'reseller' ? (
             /* Untuk Akun Reseller: Kunci di WHM Reseller, jangan tampilkan switcher portal */
             <div className="flex items-center justify-between gap-2 py-0.5">
               <div className="flex items-center gap-2">

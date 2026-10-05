@@ -112,7 +112,7 @@ export const BackupManager: React.FC<BackupManagerProps> = ({
   // Domains & Subdomains for this account
   const [serverDomains, setServerDomains] = useState<ServerDomainItem[]>([]);
   const [selectedDomain, setSelectedDomain] = useState<string>(
-    preselectedDomain || account?.primaryDomain || (currentUser?.role === 'admin' ? 'denbaguse.my.id' : 'websitepelanggan.my.id')
+    preselectedDomain || account?.primaryDomain || 'denbaguse.my.id'
   );
   const [selectedDocRoot, setSelectedDocRoot] = useState<string>(account?.documentRoot || '/public_html');
 
@@ -226,8 +226,8 @@ export const BackupManager: React.FC<BackupManagerProps> = ({
 
     // Fallback to local db domains
     const accId = account?.id || (currentUser?.role === 'admin' ? 'acc-rdm-01' : 'acc-school-02');
-    const accDomain = account?.primaryDomain || (currentUser?.role === 'admin' ? 'denbaguse.my.id' : 'websitepelanggan.my.id');
-    const accUser = account?.username || (currentUser?.role === 'admin' ? 'cloudpro' : 'pelanggan');
+    const accDomain = account?.primaryDomain || 'denbaguse.my.id';
+    const accUser = account?.username || (currentUser?.role === 'admin' ? 'karsacloud' : 'pelanggan');
     const localDoms = db.getDomains(accId);
     const mapped: ServerDomainItem[] = [
       {

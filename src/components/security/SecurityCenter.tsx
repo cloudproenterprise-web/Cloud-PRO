@@ -14,6 +14,7 @@ import {
   Terminal,
   Copy,
   Check,
+  ShieldCheck,
 } from 'lucide-react';
 import { AuditLog, FirewallRule, ApiKeyItem } from '../../types';
 import { TailscaleMeshNode } from './TailscaleMeshNode';

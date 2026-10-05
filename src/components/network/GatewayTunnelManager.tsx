@@ -947,7 +947,7 @@ export const GatewayTunnelManager: React.FC<GatewayTunnelManagerProps> = ({
                     </span>
                   </td>
                   <td className="px-4 py-3 font-sans text-slate-600 dark:text-slate-300">
-                    Dashboard &amp; Portal Utama Cloud PRO Enterprise
+                    Dashboard &amp; Portal Utama Karsa Cloud
                   </td>
                   <td className="px-4 py-3 text-sky-600 dark:text-sky-400">http://localhost:3000</td>
                   <td className="px-4 py-3 text-right font-sans text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">

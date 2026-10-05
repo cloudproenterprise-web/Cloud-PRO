@@ -38,16 +38,16 @@ export const DEFAULT_LETTERHEAD_CONFIG: CloudProLetterheadConfig = {
   officialEmail: 'admin@denbaguse.my.id',
   officialWhatsApp: '+62 812-2673-8883',
   ownerName: 'Jaenal Maskun',
-  ownerTitle: 'Pemilik & Root Administrator Cloud PRO Enterprise',
+  ownerTitle: 'Pemilik & Root Administrator Karsa Cloud',
   signatureCity: 'Indonesia',
   bank1Name: 'Bank BCA',
   bank1Number: '8420-9918-22',
-  bank1Holder: 'Jaenal Maskun (Cloud PRO Enterprise)',
+  bank1Holder: 'Jaenal Maskun (Karsa Cloud)',
   bank2Name: 'Bank Mandiri / BRI',
   bank2Number: '139-00-8829104-5',
   bank2Holder: 'Jaenal Maskun',
-  qrisInfo: 'QRIS Cloud PRO Enterprise (All Bank, Dana, OVO, GoPay, ShopeePay)',
-  footerNote: 'Dokumen ini diterbitkan secara resmi oleh Sistem Billing & Otomasi Cloud PRO Enterprise (denbaguse.my.id) dan sah disertai Barcode Tanda Tangan Elektronik.',
+  qrisInfo: 'QRIS Karsa Cloud (All Bank, Dana, OVO, GoPay, ShopeePay)',
+  footerNote: 'Dokumen ini diterbitkan secara resmi oleh Sistem Billing & Otomasi Karsa Cloud (denbaguse.my.id) dan sah disertai Barcode Tanda Tangan Elektronik.',
   enableBarcodeSignature: true,
   autoSendWhatsApp: true,
   autoSendEmail: true,
@@ -92,15 +92,15 @@ const INITIAL_STATE: DatabaseState = {
     {
       id: 'usr-admin-01',
       name: 'Root Administrator',
-      username: 'admin',
+      username: 'karsacloud',
       email: 'admin@denbaguse.my.id',
       role: 'admin',
       status: 'active',
       creditBalance: 50000.0,
-      companyName: 'Cloud PRO Enterprise (denbaguse.my.id)',
+      companyName: 'Karsa Cloud PRO (denbaguse.my.id)',
       phone: '+62 812-2673-8883',
       twoFactorEnabled: true,
-      twoFactorSecret: 'CLOUDPROSECRET23',
+      twoFactorSecret: 'KARSACLOUDSECRET23',
       createdAt: '2026-01-10T08:00:00Z',
       lastLogin: '2026-09-30T08:00:00Z',
     },
@@ -122,7 +122,7 @@ const INITIAL_STATE: DatabaseState = {
       id: 'usr-cust-02',
       name: 'Pelanggan Hosting cPanel',
       username: 'pelanggan',
-      email: 'admin@websitepelanggan.my.id',
+      email: 'pelanggan@denbaguse.my.id',
       role: 'customer',
       status: 'active',
       creditBalance: 250.0,
@@ -323,14 +323,14 @@ const INITIAL_STATE: DatabaseState = {
       id: 'acc-rdm-01',
       primaryDomain: 'denbaguse.my.id',
       domain: 'denbaguse.my.id',
-      username: 'cloudpro',
+      username: 'karsacloud',
       customerId: 'usr-admin-01',
       customerName: 'Jaenal Maskun (Website Pribadi)',
       customerEmail: 'admin@denbaguse.my.id',
       serverId: 'srv-sg-01',
       serverName: 'SG-Edge-01 (Singapore)',
       planId: 'plan-pro',
-      planName: 'Cloud Pro SSD',
+      planName: 'Karsa Cloud PRO NVMe',
       diskUsedMb: 23,
       diskLimitMb: 25600,
       bandwidthUsedMb: 8450,
@@ -356,7 +356,7 @@ const INITIAL_STATE: DatabaseState = {
       sslProvider: "Let's Encrypt / ZeroSSL",
       sslExpiresAt: '2027-01-01T00:00:00Z',
       forceHttps: true,
-      documentRoot: '/home/cloudpro/public_html',
+      documentRoot: '/home/karsacloud/public_html',
       ipAddress: '103.147.154.21',
       databaseCount: 1,
       emailCount: 2,
@@ -366,12 +366,12 @@ const INITIAL_STATE: DatabaseState = {
     },
     {
       id: 'acc-school-02',
-      primaryDomain: 'websitepelanggan.my.id',
-      domain: 'websitepelanggan.my.id',
+      primaryDomain: 'client.denbaguse.my.id',
+      domain: 'client.denbaguse.my.id',
       username: 'pelanggan',
       customerId: 'usr-cust-02',
       customerName: 'Pelanggan Hosting cPanel',
-      customerEmail: 'admin@websitepelanggan.my.id',
+      customerEmail: 'pelanggan@denbaguse.my.id',
       serverId: 'srv-id-01',
       serverName: 'ID-Cyber-01 (Jakarta)',
       planId: 'plan-starter',
@@ -638,7 +638,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     {
       id: 'cron-01',
       accountId: 'acc-rdm-01',
-      command: 'php /home/cloudpro/public_html/artisan schedule:run >> /dev/null 2>&1',
+      command: 'php /home/karsacloud/public_html/artisan schedule:run >> /dev/null 2>&1',
       schedule: '0 2 * * *',
       description: 'Daily Automated RDM Database Sync & Backup',
       isActive: true,
@@ -659,8 +659,8 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     {
       id: 'bk-auto-02',
       accountId: 'acc-school-02',
-      accountDomain: 'websitepelanggan.my.id',
-      fileName: 'backup-full-websitepelanggan.my.id-20260930.tar.gz',
+      accountDomain: 'client.denbaguse.my.id',
+      fileName: 'backup-full-client.denbaguse.my.id-20260930.tar.gz',
       type: 'full',
       sizeMb: 84.2,
       status: 'completed',
@@ -674,18 +674,18 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       userId: 'usr-cust-02',
       accountId: 'acc-school-02',
       userName: 'Pelanggan Hosting cPanel',
-      userEmail: 'admin@websitepelanggan.my.id',
+      userEmail: 'pelanggan@denbaguse.my.id',
       userPhone: '+62 812-2673-8883',
       billingSource: 'automated',
       items: [
         {
-          description: 'Perpanjangan Paket Cloud Starter NVMe (websitepelanggan.my.id) — 1 Tahun',
+          description: 'Perpanjangan Paket Cloud Starter NVMe (client.denbaguse.my.id) — 1 Tahun',
           qty: 1,
           unitPrice: 350000,
           amount: 350000,
         },
         {
-          description: 'Perpanjangan Domain .MY.ID (websitepelanggan.my.id) — 1 Tahun',
+          description: 'Perpanjangan Domain .MY.ID (client.denbaguse.my.id) — 1 Tahun',
           qty: 1,
           unitPrice: 50000,
           amount: 50000,
@@ -710,7 +710,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       billingSource: 'automated',
       items: [
         {
-          description: 'Tagihan Bulanan Otomatis Cloud PRO Enterprise SSD (denbaguse.my.id) — Periode Oktober 2026',
+          description: 'Tagihan Bulanan Otomatis Karsa Cloud SSD (denbaguse.my.id) — Periode Oktober 2026',
           qty: 1,
           unitPrice: 150000,
           amount: 150000,
@@ -723,7 +723,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       createdAt: new Date().toISOString(),
       whatsappSentAt: new Date().toISOString(),
       emailSentAt: new Date().toISOString(),
-      paymentNotes: 'Diterbitkan otomatis oleh Mesin Auto-Billing Cloud PRO Enterprise (Status: UNPAID / Menunggu Pembayaran).',
+      paymentNotes: 'Diterbitkan otomatis oleh Mesin Auto-Billing Karsa Cloud (Status: UNPAID / Menunggu Pembayaran).',
     },
     {
       id: 'inv-default-paid-01',
@@ -736,7 +736,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       billingSource: 'manual',
       items: [
         {
-          description: 'Lisensi Cloud PRO Enterprise SSD & Infrastruktur Domain Utama (denbaguse.my.id)',
+          description: 'Lisensi Karsa Cloud SSD & Infrastruktur Domain Utama (denbaguse.my.id)',
           qty: 1,
           unitPrice: 450000,
           amount: 450000,
@@ -768,7 +768,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       action: 'SYSTEM_INITIALIZATION',
       category: 'SERVER',
       ipAddress: '127.0.0.1',
-      details: 'Cloud PRO Enterprise system initialized for domain denbaguse.my.id',
+      details: 'Karsa Cloud system initialized for domain denbaguse.my.id',
       timestamp: '2026-09-28T18:30:15Z',
     },
   ],
@@ -819,7 +819,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
   notifications: [
     {
       id: 'notif-01',
-      title: 'Selamat Datang di Cloud PRO Enterprise',
+      title: 'Selamat Datang di Karsa Cloud',
       message: 'Panel hosting aktif dan siap dikonfigurasi untuk domain denbaguse.my.id.',
       type: 'success',
       timestamp: '2026-09-28T18:35:00Z',
@@ -1139,7 +1139,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       accountId: 'acc-rdm-01',
       domain: 'denbaguse.my.id',
       type: 'primary',
-      documentRoot: '/home/cloudpro/public_html',
+      documentRoot: '/home/karsacloud/public_html',
       phpVersion: '8.2',
       sslStatus: 'active',
       createdAt: '2026-09-28T08:00:00Z',
@@ -1151,7 +1151,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       type: 'subdomain',
       parentDomain: 'denbaguse.my.id',
       subdomainPrefix: 'siakad-madrasah',
-      documentRoot: '/home/cloudpro/public_html/siakad-madrasah',
+      documentRoot: '/home/karsacloud/public_html/siakad-madrasah',
       phpVersion: '8.2',
       sslStatus: 'active',
       createdAt: '2026-09-29T10:00:00Z',
@@ -1163,7 +1163,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       type: 'subdomain',
       parentDomain: 'denbaguse.my.id',
       subdomainPrefix: 'rdm',
-      documentRoot: '/home/cloudpro/public_html/rdm',
+      documentRoot: '/home/karsacloud/public_html/rdm',
       phpVersion: '7.2',
       sslStatus: 'active',
       createdAt: '2026-09-29T10:05:00Z',
@@ -1175,7 +1175,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       type: 'subdomain',
       parentDomain: 'denbaguse.my.id',
       subdomainPrefix: 'cbt',
-      documentRoot: '/home/cloudpro/public_html/cbt',
+      documentRoot: '/home/karsacloud/public_html/cbt',
       phpVersion: '7.4',
       sslStatus: 'active',
       createdAt: '2026-09-29T10:10:00Z',
@@ -1187,7 +1187,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       type: 'subdomain',
       parentDomain: 'denbaguse.my.id',
       subdomainPrefix: 'elearning',
-      documentRoot: '/home/cloudpro/public_html/elearning',
+      documentRoot: '/home/karsacloud/public_html/elearning',
       phpVersion: '8.2',
       sslStatus: 'active',
       createdAt: '2026-09-29T10:15:00Z',
@@ -1199,7 +1199,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       type: 'subdomain',
       parentDomain: 'denbaguse.my.id',
       subdomainPrefix: 'kartu-pelajar',
-      documentRoot: '/home/cloudpro/public_html/kartu-pelajar',
+      documentRoot: '/home/karsacloud/public_html/kartu-pelajar',
       phpVersion: '8.2',
       sslStatus: 'active',
       createdAt: '2026-10-04T02:00:00Z',
@@ -1207,7 +1207,7 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
     {
       id: 'dom-primary-02',
       accountId: 'acc-school-02',
-      domain: 'websitepelanggan.my.id',
+      domain: 'client.denbaguse.my.id',
       type: 'primary',
       documentRoot: '/home/pelanggan/public_html',
       phpVersion: '8.2',
@@ -1294,19 +1294,23 @@ class StorageService {
           // Ignore
         }
       }
+      if (serialized && serialized.includes('websitepelanggan.my.id')) {
+        serialized = serialized.replace(/websitepelanggan\.my\.id/g, 'client.denbaguse.my.id')
+                               .replace(/admin@websitepelanggan/g, 'pelanggan@denbaguse');
+      }
       if (serialized) {
         const parsed = JSON.parse(serialized);
         const hasAccounts = Array.isArray(parsed.hostingAccounts) && parsed.hostingAccounts.length > 0;
         let loadedAccounts: HostingAccount[] = hasAccounts ? parsed.hostingAccounts : INITIAL_STATE.hostingAccounts;
-        // Upgrade legacy default RDM domain to denbaguse.my.id personal web and username madrasah -> cloudpro
+        // Upgrade legacy default RDM domain to denbaguse.my.id personal web and username to karsacloud
         loadedAccounts = loadedAccounts.map(acc => {
           if (acc.id === 'acc-rdm-01') {
             return {
               ...acc,
               primaryDomain: acc.primaryDomain === 'rdm.denbaguse.my.id' ? 'denbaguse.my.id' : acc.primaryDomain,
               domain: acc.domain === 'rdm.denbaguse.my.id' ? 'denbaguse.my.id' : acc.domain,
-              username: acc.username === 'madrasah' || !acc.username ? 'cloudpro' : acc.username,
-              documentRoot: (acc.documentRoot || '/home/cloudpro/public_html').replace('/home/madrasah', '/home/cloudpro'),
+              username: 'karsacloud',
+              documentRoot: (acc.documentRoot || '/home/karsacloud/public_html').replace('/home/madrasah', '/home/karsacloud').replace('/home/cloudpro', '/home/karsacloud').replace('/home/gridmaster', '/home/karsacloud'),
               customerName: 'Jaenal Maskun (Website Pribadi)',
               diskUsedMb: acc.diskUsedMb === 1240 ? 23 : acc.diskUsedMb,
               resellerId: undefined,
@@ -1316,8 +1320,9 @@ class StorageService {
             const cleanDom =
               acc.primaryDomain === 'klien-reseller.my.id' ||
               acc.primaryDomain === 'portal.denbaguse.my.id' ||
-              acc.primaryDomain.includes('reseller')
-                ? 'websitepelanggan.my.id'
+              acc.primaryDomain.includes('reseller') ||
+              acc.primaryDomain.includes('websitepelanggan')
+                ? 'client.denbaguse.my.id'
                 : acc.primaryDomain;
             return {
               ...acc,
@@ -1330,8 +1335,8 @@ class StorageService {
                   ? 'Pelanggan Hosting cPanel'
                   : acc.customerName,
               customerEmail:
-                !acc.customerEmail || acc.customerEmail.toLowerCase().includes('reseller')
-                  ? 'admin@websitepelanggan.my.id'
+                !acc.customerEmail || acc.customerEmail.toLowerCase().includes('reseller') || acc.customerEmail.includes('websitepelanggan')
+                  ? 'pelanggan@denbaguse.my.id'
                   : acc.customerEmail,
               documentRoot:
                 acc.documentRoot === '/home/klienweb/public_html'
@@ -1381,7 +1386,7 @@ class StorageService {
               ...u,
               name: u.name.toLowerCase().includes('reseller') ? 'Pelanggan Hosting cPanel' : u.name,
               username: u.username === 'klienweb' ? 'pelanggan' : (u.username || 'pelanggan'),
-              email: u.email.toLowerCase().includes('reseller') ? 'admin@websitepelanggan.my.id' : u.email,
+              email: u.email.toLowerCase().includes('reseller') || u.email.includes('websitepelanggan') ? 'pelanggan@denbaguse.my.id' : u.email,
               companyName: u.companyName?.toLowerCase().includes('reseller') ? 'Portal Website Pelanggan' : (u.companyName || 'Portal Website Pelanggan'),
               resellerId: undefined,
               phone: u.phone || '+62 812-2673-8883',
@@ -1412,7 +1417,7 @@ class StorageService {
           if (d.accountId === 'acc-school-02' && (d.domain.includes('reseller') || d.domain === 'portal.denbaguse.my.id')) {
             return {
               ...d,
-              domain: 'websitepelanggan.my.id',
+              domain: 'client.denbaguse.my.id',
               documentRoot: '/home/pelanggan/public_html',
             };
           }
@@ -1452,7 +1457,7 @@ class StorageService {
               ...inv,
               accountId: inv.accountId || 'acc-school-02',
               userName: (inv.userName || '').toLowerCase().includes('reseller') ? 'Pelanggan Hosting cPanel' : (inv.userName || 'Pelanggan Hosting cPanel'),
-              userEmail: inv.userEmail?.toLowerCase().includes('reseller') ? 'admin@websitepelanggan.my.id' : (inv.userEmail || 'admin@websitepelanggan.my.id'),
+              userEmail: inv.userEmail?.toLowerCase().includes('reseller') || inv.userEmail?.includes('websitepelanggan') ? 'pelanggan@denbaguse.my.id' : (inv.userEmail || 'pelanggan@denbaguse.my.id'),
               userPhone: inv.userPhone || '+62 812-2673-8883',
               resellerId: undefined,
               billingSource: inv.billingSource || 'automated',
@@ -1463,7 +1468,7 @@ class StorageService {
               createdAt: inv.createdAt || new Date().toISOString(),
               items: safeItems.map(it => ({
                 ...it,
-                description: it.description.replace(/klien-reseller\.my\.id/g, 'websitepelanggan.my.id'),
+                description: it.description.replace(/klien-reseller\.my\.id/g, 'client.denbaguse.my.id').replace(/websitepelanggan\.my\.id/g, 'client.denbaguse.my.id'),
               })),
             };
           }
@@ -1941,18 +1946,18 @@ class StorageService {
         updated = true;
       }
 
-      // Always enforce multi-tenant isolation and upgrade legacy username madrasah -> cloudpro
+      // Always enforce multi-tenant isolation and upgrade legacy username to karsacloud
       if (Array.isArray(this.state.hostingAccounts)) {
         this.state.hostingAccounts = this.state.hostingAccounts.map(acc => {
           if (acc.id === 'acc-rdm-01') {
-            if (acc.resellerId || acc.username === 'madrasah' || (acc.documentRoot || '').includes('/home/madrasah')) {
+            if (acc.resellerId || acc.username !== 'karsacloud' || (acc.documentRoot || '').includes('/home/madrasah') || (acc.documentRoot || '').includes('/home/cloudpro') || (acc.documentRoot || '').includes('/home/gridmaster')) {
               updated = true;
               return {
                 ...acc,
                 resellerId: undefined,
                 customerId: 'usr-admin-01',
-                username: acc.username === 'madrasah' || !acc.username ? 'cloudpro' : acc.username,
-                documentRoot: (acc.documentRoot || '/home/cloudpro/public_html').replace('/home/madrasah', '/home/cloudpro'),
+                username: 'karsacloud',
+                documentRoot: (acc.documentRoot || '/home/karsacloud/public_html').replace('/home/madrasah', '/home/karsacloud').replace('/home/cloudpro', '/home/karsacloud').replace('/home/gridmaster', '/home/karsacloud'),
               };
             }
           }
@@ -1962,8 +1967,9 @@ class StorageService {
               const cleanDom =
                 acc.primaryDomain === 'klien-reseller.my.id' ||
                 acc.primaryDomain === 'portal.denbaguse.my.id' ||
-                acc.primaryDomain.includes('reseller')
-                  ? 'websitepelanggan.my.id'
+                acc.primaryDomain.includes('reseller') ||
+                acc.primaryDomain.includes('websitepelanggan')
+                  ? 'client.denbaguse.my.id'
                   : acc.primaryDomain;
               return {
                 ...acc,
@@ -1972,7 +1978,7 @@ class StorageService {
                 domain: cleanDom,
                 username: acc.username === 'klienweb' ? 'pelanggan' : acc.username,
                 customerName: 'Pelanggan Hosting cPanel',
-                customerEmail: 'admin@websitepelanggan.my.id',
+                customerEmail: 'pelanggan@denbaguse.my.id',
                 documentRoot: '/home/pelanggan/public_html',
               };
             }
@@ -2145,7 +2151,7 @@ class StorageService {
   public getUsers(): User[] {
     return this.state.users.map(u => {
       if (u.twoFactorSecret && /[^A-Z2-7]/i.test(u.twoFactorSecret)) {
-        return { ...u, twoFactorSecret: 'CLOUDPROSECRET23' };
+        return { ...u, twoFactorSecret: 'KARSACLOUDSECRET23' };
       }
       return u;
     });
@@ -2154,7 +2160,7 @@ class StorageService {
   public getUserById(id: string): User | undefined {
     const u = this.state.users.find(user => user.id === id);
     if (u && u.twoFactorSecret && /[^A-Z2-7]/i.test(u.twoFactorSecret)) {
-      return { ...u, twoFactorSecret: 'CLOUDPROSECRET23' };
+      return { ...u, twoFactorSecret: 'KARSACLOUDSECRET23' };
     }
     return u;
   }
@@ -3586,18 +3592,18 @@ class StorageService {
           parsed.ownerTitle === 'Pemilik & Root Administrator Server Cloud PRO' ||
           parsed.ownerTitle === 'Pemilik & Root Administrator Platform Cloud PRO'
         ) {
-          parsed.ownerTitle = 'Pemilik & Root Administrator Cloud PRO Enterprise';
+          parsed.ownerTitle = 'Pemilik & Root Administrator Karsa Cloud';
         }
         if (
           parsed.bank1Holder === 'Jaenal Maskun (Server Cloud PRO)' ||
           parsed.bank1Holder === 'Jaenal Maskun (Platform Cloud PRO)'
         ) {
-          parsed.bank1Holder = 'Jaenal Maskun (Cloud PRO Enterprise)';
+          parsed.bank1Holder = 'Jaenal Maskun (Karsa Cloud)';
         }
         if (typeof parsed.footerNote === 'string') {
           parsed.footerNote = parsed.footerNote
-            .replace(/Server Cloud PRO/g, 'Cloud PRO Enterprise')
-            .replace(/Platform Cloud PRO/g, 'Cloud PRO Enterprise');
+            .replace(/Server Cloud PRO/g, 'Karsa Cloud')
+            .replace(/Platform Cloud PRO/g, 'Karsa Cloud');
         }
         return { ...DEFAULT_LETTERHEAD_CONFIG, ...(this.state.letterheadConfig || {}), ...parsed };
       }

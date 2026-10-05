@@ -929,7 +929,7 @@ export class CloudProApi {
         `• *Jatuh Tempo:* ${new Date(inv.dueDate).toLocaleDateString('id-ID')}\n\n` +
         `*Rincian Layanan:*\n${itemDesc}\n\n` +
         `*Total Tagihan:* *${totalStr}*\n\n` +
-        `*Rekening Pembayaran Resmi Cloud PRO Enterprise:*\n` +
+        `*Rekening Pembayaran Resmi Karsa Cloud PRO:*\n` +
         `1. *${kop.bank1Name}:* ${kop.bank1Number} a.n *${kop.bank1Holder}*\n` +
         (kop.bank2Number ? `2. *${kop.bank2Name}:* ${kop.bank2Number} a.n *${kop.bank2Holder}*\n` : '') +
         (kop.qrisInfo ? `3. *QRIS:* ${kop.qrisInfo}\n` : '') +
@@ -1200,7 +1200,7 @@ export class CloudProApi {
       paymentNotes:
         payload.paymentNotes ||
         (isPaid
-          ? 'Pembayaran manual diterima lunas dan diverifikasi oleh Pemilik Cloud PRO Enterprise.'
+          ? 'Pembayaran manual diterima lunas dan diverifikasi oleh Pemilik Karsa Cloud PRO.'
           : 'Bukti Tagihan Unpaid Manual — Menunggu pembayaran sebelum tanggal jatuh tempo.'),
     };
 
@@ -1334,7 +1334,7 @@ export class CloudProApi {
           signatureHash: status === 'paid' && receiptNumber ? `SIG-CPRO-${receiptNumber.replace(/[^A-Z0-9]/gi, '')}-AUTO` : undefined,
           paymentNotes:
             status === 'unpaid'
-              ? `Bukti Tagihan Unpaid Otomatis (Cron H-${options.dueDays}) untuk domain ${acc.primaryDomain}. Silakan lakukan pembayaran ke rekening resmi Cloud PRO Enterprise.`
+              ? `Bukti Tagihan Unpaid Otomatis (Cron H-${options.dueDays}) untuk domain ${acc.primaryDomain}. Silakan lakukan pembayaran ke rekening resmi Karsa Cloud PRO.`
               : `Lunas otomatis melalui pemotongan Saldo Deposit Wallet.`,
         };
 

@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       creditBalance: role === 'admin' ? 50000 : role === 'reseller' ? 1500 : 250,
       companyName:
         role === 'admin'
-          ? 'Cloud PRO Enterprise'
+          ? 'Karsa Cloud PRO'
           : role === 'reseller'
           ? 'Mitra Hosting Partner'
           : 'cPanel Web Client',
@@ -122,7 +122,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         u.role === targetRole &&
         (u.email.toLowerCase() === cleanInput.toLowerCase() ||
           u.name.toLowerCase() === cleanInput.toLowerCase() ||
-          (u.username ? u.username.toLowerCase() === cleanInput.toLowerCase() : false))
+          (u.username ? u.username.toLowerCase() === cleanInput.toLowerCase() : false) ||
+          (u.role === 'admin' && ['karsacloud', 'gridmaster', 'admin', 'root'].includes(cleanInput.toLowerCase())))
     );
     if (!target) {
       target = ensureRoleUser(targetRole, cleanInput);
@@ -177,7 +178,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         u.role === targetRole &&
         (u.email.toLowerCase() === cleanInput.toLowerCase() ||
           u.name.toLowerCase() === cleanInput.toLowerCase() ||
-          (u.username ? u.username.toLowerCase() === cleanInput.toLowerCase() : false))
+          (u.username ? u.username.toLowerCase() === cleanInput.toLowerCase() : false) ||
+          (u.role === 'admin' && ['karsacloud', 'gridmaster', 'admin', 'root'].includes(cleanInput.toLowerCase())))
     );
     if (!target) {
       target = ensureRoleUser(targetRole, cleanInput);
@@ -333,7 +335,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         : null;
     updateCurrentUser({
       twoFactorEnabled: nextVal,
-      twoFactorSecret: nextVal ? (validExistingSecret || 'CLOUDPROSECRET23') : undefined,
+      twoFactorSecret: nextVal ? (validExistingSecret || 'KARSACLOUDSECRET23') : undefined,
     });
     return nextVal;
   };

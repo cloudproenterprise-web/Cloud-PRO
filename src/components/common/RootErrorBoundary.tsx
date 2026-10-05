@@ -66,7 +66,7 @@ export class RootErrorBoundary extends React.Component<Props, State> {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white tracking-tight">
-                  Cloud PRO Enterprise Guard
+                  Karsa Cloud Guard
                 </h2>
                 <p className="text-xs text-slate-400">
                   Sistem Pemulihan Otomatis Antarmuka (Auto-Heal)

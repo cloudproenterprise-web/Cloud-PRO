@@ -198,7 +198,7 @@ export const BillingOverview: React.FC = () => {
       whatsappReminder: true,
       defaultCurrency: 'IDR',
       idrExchangeRate: 16000,
-      bankAccountInfo: 'Bank BCA: 8420-9918-22 a.n Cloud PRO Enterprise / QRIS Nusantara Host',
+      bankAccountInfo: 'Bank BCA: 8420-9918-22 a.n Karsa Cloud PRO / QRIS Nusantara Host',
     };
   });
   const [isRunningAutoCycle, setIsRunningAutoCycle] = useState(false);
@@ -294,10 +294,10 @@ export const BillingOverview: React.FC = () => {
         dueDate: due.toISOString(),
         createdAt: now.toISOString(),
         paymentInstructions: `${letterheadConfig.bank1Name}: ${letterheadConfig.bank1Number} a.n ${letterheadConfig.bank1Holder}`,
-        paymentNotes: 'Tagihan Resmi Langganan Lisensi & Kapasitas Reseller WHM Cloud PRO Enterprise.',
+        paymentNotes: 'Tagihan Resmi Langganan Lisensi & Kapasitas Reseller WHM Karsa Cloud PRO.',
         items: [
           {
-            description: `Langganan Lisensi Reseller WHM Cloud PRO Enterprise & Alokasi NVMe SSD (${resellerBrand})`,
+            description: `Langganan Lisensi Reseller WHM Karsa Cloud PRO & Alokasi NVMe SSD (${resellerBrand})`,
             qty: 1,
             unitPrice: 750000,
             amount: 750000,
@@ -320,7 +320,7 @@ export const BillingOverview: React.FC = () => {
         invoiceNumber: `INV-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${(acc.username || 'HOST').toUpperCase().slice(0, 5)}`,
         userId: currentUser.id,
         userName: currentUser.name || acc.customerName || 'Pelanggan Hosting cPanel',
-        userEmail: currentUser.email || acc.customerEmail || 'admin@websitepelanggan.my.id',
+        userEmail: currentUser.email || acc.customerEmail || 'pelanggan@denbaguse.my.id',
         userPhone: acc.customerWhatsapp || currentUser.phone || '+62 812-2673-8883',
         accountId: acc.id,
         resellerId: acc.resellerId,
@@ -828,7 +828,7 @@ export const BillingOverview: React.FC = () => {
                 Ke Cloud PRO
               </h4>
               <p className="hidden sm:block mt-0.5 truncate text-[11px] text-slate-500 dark:text-slate-400">
-                Tagihan lisensi &amp; pembayaran Reseller ke Cloud PRO Enterprise
+                Tagihan lisensi &amp; pembayaran Reseller ke Karsa Cloud PRO
               </p>
             </div>
           </button>
@@ -1426,7 +1426,7 @@ export const BillingOverview: React.FC = () => {
                           }`}
                         >
                           {isResellerRole && resellerBillingMode === 'cloudpro_billing'
-                            ? 'Tagihan Cloud PRO Enterprise'
+                            ? 'Tagihan Karsa Cloud PRO'
                             : isCustomerRole || inv.billingSource === 'automated'
                             ? 'Tagihan Otomatis'
                             : 'Manual'}

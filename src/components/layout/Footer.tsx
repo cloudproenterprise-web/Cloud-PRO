@@ -296,7 +296,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="pt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-slate-500">
           <div>
             &copy; {new Date().getFullYear()}{' '}
-            <strong className="text-slate-800 font-semibold">Cloud PRO Enterprise</strong>. Seluruh
+            <strong className="text-slate-800 font-semibold">Karsa Cloud PRO</strong>. Seluruh
             hak cipta dilindungi.
           </div>
 

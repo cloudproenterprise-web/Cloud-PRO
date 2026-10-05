@@ -48,12 +48,12 @@ export const CustomerDashboard: React.FC<CustomerDashboardProps> = ({ onNavigate
     accounts.find(a => a.id !== 'acc-rdm-01' && a.primaryDomain?.toLowerCase() !== 'denbaguse.my.id') ||
     {
       id: 'acc-school-02',
-      primaryDomain: 'websitepelanggan.my.id',
-      domain: 'websitepelanggan.my.id',
+      primaryDomain: 'client.denbaguse.my.id',
+      domain: 'client.denbaguse.my.id',
       username: currentUser.username || 'pelanggan',
       customerId: currentUser.id,
       customerName: currentUser.name || 'Pelanggan Hosting cPanel',
-      customerEmail: currentUser.email || 'admin@websitepelanggan.my.id',
+      customerEmail: currentUser.email || 'pelanggan@denbaguse.my.id',
       serverId: 'srv-id-01',
       serverName: 'ID-Cyber-01 (Jakarta)',
       planId: 'plan-starter',

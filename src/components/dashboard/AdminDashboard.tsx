@@ -69,7 +69,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </span>
                 <h2 className="text-[16px] xs:text-lg sm:text-2xl font-extrabold tracking-tight text-slate-900 flex items-center min-h-[1.75rem] sm:min-h-[1.85rem] whitespace-nowrap shrink-0">
                   <TypewriterText
-                    text="Cloud PRO Enterprise"
+                    text="Karsa Cloud PRO"
                     speed={80}
                     deleteSpeed={45}
                     delay={200}

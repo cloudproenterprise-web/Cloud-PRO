@@ -1,10 +1,11 @@
 import * as OTPAuth from 'otpauth';
 
-export const DEFAULT_2FA_SECRET = 'CLOUDPROSECRET23';
+export const DEFAULT_2FA_SECRET = 'KARSACLOUDSECRET23';
+export const LEGACY_2FA_SECRETS = ['CLOUDPROSECRET23', 'GRIDMASTERSECRET23'];
 export const EMERGENCY_RESCUE_CODE = '992211';
 
 /**
- * Creates an RFC 6238 TOTP instance for CloudPRO
+ * Creates an RFC 6238 TOTP instance for Karsa Cloud
  */
 export const createTotpInstance = (
   secret: string = DEFAULT_2FA_SECRET,
@@ -14,7 +15,7 @@ export const createTotpInstance = (
     secret && !/[^A-Z2-7]/i.test(secret) ? secret.toUpperCase() : DEFAULT_2FA_SECRET;
 
   return new OTPAuth.TOTP({
-    issuer: 'CloudPRO Enterprise',
+    issuer: 'Karsa Cloud',
     label: userEmail,
     algorithm: 'SHA1',
     digits: 6,
@@ -26,6 +27,7 @@ export const createTotpInstance = (
 /**
  * Verifies a 6-digit TOTP token against the Base32 secret.
  * Supports +/- 1 step window (90s tolerance) to accommodate device clock drift.
+ * Also verifies legacy secrets (CLOUDPROSECRET23) so user phone with old CloudPRO profile still works smoothly.
  * Also supports the emergency rescue code for administrator recovery.
  */
 export const verifyTotpCode = (
@@ -43,12 +45,30 @@ export const verifyTotpCode = (
     return true;
   }
 
+  // 1. Primary check with active secret
   try {
     const totp = createTotpInstance(secret, userEmail);
     const delta = totp.validate({ token: cleanToken, window: 1 });
-    return delta !== null;
+    if (delta !== null) {
+      return true;
+    }
   } catch (err) {
-    console.error('TOTP verification error:', err);
-    return false;
+    console.error('TOTP primary verification error:', err);
   }
+
+  // 2. Compatibility check with legacy secrets (e.g. if user phone still has CloudPRO in Google Authenticator)
+  const candidateSecrets = [DEFAULT_2FA_SECRET, ...LEGACY_2FA_SECRETS].filter(
+    s => s !== secret
+  );
+  for (const fallbackSecret of candidateSecrets) {
+    try {
+      const fbTotp = createTotpInstance(fallbackSecret, userEmail);
+      const fbDelta = fbTotp.validate({ token: cleanToken, window: 1 });
+      if (fbDelta !== null) {
+        return true;
+      }
+    } catch {}
+  }
+
+  return false;
 };

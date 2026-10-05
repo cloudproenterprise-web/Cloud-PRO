@@ -198,10 +198,10 @@ export const DiskUsageCleanerModule: React.FC<DiskUsageCleanerModuleProps> = ({
 
       const safeDomain = account?.primaryDomain && account.primaryDomain !== 'denbaguse.my.id'
         ? account.primaryDomain
-        : 'websitepelanggan.my.id';
-      const safeUsername = account?.username && account.username !== 'cloudpro'
+        : 'client.denbaguse.my.id';
+      const safeUsername = account?.username && account.username !== 'cloudpro' && account.username !== 'karsacloud' && account.username !== 'gridmaster'
         ? account.username
-        : (currentUser?.username && currentUser.username !== 'admin' ? currentUser.username : 'pelanggan');
+        : (currentUser?.username && currentUser.username !== 'admin' && currentUser.username !== 'karsacloud' ? currentUser.username : 'pelanggan');
 
       return [{
         id: account?.id && account.id !== 'acc-rdm-01' ? account.id : 'acc-school-02',
@@ -279,7 +279,7 @@ export const DiskUsageCleanerModule: React.FC<DiskUsageCleanerModuleProps> = ({
       const safeDomain = account?.primaryDomain && account.primaryDomain !== 'denbaguse.my.id'
         ? account.primaryDomain
         : 'mitrahosting.my.id';
-      const safeUsername = account?.username && account.username !== 'cloudpro'
+      const safeUsername = account?.username && account.username !== 'cloudpro' && account.username !== 'karsacloud' && account.username !== 'gridmaster'
         ? account.username
         : 'reseller';
 

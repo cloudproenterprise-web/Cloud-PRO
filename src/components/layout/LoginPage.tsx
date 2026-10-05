@@ -73,7 +73,7 @@ export const LoginPage: React.FC = () => {
   const [totpCode, setTotpCode] = useState<string>('');
   const [pendingUser, setPendingUser] = useState<string>('');
   const [pendingRole, setPendingRole] = useState<PortalRole>('admin');
-  const [pendingSecret, setPendingSecret] = useState<string>('CLOUDPROSECRET23');
+  const [pendingSecret, setPendingSecret] = useState<string>('KARSACLOUDSECRET23');
   const [pendingEmail, setPendingEmail] = useState<string>('admin@denbaguse.my.id');
   const [totpError, setTotpError] = useState<string>('');
   const [showEmergencyHelp, setShowEmergencyHelp] = useState<boolean>(false);
@@ -229,7 +229,7 @@ export const LoginPage: React.FC = () => {
     admin: {
       title: 'Root Administrator',
       badge: 'CLUSTER ROOT',
-      placeholder: 'Username / email Root Admin (mis. admin)...',
+      placeholder: 'Username / email Root Admin (mis. karsacloud atau admin)...',
     },
     reseller: {
       title: 'WHM Reseller Partner',
@@ -263,9 +263,8 @@ export const LoginPage: React.FC = () => {
           variant="full"
           size="lg"
           cloudTextColor="text-white"
-          brandSuffix="Enterprise"
           showSubtitle={true}
-          subtitleText="ENTERPRISE CLOUD INFRASTRUCTURE & PANEL"
+          subtitleText="KARSA CLOUD PRO INFRASTRUCTURE & PANEL"
           noTruncate={true}
         />
 
@@ -287,7 +286,7 @@ export const LoginPage: React.FC = () => {
                 <span>Multi-Tier Cloud &amp; Bare-Metal Control Plane</span>
               </div>
               <h1 className="text-xl sm:text-2xl lg:text-[26px] font-extrabold tracking-tight text-white leading-snug">
-                Manajemen Server, KVM Hypervisor, &amp; Web Hosting Terpadu Kelas Enterprise.
+                Manajemen Server, KVM Hypervisor, &amp; Web Hosting Terpadu Karsa Cloud PRO.
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl">
                 Dirancang dengan arsitektur isolasi multi-tenant (Root Admin, WHM Reseller, dan
@@ -348,7 +347,7 @@ export const LoginPage: React.FC = () => {
           {/* Bottom Cluster Telemetry Strip */}
           <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-400">
             <span>Gateway: ZeroSSL TLS 1.3 &bull; HTTP/3 QUIC</span>
-            <span className="text-sky-400 font-semibold">Cloud PRO Enterprise v2.6</span>
+            <span className="text-sky-400 font-semibold">Karsa Cloud PRO v2.6</span>
           </div>
         </div>
 
@@ -384,6 +383,32 @@ export const LoginPage: React.FC = () => {
                     Masukkan 6 digit kode OTP dari ponsel Anda untuk akun{' '}
                     <strong className="text-sky-300 font-mono">{pendingUser}</strong>
                   </p>
+                </div>
+
+                {/* Secret Key Display & Compatibility Note */}
+                <div className="rounded-xl border border-sky-500/20 bg-slate-950/70 p-2.5 text-left text-[11px] text-slate-300 space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      Kunci 2FA Manual:
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try {
+                          navigator.clipboard?.writeText(pendingSecret || 'KARSACLOUDSECRET23');
+                        } catch {}
+                      }}
+                      className="text-[10px] text-sky-400 hover:text-sky-300 font-semibold cursor-pointer underline"
+                    >
+                      Salin Kunci
+                    </button>
+                  </div>
+                  <div className="font-mono font-bold text-sky-300 tracking-widest text-xs select-all">
+                    {pendingSecret || 'KARSACLOUDSECRET23'}
+                  </div>
+                  <div className="text-[10px] text-slate-400 leading-snug">
+                    💡 Kode dari profil <strong>Google Authenticator lama (CloudPRO)</strong> maupun <strong>Karsa Cloud</strong> keduanya tetap valid untuk login!
+                  </div>
                 </div>
 
                 {totpError && (
@@ -444,18 +469,32 @@ export const LoginPage: React.FC = () => {
                   </button>
 
                   {showEmergencyHelp && (
-                    <div className="mt-2.5 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3 text-left text-[11px] text-amber-200 space-y-1.5">
+                    <div className="mt-2.5 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3 text-left text-[11px] text-amber-200 space-y-2">
                       <div className="font-bold flex items-center gap-1 text-amber-300">
                         <ShieldCheck className="h-3.5 w-3.5" />
                         <span>Master Emergency Rescue Token</span>
                       </div>
                       <p className="text-slate-300 leading-relaxed">
-                        Jika ponsel Anda tidak dapat diakses, Anda dapat memasukkan kode pemulihan darurat master:{' '}
+                        Jika waktu di ponsel Anda tidak sinkron, masukkan kode pemulihan darurat master:{' '}
                         <code className="bg-black/50 px-1.5 py-0.5 rounded font-mono font-bold text-amber-300">
                           {EMERGENCY_RESCUE_CODE}
                         </code>{' '}
-                        ke kotak kode di atas untuk membuka akses Root Administrator.
+                        atau klik tombol login darurat di bawah ini:
                       </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTotpCode(EMERGENCY_RESCUE_CODE);
+                          setTotpError('');
+                          setTimeout(() => {
+                            login(pendingUser, pendingRole, true);
+                          }, 100);
+                        }}
+                        className="w-full py-2 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow"
+                      >
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        <span>Masuk Sekarang Pakai Kode Darurat ({EMERGENCY_RESCUE_CODE})</span>
+                      </button>
                     </div>
                   )}
                 </div>
@@ -641,7 +680,7 @@ export const LoginPage: React.FC = () => {
 
             <div className="text-[10px] sm:text-[11px] text-slate-500">
               &copy; {new Date().getFullYear()}{' '}
-              <strong className="text-slate-300 font-semibold">Cloud PRO Enterprise</strong>. Seluruh hak cipta dilindungi.
+              <strong className="text-slate-300 font-semibold">Karsa Cloud PRO</strong>. Seluruh hak cipta dilindungi.
             </div>
           </div>
         </div>

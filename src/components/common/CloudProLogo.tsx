@@ -107,17 +107,12 @@ export const CloudProLogo: React.FC<CloudProLogoProps> = ({
               </>
             )}
             <span className={cloudTextColor ? cloudTextColor : "text-slate-900 dark:text-white"}>
-              Cloud
+              Karsa
             </span>{' '}
-            <span className="text-[#005dbd] dark:text-[#38bdf8]">PRO</span>
-            {brandSuffix && (
-              <>
-                {' '}
-                <span className={cloudTextColor ? cloudTextColor : "text-slate-900 dark:text-white"}>
-                  {brandSuffix}
-                </span>
-              </>
-            )}
+            <span className="text-[#005dbd] dark:text-[#38bdf8]">Cloud</span>{' '}
+            <span className="text-amber-500 dark:text-amber-400 font-black tracking-tight">
+              {brandSuffix || 'PRO'}
+            </span>
           </div>
           {showSubtitle && (
             <div
@@ -127,7 +122,7 @@ export const CloudProLogo: React.FC<CloudProLogoProps> = ({
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-sky-500 shrink-0" />
               <span className={noTruncate ? 'whitespace-nowrap' : 'truncate'}>
-                {subtitleText || (variant === 'compact' ? 'ENTERPRISE CLOUD PANEL' : 'ENTERPRISE CLOUD INFRASTRUCTURE')}
+                {subtitleText || (variant === 'compact' ? 'KARSA CLOUD PRO PANEL' : 'KARSA CLOUD PRO INFRASTRUCTURE')}
               </span>
             </div>
           )}
