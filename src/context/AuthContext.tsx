@@ -128,10 +128,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       localStorage.setItem('cloudpro_current_user_id', target.id);
     } catch {}
+
+    // Security Sensor & Audit Logging: Rekam jejak forensik setiap kali login
+    try {
+      db.logAction(
+        target,
+        target.role === 'admin' ? 'ADMIN_LOGIN_SUCCESS' : 'USER_LOGIN_SUCCESS',
+        'SECURITY',
+        `Sesi login aktif terdeteksi untuk portal ${target.role.toUpperCase()} (${target.name} - ${target.email})`
+      );
+      if (target.role === 'admin') {
+        db.addNotification(
+          '🛡️ Sensor Keamanan: Sesi Admin Aktif',
+          `Sesi login Root Administrator terdeteksi pada ${new Date().toLocaleTimeString()} WIB. Pastikan 2FA tetap aktif untuk perlindungan maksimal.`,
+          'info'
+        );
+      }
+    } catch {}
+
     return true;
   };
 
   const logout = () => {
+    if (currentUser) {
+      try {
+        db.logAction(
+          currentUser,
+          'USER_LOGOUT',
+          'SECURITY',
+          `Pengguna ${currentUser.name} (${currentUser.role.toUpperCase()}) telah keluar dari sesi panel.`
+        );
+      } catch {}
+    }
     try {
       localStorage.removeItem('cloudpro_current_user_id');
       localStorage.removeItem('cloudpro_authenticated_role');
