@@ -200,9 +200,11 @@ fi
 
 if [ "$(id -u)" -eq 0 ]; then
   mkdir -p /run/sshd 2>/dev/null || true
+  ssh-keygen -A 2>/dev/null || true
   service ssh restart 2>/dev/null || service ssh start 2>/dev/null < /dev/null || true
 else
   sudo -n mkdir -p /run/sshd 2>/dev/null || true
+  sudo -n ssh-keygen -A 2>/dev/null || true
   sudo -n service ssh restart 2>/dev/null || sudo -n service ssh start 2>/dev/null < /dev/null || true
 fi
 echo "[OK] Konfigurasi Shell Ubuntu (~/.bashrc) & Daemon SSH (Anti-Disconnect) telah dipasang!"
