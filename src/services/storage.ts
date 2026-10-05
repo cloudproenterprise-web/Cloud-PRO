@@ -100,7 +100,7 @@ const INITIAL_STATE: DatabaseState = {
       companyName: 'Cloud PRO Enterprise (denbaguse.my.id)',
       phone: '+62 812-2673-8883',
       twoFactorEnabled: true,
-      twoFactorSecret: 'CP78A99BKZ22',
+      twoFactorSecret: 'CLOUDPROSECRET23',
       createdAt: '2026-01-10T08:00:00Z',
       lastLogin: '2026-09-30T08:00:00Z',
     },
@@ -2141,11 +2141,20 @@ class StorageService {
 
   // --- Users & Resellers ---
   public getUsers(): User[] {
-    return this.state.users;
+    return this.state.users.map(u => {
+      if (u.twoFactorSecret && /[^A-Z2-7]/i.test(u.twoFactorSecret)) {
+        return { ...u, twoFactorSecret: 'CLOUDPROSECRET23' };
+      }
+      return u;
+    });
   }
 
   public getUserById(id: string): User | undefined {
-    return this.state.users.find(u => u.id === id);
+    const u = this.state.users.find(user => user.id === id);
+    if (u && u.twoFactorSecret && /[^A-Z2-7]/i.test(u.twoFactorSecret)) {
+      return { ...u, twoFactorSecret: 'CLOUDPROSECRET23' };
+    }
+    return u;
   }
 
   public saveUser(user: User): void {

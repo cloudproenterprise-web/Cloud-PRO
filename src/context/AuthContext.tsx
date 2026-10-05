@@ -258,9 +258,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const toggle2FA = () => {
     if (!currentUser) return false;
     const nextVal = !currentUser.twoFactorEnabled;
+    const validExistingSecret =
+      currentUser.twoFactorSecret && !/[^A-Z2-7]/i.test(currentUser.twoFactorSecret) && currentUser.twoFactorSecret.length >= 16
+        ? currentUser.twoFactorSecret.toUpperCase()
+        : null;
     updateCurrentUser({
       twoFactorEnabled: nextVal,
-      twoFactorSecret: nextVal ? 'CP-' + Math.random().toString(36).substring(2, 8).toUpperCase() : undefined,
+      twoFactorSecret: nextVal ? (validExistingSecret || 'CLOUDPROSECRET23') : undefined,
     });
     return nextVal;
   };

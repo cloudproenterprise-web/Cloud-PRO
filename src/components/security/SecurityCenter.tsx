@@ -12,6 +12,8 @@ import {
   AlertTriangle,
   FileText,
   Terminal,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { AuditLog, FirewallRule, ApiKeyItem } from '../../types';
 import { TailscaleMeshNode } from './TailscaleMeshNode';
@@ -26,6 +28,7 @@ export const SecurityCenter: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'audit' | 'firewall' | '2fa' | 'apikeys' | 'rbac' | 'tailscale'>('audit');
   const [auditFilter, setAuditFilter] = useState<string>('ALL');
+  const [copiedSecret, setCopiedSecret] = useState(false);
 
   // Firewall Rule Modal
   const [showAddFwModal, setShowAddFwModal] = useState(false);
@@ -388,14 +391,68 @@ export const SecurityCenter: React.FC = () => {
                 <span>Akun Anda saat ini terlindungi dengan 2FA aktif</span>
               </div>
 
-              <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
-                <span className="text-[11px] text-slate-400">Secret Key Generator:</span>
-                <div className="font-mono text-sm font-bold text-slate-900 dark:text-white tracking-widest">
-                  {currentUser.twoFactorSecret || 'CP78A99BKZ22'}
+              {/* QR Code & Key Card */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 rounded-xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/60">
+                {/* QR Code Visual */}
+                <div className="flex flex-col items-center justify-center p-3 bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                      `otpauth://totp/CloudPRO:${currentUser.email || 'admin@denbaguse.my.id'}?secret=${
+                        currentUser.twoFactorSecret && !/[^A-Z2-7]/i.test(currentUser.twoFactorSecret)
+                          ? currentUser.twoFactorSecret.toUpperCase()
+                          : 'CLOUDPROSECRET23'
+                      }&issuer=CloudPRO&algorithm=SHA1&digits=6&period=30`
+                    )}`}
+                    alt="Scan QR Code Google Authenticator"
+                    className="h-36 w-36 rounded-lg"
+                  />
+                  <span className="text-[10px] text-slate-500 font-medium mt-2 flex items-center gap-1">
+                    <QrCode className="h-3 w-3" /> Pindai dengan Kamera HP
+                  </span>
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Masukkan secret key di atas pada aplikasi Google Authenticator jika scanner kamera tidak tersedia.
-                </p>
+
+                {/* Secret Key Input & Copy Info */}
+                <div className="md:col-span-2 space-y-3">
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                      Kunci Rahasia (Base32):
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 font-mono text-base font-black tracking-widest text-sky-600 dark:text-sky-400 bg-white dark:bg-slate-950 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-800 select-all">
+                        {currentUser.twoFactorSecret && !/[^A-Z2-7]/i.test(currentUser.twoFactorSecret)
+                          ? currentUser.twoFactorSecret.toUpperCase()
+                          : 'CLOUDPROSECRET23'}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const sec =
+                            currentUser.twoFactorSecret && !/[^A-Z2-7]/i.test(currentUser.twoFactorSecret)
+                              ? currentUser.twoFactorSecret.toUpperCase()
+                              : 'CLOUDPROSECRET23';
+                          navigator.clipboard.writeText(sec);
+                          setCopiedSecret(true);
+                          setTimeout(() => setCopiedSecret(false), 2000);
+                          showToast('success', 'Kunci 2FA Disalin!', 'Kunci rahasia siap ditempel di Google Authenticator.');
+                        }}
+                        className="flex items-center gap-1.5 rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-500 transition-colors shadow-2xs cursor-pointer"
+                      >
+                        {copiedSecret ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                        <span>{copiedSecret ? 'Tersalin' : 'Salin Kunci'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-[11px] text-emerald-800 dark:bg-emerald-950/30 dark:border-emerald-800/40 dark:text-emerald-300 space-y-1">
+                    <div className="font-bold flex items-center gap-1">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                      <span>Standar Base32 RFC 4648 (100% Cocok untuk Google Authenticator)</span>
+                    </div>
+                    <p className="text-[10.5px] leading-relaxed text-slate-600 dark:text-slate-400">
+                      Kunci di atas hanya menggunakan huruf <strong>A-Z</strong> dan angka <strong>2-7</strong> (tanpa angka 8 atau 9). Di Google Authenticator, pilih <strong>Jenis kunci: Berbasis waktu</strong> lalu klik <strong>Tambahkan</strong>.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
