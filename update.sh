@@ -357,10 +357,37 @@ if command -v cloudflared &>/dev/null && command -v systemctl &>/dev/null; then
 fi
 
 # -------------------------------------------------------------------------
+# [WSL SYSTEMD AUTO-ACTIVATOR]
+# Jika berjalan di WSL (Windows), aktifkan systemd permanen di /etc/wsl.conf
+# -------------------------------------------------------------------------
+if [ -f /proc/version ] && grep -qi "microsoft" /proc/version 2>/dev/null; then
+  if [ ! -f /etc/wsl.conf ] || ! grep -q "systemd=true" /etc/wsl.conf 2>/dev/null; then
+    echo "[WSL] Mengaktifkan konfigurasi Systemd permanen di /etc/wsl.conf..."
+    if [ "$(id -u)" -eq 0 ]; then
+      cat << 'WSL_EOF' >> /etc/wsl.conf
+[boot]
+systemd=true
+WSL_EOF
+    else
+      sudo -n bash -c 'cat << "WSL_EOF" >> /etc/wsl.conf
+[boot]
+systemd=true
+WSL_EOF' 2>/dev/null || true
+    fi
+  fi
+fi
+
+# Cek apakah systemd aktif sebagai PID 1
+HAS_SYSTEMD=false
+if [ -d /run/systemd/system ] && systemctl is-system-running &>/dev/null; then
+  HAS_SYSTEMD=true
+fi
+
+# -------------------------------------------------------------------------
 # [ANTI-SLEEP & ALWAYS-ON 24/7 ENFORCEMENT]
 # Mencegah OS Linux/WSL/Server masuk mode Sleep, Suspend, atau Hibernate saat malam hari
 # -------------------------------------------------------------------------
-if command -v systemctl &>/dev/null; then
+if [ "$HAS_SYSTEMD" = true ]; then
   if [ "$(id -u)" -eq 0 ]; then
     systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target 2>/dev/null || true
     systemctl enable cloudflared 2>/dev/null || true
@@ -373,13 +400,25 @@ fi
 # Bersihkan proses cloudflared ganda di background agar tidak bentrok session di Cloudflare Edge
 pkill -9 -f "cloudflared.*tunnel" 2>/dev/null || true
 
-# Pastikan service cloudflared di-restart dengan bersih
-if command -v systemctl &>/dev/null; then
+# Pastikan service cloudflared dihidupkan (Kompatibel dengan Systemd & SysV / WSL)
+if [ "$HAS_SYSTEMD" = true ]; then
   if [ "$(id -u)" -eq 0 ]; then
     systemctl restart cloudflared 2>/dev/null < /dev/null || true
   else
     sudo -n systemctl restart cloudflared 2>/dev/null < /dev/null || true
   fi
+else
+  # Lingkungan SysV / WSL tanpa native systemd PID 1
+  if [ "$(id -u)" -eq 0 ]; then
+    service cloudflared restart 2>/dev/null < /dev/null || service cloudflared start 2>/dev/null < /dev/null || true
+  else
+    sudo -n service cloudflared restart 2>/dev/null < /dev/null || sudo -n service cloudflared start 2>/dev/null < /dev/null || true
+  fi
+fi
+
+# Jika service belum running, jalankan background tunnel langsung
+if ! pgrep -f "cloudflared" >/dev/null 2>&1; then
+  nohup cloudflared tunnel --no-autoupdate run --token "$CLOUDFLARE_DEFAULT_TOKEN" >/dev/null 2>&1 &
 fi
 
 echo "[3/3] Verifikasi Status Server & Pembersihan Sampah Disk..."
@@ -393,13 +432,14 @@ fi
 # [24/7 WATCHDOG AUTO-HEALER] PEMANTAU PERMANEN ANTI-ERROR 1033 & CRASH
 # Berjalan otomatis setiap 1 menit:
 # 1. Cek port 3000 (Node.js/PM2). Jika mati -> auto-revive.
-# 2. Cek daemon cloudflared tunnel. Jika terputus atau macet -> auto-restart.
+# 2. Cek daemon cloudflared tunnel (Systemd, SysV, atau Daemon). Jika terputus -> auto-restart.
 # 3. Kirim keepalive ping ringan ke Cloudflare Edge agar koneksi ISP tidak idle.
 # -------------------------------------------------------------------------
 WATCHDOG_SCRIPT="/usr/local/bin/cloudpro-watchdog.sh"
 cat << 'WATCHDOG_EOF' > /tmp/cloudpro-watchdog.sh
 #!/usr/bin/env bash
 # CloudPRO 24/7 Watchdog Daemon & Tunnel Keepalive
+CLOUDFLARE_DEFAULT_TOKEN="eyJhIjoiZTkwMjEzZWRiMzQ3NmJiMzAwNzAyNmQ3Y2QyMjk2NjEiLCJ0IjoiNmZiMDE1YjItYzdiNS00Y2EwLTgxYjYtYzI4ZWVmYTZlNGU0IiwicyI6Ik5UVTBOMkkxWVRndFlqQmhaaTAwWmpVNExUbGxNMlF0WkdFM1ltRTVOamRoTUdaaCJ9"
 
 # 1. Anti-Idle ping ke Cloudflare Edge agar koneksi ISP tidak idle / timeout
 curl -sI --max-time 3 https://1.1.1.1 >/dev/null 2>&1 || true
@@ -413,8 +453,14 @@ fi
 
 # 3. Cek Cloudflare Tunnel Daemon (Pencegah Error 1033)
 if ! pgrep -f "cloudflared" >/dev/null 2>&1; then
-  if command -v systemctl &>/dev/null; then
+  if [ -d /run/systemd/system ] && systemctl is-system-running &>/dev/null; then
     systemctl restart cloudflared >/dev/null 2>&1 || sudo -n systemctl restart cloudflared >/dev/null 2>&1 || true
+  else
+    service cloudflared restart >/dev/null 2>&1 || service cloudflared start >/dev/null 2>&1 || sudo -n service cloudflared restart >/dev/null 2>&1 || sudo -n service cloudflared start >/dev/null 2>&1 || true
+  fi
+  # Fallback mandiri jika service manager belum siap
+  if ! pgrep -f "cloudflared" >/dev/null 2>&1; then
+    nohup cloudflared tunnel --no-autoupdate run --token "$CLOUDFLARE_DEFAULT_TOKEN" >/dev/null 2>&1 &
   fi
 fi
 WATCHDOG_EOF
