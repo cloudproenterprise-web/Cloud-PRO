@@ -471,12 +471,14 @@ if [ "$(id -u)" -eq 0 ]; then
   if ! crontab -l 2>/dev/null | grep -q "cloudpro-watchdog.sh"; then
     (crontab -l 2>/dev/null; echo "* * * * * $WATCHDOG_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
   fi
+  service cron start 2>/dev/null || systemctl start cron 2>/dev/null || true
 else
   sudo -n mv -f /tmp/cloudpro-watchdog.sh "$WATCHDOG_SCRIPT" 2>/dev/null || true
   sudo -n chmod +x "$WATCHDOG_SCRIPT" 2>/dev/null || true
   if ! crontab -l 2>/dev/null | grep -q "cloudpro-watchdog.sh"; then
     (crontab -l 2>/dev/null; echo "* * * * * $WATCHDOG_SCRIPT >/dev/null 2>&1") | crontab - 2>/dev/null || true
   fi
+  sudo -n service cron start 2>/dev/null || sudo -n systemctl start cron 2>/dev/null || true
 fi
 
 # -------------------------------------------------------------------------
