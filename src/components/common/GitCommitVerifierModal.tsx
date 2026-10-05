@@ -256,7 +256,7 @@ export const GitCommitVerifierModal: React.FC<GitCommitVerifierModalProps> = ({
               <span>Cek GitHub</span>
             </button>
             <a
-              href="https://github.com/cloudproenterprise-web/Cloud-PRO/commits/main"
+              href="https://github.com/karsacloudpro-dev/Karsa-Cloud/commits/main"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/50 px-3 py-2 text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"

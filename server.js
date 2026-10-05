@@ -5553,7 +5553,7 @@ ${routeFixScript}`);
       if (githubToken && typeof githubToken === "string" && githubToken.trim()) {
         const cleanTok = githubToken.trim();
         execSync(
-          `git remote set-url origin "https://${cleanTok}@github.com/cloudproenterprise-web/Cloud-PRO.git"`,
+          `git remote set-url origin "https://${cleanTok}@github.com/karsacloudpro-dev/Karsa-Cloud.git"`,
           { cwd: process.cwd(), timeout: 5e3 }
         );
       }
@@ -5611,7 +5611,7 @@ ${routeFixScript}`);
         if (githubToken && typeof githubToken === "string" && githubToken.trim()) {
           const cleanTok = githubToken.trim();
           execSync2(
-            `git remote set-url origin "https://${cleanTok}@github.com/cloudproenterprise-web/Cloud-PRO.git"`,
+            `git remote set-url origin "https://${cleanTok}@github.com/karsacloudpro-dev/Karsa-Cloud.git"`,
             { cwd: process.cwd(), timeout: 5e3 }
           );
           gitOutput += execSync2("git push origin main --force 2>&1", {
@@ -5619,12 +5619,12 @@ ${routeFixScript}`);
             timeout: 25e3
           }).toString() + "\n";
           execSync2(
-            `git remote set-url origin "https://github.com/cloudproenterprise-web/Cloud-PRO.git"`,
+            `git remote set-url origin "https://github.com/karsacloudpro-dev/Karsa-Cloud.git"`,
             { cwd: process.cwd(), timeout: 5e3 }
           );
         } else {
           gitOutput = execSync2(
-            "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1",
+            "git remote set-url origin https://github.com/karsacloudpro-dev/Karsa-Cloud.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1",
             {
               cwd: process.cwd(),
               timeout: 3e4
@@ -5665,7 +5665,7 @@ ${routeFixScript}`);
       const backupFull = persistedFullAppState ? JSON.stringify(persistedFullAppState, null, 2) : null;
       console.log(`[Git Auto-Sync] Triggered (${reason}). Pulling latest commit from GitHub...`);
       exec2(
-        "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1 && (npm run build 2>&1 || npm run build:server 2>&1 || true) && (pm2 reload cloudpro --update-env 2>&1 || true)",
+        "git remote set-url origin https://github.com/karsacloudpro-dev/Karsa-Cloud.git 2>/dev/null || true; git fetch origin main --force 2>&1 && git reset --hard origin/main 2>&1 && (npm run build 2>&1 || npm run build:server 2>&1 || true) && (pm2 reload cloudpro --update-env 2>&1 || true)",
         { cwd: process.cwd(), timeout: 6e4 },
         (err, stdout) => {
           try {
@@ -5725,7 +5725,7 @@ ${routeFixScript}`);
       if (!fs.existsSync(gitDir)) return;
       const { exec: exec2 } = await import("child_process");
       exec2(
-        "git remote set-url origin https://github.com/cloudproenterprise-web/Cloud-PRO.git 2>/dev/null || true; git fetch origin main -q 2>/dev/null",
+        "git remote set-url origin https://github.com/karsacloudpro-dev/Karsa-Cloud.git 2>/dev/null || true; git fetch origin main -q 2>/dev/null",
         { cwd: process.cwd(), timeout: 15e3 },
         (err) => {
           if (err) return;
@@ -8992,7 +8992,7 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     }
     const fallbackToken = ["ghp", "1KKxaQtmDEwPx4UdzAnb6tIMKpKLXA1w8XvZ"].join("_");
     const githubToken = process.env.GITHUB_TOKEN || fallbackToken;
-    const authRepoUrl = `https://x-access-token:${githubToken}@github.com/cloudproenterprise-web/Cloud-PRO.git`;
+    const authRepoUrl = `https://x-access-token:${githubToken}@github.com/karsacloudpro-dev/Karsa-Cloud.git`;
     if (actualCommand === "./update.sh" || actualCommand === "update" || actualCommand === "cloudpro" || actualCommand === "bash update.sh") {
       const appRoot = fs.existsSync(path.join(execCwd, "update.sh")) ? execCwd : process.cwd();
       actualCommand = `cd "${appRoot}" && ( [ -d .git ] || git init ) && git remote set-url origin "${authRepoUrl}" 2>/dev/null || git remote add origin "${authRepoUrl}" 2>/dev/null || true && bash update.sh`;
