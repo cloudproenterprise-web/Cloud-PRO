@@ -1046,9 +1046,11 @@ body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Ro
       id: 'ns-cfg-default',
       domain: 'denbaguse.my.id',
       ns1Host: 'ns1.denbaguse.my.id',
-      ns1Ip: '172.67.223.133',
+      ns1Ip: '172.64.34.193',
+      ns1Ipv6: '2606:4700:50::a29f:26c1',
       ns2Host: 'ns2.denbaguse.my.id',
-      ns2Ip: '104.21.95.88',
+      ns2Ip: '172.64.35.228',
+      ns2Ipv6: '2606:4700:58::a29f:2ce4',
       dnssecEnabled: true,
       dnssecKeyTag: 23719,
       dnssecAlgorithm: 13, // ECDSAP256SHA256
