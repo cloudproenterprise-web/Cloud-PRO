@@ -2,7 +2,8 @@ import os from 'os';
 
 export function renderWebTerminalHtml(host: string, initialCwd: string): string {
   const hostname = os.hostname() || 'linux-server';
-  const username = os.userInfo()?.username || 'cloudpro';
+  const osUser = os.userInfo()?.username;
+  const username = osUser && osUser !== 'cloudpro' ? osUser : 'karsacloud';
   const platform = `${os.type()} ${os.release()} (${os.arch()})`;
 
   return `<!DOCTYPE html>
@@ -10,7 +11,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content, viewport-fit=cover" />
-  <title>CloudPRO Web SSH Terminal — ${host}</title>
+  <title>Karsa Cloud PRO Web SSH Terminal — ${host}</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -319,7 +320,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     <header class="terminal-header">
       <div class="header-left">
         <div class="status-dot"></div>
-        <div class="header-title">CloudPRO Web SSH</div>
+        <div class="header-title">Karsa Cloud PRO Web SSH</div>
         <div class="header-badge">${username}@${hostname}</div>
       </div>
       <div class="header-right">
@@ -332,9 +333,9 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
       <button class="quick-btn" style="background:#0284c7; color:#fff;" onclick="runCommand('bash update.sh --check')">🏷️ Cek Kommit Terbaru</button>
       <button class="quick-btn" onclick="runCommand('git log -1 --stat')">📜 Log Kommit</button>
       <button class="quick-btn" style="background:#16a34a; color:#fff; font-weight:700;" onclick="runCommand('bash update.sh')">🚀 1-Click Update</button>
-      <button class="quick-btn" onclick="runCommand('pm2 restart cloudpro')">🔄 PM2 Restart</button>
+      <button class="quick-btn" onclick="runCommand('pm2 restart karsacloud 2>/dev/null || pm2 restart cloudpro 2>/dev/null || pm2 restart all')">🔄 PM2 Restart</button>
       <button class="quick-btn" onclick="runCommand('pm2 status')">📊 PM2 Status</button>
-      <button class="quick-btn" onclick="runCommand('pm2 logs cloudpro --lines 25')">📜 PM2 Logs</button>
+      <button class="quick-btn" onclick="runCommand('pm2 logs --lines 25')">📜 PM2 Logs</button>
       <button class="quick-btn" onclick="runCommand('git status -s')">📁 Git Status</button>
       <button class="quick-btn" onclick="runCommand('git pull origin main')">⬇️ Git Pull</button>
       <button class="quick-btn" onclick="runCommand('free -h && echo --- && df -h /')">💾 RAM & Disk</button>
@@ -346,7 +347,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     <div class="terminal-screen" id="terminalScreen">
       <div class="banner">
         <div class="banner-title">
-          <span>⚡ CloudPRO Direct Web Terminal (No-Tailscale Mode)</span>
+          <span>⚡ Karsa Cloud PRO Direct Web Terminal (No-Tailscale Mode)</span>
         </div>
         <div class="banner-grid">
           <div>Platform:</div><strong>${platform}</strong>
@@ -355,7 +356,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
           <div>Status:</div><strong style="color:#10b981;">Terhubung Langsung ke Linux Bash</strong>
         </div>
         <div style="margin-top:8px; font-size:11px; color:#94a3b8;">
-          Ketik perintah bash langsung seperti di console Tailscale/PuTTY. Tombol pintas cepat tersedia di atas layar.
+          Ketik perintah bash langsung seperti di console Tailscale/PuTTY/PowerShell (ssh karsacloud@...). Tombol pintas cepat tersedia di atas layar.
         </div>
       </div>
       <div id="outputHistory"></div>
@@ -399,7 +400,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
   <div class="modal-overlay" id="pinModal" style="display:none;">
     <div class="modal-card">
       <div class="modal-icon">🔐</div>
-      <div class="modal-title">CloudPRO Web SSH</div>
+      <div class="modal-title">Karsa Cloud PRO Web SSH</div>
       <div class="modal-desc">
         Akses langsung shell Linux tanpa login Tailscale. Masukkan PIN keamanan untuk membuka terminal.
       </div>
@@ -413,7 +414,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
       />
       <button class="btn-unlock" onclick="unlockTerminal()">Buka Terminal</button>
       <div class="default-hint">
-        PIN Bawaan: <strong onclick="useDefaultPin()">cloudpro</strong> (Klik untuk isi)
+        PIN Bawaan: <strong onclick="useDefaultPin()">karsacloud</strong> (Klik untuk isi)
       </div>
     </div>
   </div>
@@ -423,7 +424,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     let history = [];
     let historyIndex = -1;
     let isRunning = false;
-    let terminalPin = localStorage.getItem('cloudpro_terminal_pin') || 'cloudpro';
+    let terminalPin = localStorage.getItem('karsacloud_terminal_pin') || localStorage.getItem('cloudpro_terminal_pin') || 'karsacloud';
 
     const cmdInput = document.getElementById('cmdInput');
     const outputHistory = document.getElementById('outputHistory');
@@ -449,20 +450,21 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
     }
 
     function useDefaultPin() {
-      pinInput.value = 'cloudpro';
+      pinInput.value = 'karsacloud';
     }
 
     function unlockTerminal() {
       const pin = pinInput.value.trim();
       if (!pin) return;
       terminalPin = pin;
-      localStorage.setItem('cloudpro_terminal_pin', pin);
+      localStorage.setItem('karsacloud_terminal_pin', pin);
       pinModal.style.display = 'none';
       safeFocus(cmdInput);
       runCommand('pwd');
     }
 
     function lockTerminal() {
+      localStorage.removeItem('karsacloud_terminal_pin');
       localStorage.removeItem('cloudpro_terminal_pin');
       terminalPin = '';
       pinInput.value = '';
@@ -607,7 +609,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
             appendHistoryBlock(
               cmd,
               '⚡ [INFO] Perintah update / restart sedang dieksekusi di background server...\\n' +
-              'Service PM2 sedang me-reload process CloudPRO.\\n' +
+              'Service PM2 sedang me-reload process Karsa Cloud PRO.\\n' +
               'Menghubungi ulang server dalam 3 detik...',
               false,
               0
@@ -616,7 +618,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
               try {
                 const check = await fetch('/');
                 if (check.ok || check.status < 500) {
-                  appendHistoryBlock('status', '✅ [SUKSES] Server CloudPRO telah aktif kembali dan siap melayani!', false, 0);
+                  appendHistoryBlock('status', '✅ [SUKSES] Server Karsa Cloud PRO telah aktif kembali dan siap melayani!', false, 0);
                 }
               } catch (e) {}
             }, 3500);
@@ -641,7 +643,7 @@ export function renderWebTerminalHtml(host: string, initialCwd: string): string 
         if (!isCheckCmd && (cmd.includes('update') || cmd.includes('restart'))) {
           appendHistoryBlock(
             cmd,
-            '⚡ [INFO] Server CloudPRO sedang me-restart service di background.\\n' +
+            '⚡ [INFO] Server Karsa Cloud PRO sedang me-restart service di background.\\n' +
             'Silakan refresh browser beberapa detik lagi untuk melihat versi terbaru.',
             false,
             0

@@ -9676,13 +9676,13 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     const pinFile = path.join(HOME_VAULT_DIR, 'terminal-pin.txt');
     const storedPin = fs.existsSync(pinFile)
       ? fs.readFileSync(pinFile, 'utf-8').trim()
-      : 'cloudpro';
+      : 'karsacloud';
 
-    const validPins = [storedPin, 'cloudpro', 'admin', 'admin123'];
+    const validPins = [storedPin, 'karsacloud', 'cloudpro', 'admin', 'admin123'];
     if (!validPins.includes(String(pin || '').trim())) {
       return res.status(401).json({
         ok: false,
-        error: 'PIN Terminal Salah! Silakan masukkan PIN yang benar (Default: cloudpro).',
+        error: 'PIN Terminal Salah! Silakan masukkan PIN yang benar (Default: karsacloud).',
       });
     }
 
@@ -9797,9 +9797,9 @@ with zipfile.ZipFile('${sourceZipPath}', 'r') as zf:
     const pinFile = path.join(HOME_VAULT_DIR, 'terminal-pin.txt');
     const storedPin = fs.existsSync(pinFile)
       ? fs.readFileSync(pinFile, 'utf-8').trim()
-      : 'cloudpro';
+      : 'karsacloud';
 
-    if (currentPin !== storedPin && currentPin !== 'cloudpro') {
+    if (currentPin !== storedPin && currentPin !== 'cloudpro' && currentPin !== 'karsacloud') {
       return res.status(403).json({ ok: false, error: 'PIN saat ini salah!' });
     }
     if (!newPin || newPin.length < 4) {

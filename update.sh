@@ -93,7 +93,7 @@ for TARGET_HOME in /root /home/*; do
       cat << 'WRAPPER_EOF' > "$TARGET_HOME/update.sh"
 #!/usr/bin/env bash
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-for candidate in "$SCRIPT_DIR/CloudPRO-Server" "$SCRIPT_DIR/Cloud-PRO" "/home/cloudpro/CloudPRO-Server" "/root/CloudPRO-Server" "/root/Cloud-PRO" "/var/www/Cloud-PRO" "/app/applet"; do
+for candidate in "$SCRIPT_DIR/CloudPRO-Server" "$SCRIPT_DIR/Cloud-PRO" "/home/karsacloud/CloudPRO-Server" "/home/karsacloud/Cloud-PRO" "/home/cloudpro/CloudPRO-Server" "/root/CloudPRO-Server" "/root/Cloud-PRO" "/var/www/Cloud-PRO" "/app/applet"; do
   if [ -f "$candidate/update.sh" ] && [ "$candidate" != "$SCRIPT_DIR" ]; then
     cd "$candidate" && exec bash update.sh "$@"
   fi
@@ -110,7 +110,7 @@ done
 cat << 'BIN_EOF' > /tmp/cloudpro-global-bin
 #!/usr/bin/env bash
 SCRIPT_PATH=""
-for candidate in "/home/cloudpro/CloudPRO-Server" "/root/CloudPRO-Server" "/root/Cloud-PRO" "/var/www/Cloud-PRO" "$HOME/CloudPRO-Server" "$HOME/Cloud-PRO" "/app/applet"; do
+for candidate in "/home/karsacloud/CloudPRO-Server" "/home/karsacloud/Cloud-PRO" "/home/cloudpro/CloudPRO-Server" "/root/CloudPRO-Server" "/root/Cloud-PRO" "/var/www/Cloud-PRO" "$HOME/CloudPRO-Server" "$HOME/Cloud-PRO" "/app/applet"; do
   if [ -f "$candidate/update.sh" ]; then
     SCRIPT_PATH="$candidate"
     break
@@ -134,15 +134,15 @@ fi
 
 case "$1" in
   restart|reload)
-    pm2 restart cloudpro --update-env 2>/dev/null || pm2 restart all
-    echo "[OK] Service CloudPRO berhasil di-restart!"
+    pm2 restart karsacloud --update-env 2>/dev/null || pm2 restart cloudpro --update-env 2>/dev/null || pm2 restart all
+    echo "[OK] Service Karsa Cloud PRO berhasil di-restart!"
     ;;
   logs|log)
-    pm2 logs cloudpro --lines 30
+    pm2 logs karsacloud --lines 30 2>/dev/null || pm2 logs cloudpro --lines 30 2>/dev/null || pm2 logs --lines 30
     ;;
   status|stat)
     echo "========================================="
-    echo "  CloudPRO Enterprise Server Status"
+    echo "  Karsa Cloud PRO Server Status"
     echo "========================================="
     echo "Direktori  : $SCRIPT_PATH"
     echo "Versi Git  : $(git -C "$SCRIPT_PATH" rev-parse --short HEAD 2>/dev/null) - $(git -C "$SCRIPT_PATH" log -1 --pretty=%s 2>/dev/null)"
@@ -177,9 +177,11 @@ BIN_EOF
 
 chmod +x /tmp/cloudpro-global-bin 2>/dev/null || true
 if [ "$(id -u)" -eq 0 ]; then
+  cp -f /tmp/cloudpro-global-bin /usr/local/bin/karsacloud 2>/dev/null || true
   cp -f /tmp/cloudpro-global-bin /usr/local/bin/cloudpro 2>/dev/null || true
   cp -f /tmp/cloudpro-global-bin /usr/local/bin/update 2>/dev/null || true
 else
+  sudo -n cp -f /tmp/cloudpro-global-bin /usr/local/bin/karsacloud 2>/dev/null || true
   sudo -n cp -f /tmp/cloudpro-global-bin /usr/local/bin/cloudpro 2>/dev/null || true
   sudo -n cp -f /tmp/cloudpro-global-bin /usr/local/bin/update 2>/dev/null || true
 fi
@@ -302,9 +304,9 @@ if command -v pm2 &> /dev/null; then
   for pid in $OLD_PIDS; do
     kill -9 "$pid" 2>/dev/null || sudo -n kill -9 "$pid" 2>/dev/null || true
   done
-  pm2 restart cloudpro --update-env 2>/dev/null || pm2 start ecosystem.config.cjs 2>/dev/null || pm2 restart all 2>/dev/null || pm2 start server.js --name cloudpro --update-env 2>/dev/null || true
+  pm2 restart karsacloud --update-env 2>/dev/null || pm2 restart cloudpro --update-env 2>/dev/null || pm2 start ecosystem.config.cjs 2>/dev/null || pm2 restart all 2>/dev/null || pm2 start server.js --name karsacloud --update-env 2>/dev/null || true
   pm2 save < /dev/null 2>/dev/null || true
-  echo "[OK] Server CloudPRO aktif & berjalan segar via PM2!"
+  echo "[OK] Server Karsa Cloud PRO aktif & berjalan segar via PM2!"
 else
   OLD_NODE_PIDS=$(pgrep -f "node.*server\.js|tsx.*server\.ts" 2>/dev/null | grep -v "^$$\$" | grep -v "^$PPID\$" || true)
   if [ -n "$OLD_NODE_PIDS" ]; then
