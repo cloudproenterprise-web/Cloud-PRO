@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onCloseMobile,
 }) => {
-  const { currentUser, currentResellerProfile, switchRole, logout } = useAuth();
+  const { currentUser, currentResellerProfile, switchRole, logout, authenticatedRole } = useAuth();
   const { servers } = useServer();
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -1013,65 +1013,114 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Compact Executive Portal Switcher & Logout Dock */}
         <div className="border-t border-slate-800/90 bg-slate-950 p-3 space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              Mode Portal
-            </span>
-            <button
-              type="button"
-              onClick={() => logout()}
-              className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] font-semibold text-slate-400 hover:border-rose-500/40 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
-              title="Keluar / Logout Akun"
-            >
-              <LogOut className="h-3 w-3" />
-              <span>Logout</span>
-            </button>
-          </div>
+          {/* Untuk Akun Klien (Customer): Kunci di cPanel, jangan tampilkan switcher portal */}
+          {authenticatedRole === 'customer' || currentUser.role === 'customer' ? (
+            <div className="flex items-center justify-between gap-2 py-0.5">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-[10.5px] font-bold uppercase tracking-wider text-emerald-400">
+                  Portal cPanel Klien
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:border-rose-500/40 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
+                title="Keluar / Logout Akun"
+              >
+                <LogOut className="h-3 w-3" />
+                <span>Logout</span>
+              </button>
+            </div>
+          ) : authenticatedRole === 'reseller' || currentUser.role === 'reseller' ? (
+            /* Untuk Akun Reseller: Kunci di WHM Reseller, jangan tampilkan switcher portal */
+            <div className="flex items-center justify-between gap-2 py-0.5">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                </span>
+                <span className="text-[10.5px] font-bold uppercase tracking-wider text-sky-400">
+                  Portal WHM Reseller
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2.5 py-1 text-[10px] font-semibold text-slate-400 hover:border-rose-500/40 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
+                title="Keluar / Logout Akun"
+              >
+                <LogOut className="h-3 w-3" />
+                <span>Logout</span>
+              </button>
+            </div>
+          ) : (
+            /* Khusus Akun Root Administrator: Tampilkan Mode Portal Switcher */
+            <>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Mode Portal (Root)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  className="inline-flex items-center gap-1 rounded-md border border-slate-800 bg-slate-900 px-2 py-1 text-[10px] font-semibold text-slate-400 hover:border-rose-500/40 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
+                  title="Keluar / Logout Akun"
+                >
+                  <LogOut className="h-3 w-3" />
+                  <span>Logout</span>
+                </button>
+              </div>
 
-          <div className="grid grid-cols-3 gap-1 rounded-xl border border-slate-800/90 bg-slate-900/90 p-1">
-            <button
-              type="button"
-              onClick={() => {
-                switchRole('admin');
-                handleNav('dashboard');
-              }}
-              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
-                currentUser.role === 'admin'
-                  ? 'bg-sky-600 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-              }`}
-            >
-              ROOT
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                switchRole('reseller');
-                handleNav('reseller-dashboard');
-              }}
-              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
-                currentUser.role === 'reseller'
-                  ? 'bg-sky-600 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-              }`}
-            >
-              WHM
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                switchRole('customer');
-                handleNav('customer-dashboard');
-              }}
-              className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
-                currentUser.role === 'customer'
-                  ? 'bg-sky-600 text-white font-bold shadow-xs'
-                  : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-              }`}
-            >
-              CPANEL
-            </button>
-          </div>
+              <div className="grid grid-cols-3 gap-1 rounded-xl border border-slate-800/90 bg-slate-900/90 p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole('admin');
+                    handleNav('dashboard');
+                  }}
+                  className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
+                    currentUser.role === 'admin'
+                      ? 'bg-sky-600 text-white font-bold shadow-xs'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  ROOT
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole('reseller');
+                    handleNav('reseller-dashboard');
+                  }}
+                  className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
+                    currentUser.role === 'reseller'
+                      ? 'bg-sky-600 text-white font-bold shadow-xs'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  WHM
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    switchRole('customer');
+                    handleNav('customer-dashboard');
+                  }}
+                  className={`rounded-lg py-1.5 text-center font-mono text-[10px] transition-all cursor-pointer touch-manipulation active:scale-95 ${
+                    currentUser.role === 'customer'
+                      ? 'bg-sky-600 text-white font-bold shadow-xs'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  CPANEL
+                </button>
+              </div>
+            </>
+          )}
 
           {/* Android & Mobile Accessible Git Commit Version Badge (Permanently placed in sidebar navigation) */}
           <button

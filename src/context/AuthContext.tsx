@@ -5,6 +5,7 @@ import { db } from '../services/storage';
 interface AuthContextType {
   currentUser: User | null;
   isAuthenticated: boolean;
+  authenticatedRole: 'admin' | 'reseller' | 'customer';
   currentResellerProfile?: ResellerProfile;
   login: (emailOrUser: string, role?: 'admin' | 'reseller' | 'customer') => boolean;
   logout: () => void;
@@ -20,6 +21,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [authenticatedRole, setAuthenticatedRole] = useState<'admin' | 'reseller' | 'customer'>(() => {
+    const savedRole = localStorage.getItem('cloudpro_authenticated_role') as 'admin' | 'reseller' | 'customer' | null;
+    if (savedRole && ['admin', 'reseller', 'customer'].includes(savedRole)) {
+      return savedRole;
+    }
+    const savedId = localStorage.getItem('cloudpro_current_user_id');
+    if (savedId) {
+      const u = db.getUserById(savedId);
+      if (u) return u.role;
+    }
+    return 'admin';
+  });
+
   const [currentUserState, setCurrentUserState] = useState<User | null>(() => {
     const savedId = localStorage.getItem('cloudpro_current_user_id');
     if (savedId) {
@@ -106,6 +120,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('cloudpro_active_reseller_id', target.id);
       } catch {}
     }
+    setAuthenticatedRole(target.role);
+    try {
+      localStorage.setItem('cloudpro_authenticated_role', target.role);
+    } catch {}
     setCurrentUserState(target);
     try {
       localStorage.setItem('cloudpro_current_user_id', target.id);
@@ -116,26 +134,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     try {
       localStorage.removeItem('cloudpro_current_user_id');
+      localStorage.removeItem('cloudpro_authenticated_role');
+      localStorage.removeItem('cloudpro_active_reseller_id');
     } catch {}
     setCurrentUserState(null);
+    setAuthenticatedRole('admin');
   };
 
   const switchUser = (userId: string) => {
     const target = db.getUserById(userId);
-    if (target) {
-      if (target.role === 'reseller') {
-        try {
-          localStorage.setItem('cloudpro_active_reseller_id', target.id);
-        } catch {}
-      }
-      setCurrentUserState(target);
+    if (!target) return;
+
+    // RBAC SECURITY: If logged in as customer, cannot switch to any other account
+    if (authenticatedRole === 'customer') {
+      return;
+    }
+    // If logged in as reseller, cannot switch to Root Administrator or another reseller
+    if (authenticatedRole === 'reseller' && (target.role === 'admin' || (target.role === 'reseller' && target.id !== currentUser?.id))) {
+      return;
+    }
+
+    if (target.role === 'reseller') {
       try {
-        localStorage.setItem('cloudpro_current_user_id', target.id);
+        localStorage.setItem('cloudpro_active_reseller_id', target.id);
       } catch {}
     }
+    setCurrentUserState(target);
+    try {
+      localStorage.setItem('cloudpro_current_user_id', target.id);
+    } catch {}
   };
 
   const switchRole = (role: 'admin' | 'reseller' | 'customer') => {
+    // RBAC SECURITY: When logged in as reseller or customer, other dashboards CANNOT be accessed by switching portal mode
+    if (authenticatedRole !== 'admin') {
+      console.warn(`[RBAC Access Control] User logged in as '${authenticatedRole}' is not authorized to switch to '${role}' dashboard.`);
+      return;
+    }
+
     const target = ensureRoleUser(role);
     if (target.role === 'reseller') {
       localStorage.setItem('cloudpro_active_reseller_id', target.id);
@@ -206,6 +242,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         currentUser,
         isAuthenticated: !!currentUser,
+        authenticatedRole,
         currentResellerProfile,
         login,
         logout,

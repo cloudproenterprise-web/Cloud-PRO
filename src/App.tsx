@@ -118,7 +118,7 @@ class ModuleErrorBoundary extends React.Component<ModuleErrorBoundaryProps, Modu
 }
 
 const AppContent: React.FC = () => {
-  const { currentUser, isAuthenticated } = useAuth();
+  const { currentUser, isAuthenticated, authenticatedRole } = useAuth();
   const {
     servers,
     toasts,
@@ -342,22 +342,47 @@ const AppContent: React.FC = () => {
     }
   }, [currentUser?.id, currentUser?.role, accounts.length]);
 
-  // Validate tab permissions according to current user role
+  // Validate tab permissions according to current user role and authenticated role
   useEffect(() => {
     if (!currentUser) return;
-    const adminOnlyTabs = ['servers', 'ip-manager', 'resellers', 'tailscale-mesh', 'architecture', 'gateway-tunnel'];
-    if (currentUser.role === 'admin' && (activeTab === 'reseller-dashboard' || activeTab === 'customer-dashboard')) {
-      setActiveTabState('dashboard');
-    } else if (currentUser.role === 'reseller') {
-      if (activeTab === 'dashboard' || activeTab === 'admin-dashboard' || activeTab === 'customer-dashboard' || adminOnlyTabs.includes(activeTab)) {
+    const adminOnlyTabs = [
+      'servers',
+      'ip-manager',
+      'resellers',
+      'tailscale-mesh',
+      'architecture',
+      'gateway-tunnel',
+      'private-ns',
+      'security',
+      'api',
+      'api-explorer',
+      'terminal',
+    ];
+
+    const effectiveRole = authenticatedRole || currentUser.role;
+
+    if (effectiveRole === 'reseller') {
+      if (
+        activeTab === 'dashboard' ||
+        activeTab === 'admin-dashboard' ||
+        adminOnlyTabs.includes(activeTab)
+      ) {
         setActiveTabState('reseller-dashboard');
       }
-    } else if (currentUser.role === 'customer') {
-      if (activeTab === 'dashboard' || activeTab === 'admin-dashboard' || activeTab === 'reseller-dashboard' || adminOnlyTabs.includes(activeTab) || activeTab === 'customers' || activeTab === 'plans' || activeTab === 'whitelabel') {
+    } else if (effectiveRole === 'customer') {
+      if (
+        activeTab === 'dashboard' ||
+        activeTab === 'admin-dashboard' ||
+        activeTab === 'reseller-dashboard' ||
+        adminOnlyTabs.includes(activeTab) ||
+        activeTab === 'customers' ||
+        activeTab === 'plans' ||
+        activeTab === 'whitelabel'
+      ) {
         setActiveTabState('customer-dashboard');
       }
     }
-  }, [currentUser?.role, activeTab]);
+  }, [currentUser?.role, authenticatedRole, activeTab]);
 
   // Ensure viewport is scrolled to top after login, tab switch, or user/role switch
   useEffect(() => {
