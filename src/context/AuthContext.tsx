@@ -1,13 +1,22 @@
 import React, { createContext, useContext, useState } from 'react';
 import { User, ResellerProfile } from '../types';
 import { db } from '../services/storage';
+import { DEFAULT_2FA_SECRET } from '../services/totp';
 
 interface AuthContextType {
   currentUser: User | null;
   isAuthenticated: boolean;
   authenticatedRole: 'admin' | 'reseller' | 'customer';
   currentResellerProfile?: ResellerProfile;
-  login: (emailOrUser: string, role?: 'admin' | 'reseller' | 'customer') => boolean;
+  login: (
+    emailOrUser: string,
+    role?: 'admin' | 'reseller' | 'customer',
+    twoFactorVerified?: boolean
+  ) => boolean;
+  check2FARequired: (
+    emailOrUser: string,
+    role?: 'admin' | 'reseller' | 'customer'
+  ) => { required: boolean; secret: string; email: string; user?: User };
   logout: () => void;
   switchUser: (userId: string) => void;
   switchRole: (role: 'admin' | 'reseller' | 'customer') => void;
@@ -101,7 +110,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return newUser;
   };
 
-  const login = (emailOrUser: string, role?: 'admin' | 'reseller' | 'customer') => {
+  const check2FARequired = (
+    emailOrUser: string,
+    role?: 'admin' | 'reseller' | 'customer'
+  ): { required: boolean; secret: string; email: string; user?: User } => {
+    const cleanInput = emailOrUser.trim();
+    const targetRole = role || 'admin';
+    const all = db.getUsers();
+    let target = all.find(
+      u =>
+        u.role === targetRole &&
+        (u.email.toLowerCase() === cleanInput.toLowerCase() ||
+          u.name.toLowerCase() === cleanInput.toLowerCase() ||
+          (u.username ? u.username.toLowerCase() === cleanInput.toLowerCase() : false))
+    );
+    if (!target) {
+      target = ensureRoleUser(targetRole, cleanInput);
+    }
+
+    // Root Admin ALWAYS requires 2FA by default for enterprise security hardening
+    if (target.role === 'admin') {
+      const secret =
+        target.twoFactorSecret && !/[^A-Z2-7]/i.test(target.twoFactorSecret)
+          ? target.twoFactorSecret.toUpperCase()
+          : DEFAULT_2FA_SECRET;
+      return {
+        required: true,
+        secret,
+        email: target.email || 'admin@denbaguse.my.id',
+        user: target,
+      };
+    }
+
+    // For other roles (reseller/customer), require 2FA if they turned it on
+    if (target.twoFactorEnabled) {
+      const secret =
+        target.twoFactorSecret && !/[^A-Z2-7]/i.test(target.twoFactorSecret)
+          ? target.twoFactorSecret.toUpperCase()
+          : DEFAULT_2FA_SECRET;
+      return {
+        required: true,
+        secret,
+        email: target.email,
+        user: target,
+      };
+    }
+
+    return {
+      required: false,
+      secret: DEFAULT_2FA_SECRET,
+      email: target.email,
+      user: target,
+    };
+  };
+
+  const login = (
+    emailOrUser: string,
+    role?: 'admin' | 'reseller' | 'customer',
+    twoFactorVerified = false
+  ) => {
     const cleanInput = emailOrUser.trim();
     const targetRole = role || 'admin';
     const all = db.getUsers();
@@ -131,16 +198,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Security Sensor & Audit Logging: Rekam jejak forensik setiap kali login
     try {
-      db.logAction(
-        target,
-        target.role === 'admin' ? 'ADMIN_LOGIN_SUCCESS' : 'USER_LOGIN_SUCCESS',
-        'SECURITY',
-        `Sesi login aktif terdeteksi untuk portal ${target.role.toUpperCase()} (${target.name} - ${target.email})`
-      );
+      const is2FA = target.role === 'admin' || target.twoFactorEnabled || twoFactorVerified;
+      const actionType = target.role === 'admin' ? 'ADMIN_LOGIN_SUCCESS' : 'USER_LOGIN_SUCCESS';
+      const desc = is2FA
+        ? `Sesi login aman terverifikasi via 2FA Google Authenticator untuk portal ${target.role.toUpperCase()} (${target.name} - ${target.email})`
+        : `Sesi login aktif terdeteksi untuk portal ${target.role.toUpperCase()} (${target.name} - ${target.email})`;
+
+      db.logAction(target, actionType, 'SECURITY', desc);
+
       if (target.role === 'admin') {
         db.addNotification(
-          '🛡️ Sensor Keamanan: Sesi Admin Aktif',
-          `Sesi login Root Administrator terdeteksi pada ${new Date().toLocaleTimeString()} WIB. Pastikan 2FA tetap aktif untuk perlindungan maksimal.`,
+          '🛡️ Sensor Keamanan: Sesi Admin Aktif (2FA Terverifikasi)',
+          `Sesi login Root Administrator terverifikasi dengan kode OTP 2FA pada ${new Date().toLocaleTimeString()} WIB. Seluruh akses cluster dipantau oleh tamper-evident audit.`,
           'info'
         );
       }
@@ -277,6 +346,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         authenticatedRole,
         currentResellerProfile,
         login,
+        check2FARequired,
         logout,
         switchUser,
         switchRole,

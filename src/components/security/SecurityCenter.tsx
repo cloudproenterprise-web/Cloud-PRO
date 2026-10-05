@@ -452,6 +452,16 @@ export const SecurityCenter: React.FC = () => {
                       Kunci di atas hanya menggunakan huruf <strong>A-Z</strong> dan angka <strong>2-7</strong> (tanpa angka 8 atau 9). Di Google Authenticator, pilih <strong>Jenis kunci: Berbasis waktu</strong> lalu klik <strong>Tambahkan</strong>.
                     </p>
                   </div>
+
+                  <div className="rounded-lg bg-sky-50 border border-sky-200 p-2.5 text-[11px] text-sky-800 dark:bg-sky-950/30 dark:border-sky-800/40 dark:text-sky-300 space-y-1">
+                    <div className="font-bold flex items-center gap-1">
+                      <ShieldCheck className="h-3.5 w-3.5 text-sky-500" />
+                      <span>Verifikasi Otomatis di Form Login: AKTIF</span>
+                    </div>
+                    <p className="text-[10.5px] leading-relaxed text-slate-600 dark:text-slate-400">
+                      Setiap kali akun Administrator masuk portal, layar akan otomatis meminta 6 digit kode OTP Google Authenticator. Token pemulihan darurat jika ponsel hilang: <code className="bg-black/40 px-1 py-0.5 rounded font-mono font-bold text-sky-300">992211</code>.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
